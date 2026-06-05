@@ -1,0 +1,8 @@
+venv/
+models/
+repo/playground/data/
+__pycache__/
+*.pyc
+*.zip
+.git_backup/
+repo/.git_backup/
