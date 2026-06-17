@@ -1,8 +1,22 @@
 venv/
+.venv/
+venv_*/
 models/
 repo/playground/data/
 __pycache__/
 *.pyc
 *.zip
+*.log
 .git_backup/
 repo/.git_backup/
+
+# Local agent/tool state.
+.claude/
+.local/
+repo/.understand-anything/
+
+# Local drafts and generated research data.
+human_draft_never_touch.md
+autoresearch/data/
+autoresearch/**/output/
+autoresearch/profiling/results/

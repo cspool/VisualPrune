@@ -1,0 +1,108 @@
+# VisiPruner FA2-Accelerated Inference — Research State
+# Updated 2026-06-17: Cancelled unfair eager-vs-FA2 comparison.
+# New direction: FA2-accelerated VisiPruner with lightweight pruning proxy.
+
+project: VisiPruner FA2
+question: "VisiPruner 的 token pruning 能否在 FA2 backend 上实现真正的墙钟加速？"
+
+methodology:
+  tier1: "nsys (sampling, non-invasive) → full GPU timeline → locate hottest kernels"
+  tier2: "ncu (replay, deep counters) → targeted analysis on hotspots identified by nsys"
+  forbidden: ["Python wall-time (time.time/CUDATimer/torch.cuda.Event)", "CUPTI (torch.profiler)"]
+  adopted: "2026-06-16 — nsys→ncu two-tier method"
+  revision: "2026-06-17 — FA2 acceleration: use flash_attn_func() for dense attention, compute Q_last@K^T (O(L×d)) as lightweight pruning proxy"
+
+key_insight: |
+  value_aware_token_selection() only needs attn_weights[:, :, -1, :] — the LAST
+  query token's attention weights. This is O(L×d) to compute, NOT O(L²×d).
+  Therefore we can use FA2 for the full attention (fast, tiled) and separately
+  compute Q_last @ K^T (cheap) for pruning decisions. Never materialize full S=QK^T.
+
+findings_20260616:
+  nsys_e1:
+    dense_fa2_ms: 79.3
+    dense_eager_ms: 1490.6
+    visipruner_full_ms: 1516.2
+    visipruner_shallow_ms: 1490.5
+    actual_speedup_vs_fa2: 0.052x
+    conclusion: "Eager attention is 19× slower than FA2. VisiPruner vs Dense-FA2 comparison is dominated by attention backend, not pruning. UNFAIR."
+    action: "Cancel eager-vs-FA2 comparison. Redesign with FA2 backend for VisiPruner."
+
+hypotheses:
+  H1:
+    label: "FA2-VisiPruner 接近 FA2-Dense 的速度"
+    description: "使用 FA2 + lightweight pruning proxy 后，VisiPruner 的 GPU 时间应接近 dense-fa2 (79ms)，而非 dense-eager (1490ms)"
+    status: untested
+    priority: P0
+  H2:
+    label: "Token pruning 在 FA2 backend 上仍有加速效果"
+    description: "Middle/deep pruning 物理移除 token 后，后续层 FA2 处理更短序列，T_total < dense-fa2"
+    status: untested
+    priority: P0
+  H3:
+    label: "移除 shallow pruning 对输出质量影响可接受"
+    description: "Shallow pruning 的 per-cell attention masking 与 FA2 不兼容，移除后的输出质量下降应在可接受范围"
+    status: untested
+    priority: P1
+
+experiments:
+  e0_nsys_baseline:
+    status: done
+    protocol: experiments/e1_baseline/protocol.md
+    description: "Original E1: nsys profiling of dense-fa2, dense-eager, visipruner-full, visipruner-shallow-only"
+    results:
+      dense_fa2_ms: 79.3
+      dense_eager_ms: 1490.6
+      visipruner_full_ms: 1516.2
+      visipruner_shallow_ms: 1490.5
+      actual_speedup: 0.052x
+    conclusion: "UNFAIR — attention backend dominates. Move to FA2-VisiPruner."
+
+  e1_fa2_visipruner:
+    status: designed
+    description: "FA2-VisiPruner vs FA2-Dense: 公平的 pruning 加速对比"
+    configs:
+      - dense-fa2              # Dense + FA2 (baseline)
+      - visipruner-fa2-full    # NEW: VisiPruner + FA2 + lightweight pruning proxy (middle+deep)
+      - visipruner-fa2-shallow # NEW: VisiPruner + FA2 (shallow-only, no middle/deep pruning)
+    metrics:
+      - T_total (nsys GPU time)
+      - actual_speedup vs dense-fa2
+      - Top-10 kernel breakdown
+      - Kernel category distribution
+    priority: P0
+
+  e2_output_quality:
+    status: designed
+    description: "FA2-VisiPruner vs Eager-VisiPruner 输出质量对比"
+    configs:
+      - visipruner-fa2-full
+      - visipruner-eager-full (original)
+    metrics:
+      - Output text (same input)
+      - Token-by-token generation match rate
+      - Perplexity on benchmark
+    priority: P1
+
+  e3_scaling:
+    status: designed
+    description: "Batch size / sequence length scaling for FA2-VisiPruner"
+    configs:
+      - dense-fa2
+      - visipruner-fa2-full
+    parameters:
+      - batch_size: [1, 2, 4]
+      - prompt_length: [256, 512, 1024]
+    priority: P2
+
+implementation:
+  files:
+    - path: repo/llava/model/language_model/custom_modeling_llama.py
+      change: "Add FA2VisiPrunerLlamaAttention class; modify LlamaDecoderLayer for dynamic attention selection"
+    - path: autoresearch/experiments/e1_baseline/code/bench_fa2_visipruner.py
+      change: "Standalone inference + profiling script (nsys/ncu compatible)"
+
+issues:
+  - "Eager attention is 19× slower than FA2 — unfair baseline comparison"
+  - "Shallow pruning (post-softmax weight masking) incompatible with FA2 — removed in FA2 version"
+  - "Need to verify flash_attn library is installed and compatible with CUDA 13.2"

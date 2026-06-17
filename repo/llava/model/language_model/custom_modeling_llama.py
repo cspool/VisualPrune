@@ -388,6 +388,15 @@ class LlamaAttention(nn.Module):
     def _shape(self, tensor: torch.Tensor, seq_len: int, bsz: int):
         return tensor.view(bsz, seq_len, self.num_heads, self.head_dim).transpose(1, 2).contiguous()
 
+    def set_num_images(self, num_images: int):
+        """No-op stub for compatibility with VisiPruner's pruning pipeline.
+
+        VisiPrunerLlamaAttention overrides this to track image token
+        positions for pruning. Non-pruning attention subclasses
+        (LlamaFlashAttention2, LlamaSdpaAttention) inherit this no-op.
+        """
+        pass
+
     def forward(
         self,
         hidden_states: torch.Tensor,
@@ -735,6 +744,160 @@ class VisiPrunerLlamaAttention(nn.Module):
         return attn_output, attn_weights, past_key_value
 
 
+class FA2VisiPrunerLlamaAttention(VisiPrunerLlamaAttention):
+    """
+    FA2-accelerated VisiPruner attention.
+
+    Uses flash_attn_func() for dense attention computation (fast, tiled, IO-aware).
+    Computes Q_last @ K^T as a lightweight pruning proxy (O(L×d)) — this is the
+    only attention-weight information needed by value_aware_token_selection().
+
+    Shallow pruning (post-softmax weight masking) is SKIPPED — it is fundamentally
+    incompatible with FA2's fused kernel which never materialises the full S = QK^T
+    matrix, and it would not reduce FA2 compute anyway.
+
+    Middle/deep pruning is PRESERVED — operates at the token level (outside the
+    attention kernel) and physically removes tokens from subsequent layers, which
+    makes FA2 even faster on shorter sequences.
+    """
+
+    def forward(
+        self,
+        hidden_states: torch.Tensor,
+        attention_mask: Optional[torch.Tensor] = None,
+        position_ids: Optional[torch.LongTensor] = None,
+        past_key_value: Optional[Cache] = None,
+        output_attentions: bool = False,
+        use_cache: bool = False,
+        important_vis_tokens: Optional[torch.Tensor] = None,
+        exit_indicator: Optional[int] = 0,
+        **kwargs,
+    ) -> Tuple[torch.Tensor, Optional[torch.Tensor], Optional[Tuple[torch.Tensor]]]:
+        if "padding_mask" in kwargs:
+            warnings.warn(
+                "Passing `padding_mask` is deprecated and will be removed in v4.37. "
+                "Please make sure use `attention_mask` instead.`"
+            )
+
+        bsz, q_len, _ = hidden_states.size()
+
+        # ── QKV projection (same as parent) ──────────────────────────
+        query_states = self.q_proj(hidden_states)
+        key_states = self.k_proj(hidden_states)
+        value_states = self.v_proj(hidden_states)
+
+        query_states = query_states.view(bsz, q_len, self.num_heads, self.head_dim).transpose(1, 2)
+        key_states = key_states.view(bsz, q_len, self.num_key_value_heads, self.head_dim).transpose(1, 2)
+        value_states = value_states.view(bsz, q_len, self.num_key_value_heads, self.head_dim).transpose(1, 2)
+
+        kv_seq_len = key_states.shape[-2]
+        if past_key_value is not None:
+            kv_seq_len += past_key_value.get_usable_length(kv_seq_len, self.layer_idx)
+
+        # ── RoPE ─────────────────────────────────────────────────────
+        cos, sin = self.rotary_emb(value_states, seq_len=position_ids[0, -1] + 1)
+        query_states, key_states = apply_rotary_pos_emb(
+            query_states, key_states, cos, sin, position_ids)
+
+        # ── KV cache ─────────────────────────────────────────────────
+        if past_key_value is not None:
+            cache_kwargs = {"sin": sin, "cos": cos}
+            key_states, value_states = past_key_value.update(
+                key_states, value_states, self.layer_idx, cache_kwargs)
+
+        # ── Pruning proxy: Q_last @ K^T (cheap, O(L×d)) ─────────────
+        # Only needed during prefill (q_len > 1) for middle/deep layers.
+        pruning_mode = getattr(self, "pruning_mode", [])
+        shallow_mid = getattr(self, "shallow_mid_layer", 80)
+        need_pruning_proxy = (
+            self.num_images > 0
+            and q_len > 1
+            and self.layer_idx > shallow_mid
+            and ("middle" in pruning_mode or "deep" in pruning_mode)
+        )
+
+        pruning_weights = None  # (bsz, nheads, 1, kv_seq_len) — last query only
+        if need_pruning_proxy:
+            key_states_for_pruning = repeat_kv(key_states, self.num_key_value_groups)
+            # Only the last query token: O(kv_seq_len × head_dim × nheads)
+            q_last = query_states[:, :, -1:, :]  # (bsz, nheads, 1, head_dim)
+            pruning_weights = torch.matmul(
+                q_last, key_states_for_pruning.transpose(2, 3)
+            ) / math.sqrt(self.head_dim)
+            # Apply causal mask to the last position
+            # Create causal mask: allow attending to positions <= last_query_pos
+            if attention_mask is not None and attention_mask.dim() == 4:
+                # Use the last query's mask slice
+                pruning_mask = attention_mask[:, :, -1:, :kv_seq_len]
+                pruning_weights = pruning_weights + pruning_mask
+            pruning_weights = nn.functional.softmax(
+                pruning_weights, dim=-1, dtype=torch.float32
+            ).to(query_states.dtype)
+
+        # ── FA2 attention ────────────────────────────────────────────
+        # FA2 expects (batch, seqlen, nheads, headdim) — NOT HuggingFace fmt
+        # GQA: repeat_kv first, then transpose
+        query_states_fa2 = query_states.transpose(1, 2)  # (bsz, q_len, nheads, headdim)
+        key_states_fa2 = repeat_kv(key_states, self.num_key_value_groups)
+        key_states_fa2 = key_states_fa2.transpose(1, 2)
+        value_states_fa2 = repeat_kv(value_states, self.num_key_value_groups)
+        value_states_fa2 = value_states_fa2.transpose(1, 2)
+
+        # Determine causal setting: only use causal when no explicit attention_mask
+        # and when q_len == kv_seq_len (no prefix/context)
+        is_causal = (attention_mask is None and q_len == kv_seq_len)
+
+        attn_output = flash_attn_func(
+            query_states_fa2,
+            key_states_fa2,
+            value_states_fa2,
+            dropout_p=self.attention_dropout if self.training else 0.0,
+            softmax_scale=1.0 / math.sqrt(self.head_dim),
+            causal=is_causal,
+            window_size=(-1, -1),  # no sliding window
+        )
+        # FA2 output: (bsz, q_len, nheads, headdim)
+
+        # ── Reshape FA2 output back to (bsz, q_len, hidden_size) ────
+        attn_output = attn_output.reshape(bsz, q_len, self.hidden_size)
+
+        # ── Value-aware token selection (middle/deep pruning) ────────
+        # Uses the lightweight pruning_weights instead of full attn_weights
+        if need_pruning_proxy and pruning_weights is not None:
+            # Reshape pruning_weights for value_aware_token_selection
+            # Function expects attn_output shape: (bsz, q_len, hidden_size)
+            # and attn_weights shape: (bsz, nheads, q_len, kv_seq_len)
+            # pruning_weights is (bsz, nheads, 1, kv_seq_len) — pad to full q_len
+            pw_full = pruning_weights  # (bsz, nheads, 1, kv_seq_len)
+
+            value_states_full = repeat_kv(value_states, self.num_key_value_groups)
+
+            # Build full attn_output in (bsz, q_len, hidden_size) for selection
+            attn_output_for_selection = attn_output  # (bsz, q_len, hidden_size)
+
+            if ("middle" in pruning_mode and important_vis_tokens is None
+                    and q_len == position_ids[0, -1] + 1):
+                important_vis_tokens = self.value_aware_token_selection(
+                    value_states_full, attn_output_for_selection, pw_full)
+            elif ("deep" in pruning_mode and important_vis_tokens is not None
+                  and q_len == position_ids[0, -1] + 1
+                  - 576 * self.num_images + important_vis_tokens.shape[0]):
+                exit_indicator += self.value_aware_token_selection(
+                    value_states_full, attn_output_for_selection, pw_full,
+                    important_vis_tokens)
+
+        # ── Output projection ────────────────────────────────────────
+        attn_output = self.o_proj(attn_output)
+
+        if not output_attentions:
+            attn_weights = None
+
+        if important_vis_tokens is not None:
+            return (attn_output, important_vis_tokens, exit_indicator), None, past_key_value
+
+        return attn_output, None, past_key_value
+
+
 class LlamaFlashAttention2(LlamaAttention):
     """
     Llama flash attention module. This module inherits from `LlamaAttention` as the weights of the module stays
@@ -1028,6 +1191,7 @@ class LlamaSdpaAttention(LlamaAttention):
 LLAMA_ATTENTION_CLASSES = {
     "eager": LlamaAttention,
     "visi_pruner": VisiPrunerLlamaAttention,
+    "fa2_visi_pruner": FA2VisiPrunerLlamaAttention,
     "flash_attention_2": LlamaFlashAttention2,
     "sdpa": LlamaSdpaAttention,
 }
@@ -1039,7 +1203,23 @@ class LlamaDecoderLayer(nn.Module):
         self.hidden_size = config.hidden_size
 
         self.layer_idx = layer_idx
-        self.self_attn = VisiPrunerLlamaAttention(config=config, layer_idx=layer_idx)
+
+        # Dynamic attention selection based on config flags:
+        # - use_visipruner + flash_attention_2 → FA2VisiPrunerLlamaAttention (NEW)
+        # - use_visipruner + eager            → VisiPrunerLlamaAttention (original)
+        # - flash_attention_2 (no pruning)    → LlamaFlashAttention2
+        # - eager / default (no pruning)      → LlamaAttention
+        use_visipruner = getattr(config, "use_visipruner", False)
+        attn_impl = getattr(config, "_attn_implementation", "eager")
+
+        if use_visipruner and attn_impl == "flash_attention_2":
+            self.self_attn = FA2VisiPrunerLlamaAttention(config=config, layer_idx=layer_idx)
+        elif use_visipruner:
+            self.self_attn = VisiPrunerLlamaAttention(config=config, layer_idx=layer_idx)
+        elif attn_impl == "flash_attention_2":
+            self.self_attn = LlamaFlashAttention2(config=config, layer_idx=layer_idx)
+        else:
+            self.self_attn = LlamaAttention(config=config, layer_idx=layer_idx)
 
         self.mlp = LlamaMLP(config)
         self.input_layernorm = LlamaRMSNorm(config.hidden_size, eps=config.rms_norm_eps)

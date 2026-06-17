@@ -23,7 +23,7 @@ from llava.model import *
 from llava.constants import DEFAULT_IMAGE_PATCH_TOKEN, DEFAULT_IM_START_TOKEN, DEFAULT_IM_END_TOKEN
 
 
-def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, load_4bit=False, device_map="auto", device="cuda", use_flash_attn=False, **kwargs):
+def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, load_4bit=False, device_map="auto", device="cuda", use_flash_attn=False, use_visipruner=False, **kwargs):
     kwargs = {"device_map": device_map, **kwargs}
 
     if device != "cuda":
@@ -46,6 +46,22 @@ def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, l
         kwargs['attn_implementation'] = 'flash_attention_2'
     else:
         kwargs['attn_implementation'] = 'eager'
+
+    # Inject use_visipruner into the model config so LlamaDecoderLayer
+    # selects the correct attention class (VisiPrunerLlamaAttention or
+    # FA2VisiPrunerLlamaAttention) during from_pretrained.
+    # NOTE: Must use the CUSTOM LlavaConfig (from llava_llama, which inherits
+    # LlamaConfig) — NOT AutoConfig (which loads transformers' LlavaConfig
+    # inheriting only PretrainedConfig, missing attention_dropout etc.).
+    # Also MUST set _attn_implementation explicitly — when a config= kwarg is
+    # passed to from_pretrained, HuggingFace ignores the attn_implementation
+    # kwarg and uses whatever is in the config object.
+    if use_visipruner:
+        from llava.model.language_model.llava_llama import LlavaConfig as _LlavaCfg
+        cfg = _LlavaCfg.from_pretrained(model_path)
+        cfg.use_visipruner = True
+        cfg._attn_implementation = kwargs.get('attn_implementation', 'eager')
+        kwargs['config'] = cfg
 
     if 'llava' in model_name.lower():
         # Load LLaVA model

@@ -1,11 +1,26 @@
-FROM nvidia/cuda:12.8.0-devel-ubuntu22.04
+# All-in-one GPU Dockerfile: CUDA 12.8 + 13.0 + 13.2 PyTorch in a single image
+#
+# PyTorch wheels bundle their own CUDA libraries, so a single CUDA 13.2 base
+# can host torch builds for cu128, cu130, and cu132 simultaneously.
+# Each PyTorch version lives in its own conda environment.
+#
+# Build:
+#   docker build --network host -f docker/Dockerfile.gpu -t auto-research-gpu:latest .
+#
+# Inside the container, activate the desired environment:
+#   source /opt/cuda-env.sh cu128   # torch 2.11.0+cu128  (CUDA 12.8)
+#   source /opt/cuda-env.sh cu130   # torch 2.12.0+cu130  (CUDA 13.0)
+#   source /opt/cuda-env.sh cu132   # torch 2.12.0+cu132  (CUDA 13.2, default)
+
+FROM nvidia/cuda:13.2.1-devel-ubuntu22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
-ENV PATH=/usr/local/cuda-12.8/bin:/usr/local/bin:/usr/bin:/bin
-ENV LD_LIBRARY_PATH=/usr/local/cuda-12.8/lib64
+ENV PATH=/usr/local/cuda-13.2/bin:/usr/local/bin:/usr/bin:/bin
+ENV LD_LIBRARY_PATH=/usr/local/cuda-13.2/lib64
 ENV NVIDIA_VISIBLE_DEVICES=all
-ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
+ENV NVIDIA_DRIVER_CAPABILITIES=all
 
+# ── System packages ──────────────────────────────────────────────────────────
 RUN apt-get update && apt-get install -y --no-install-recommends \
     bash \
     build-essential \
@@ -24,11 +39,23 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
     && rm -rf /var/lib/apt/lists/*
 
+
+# ── Node.js + Codex CLI ──────────────────────────────────────────────────────
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
     apt-get install -y --no-install-recommends nodejs && \
     npm install -g @openai/codex && \
     rm -rf /var/lib/apt/lists/*
 
+# ── Miniconda ────────────────────────────────────────────────────────────────
+RUN curl -fsSL https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -o /tmp/miniconda.sh && \
+    bash /tmp/miniconda.sh -b -p /opt/conda && \
+    rm /tmp/miniconda.sh && \
+    /opt/conda/bin/conda init bash
+
+ENV PATH=/opt/conda/bin:/opt/conda/condabin:${PATH}
+ENV CONDA_PLUGINS_AUTO_ACCEPT_TOS=true
+
+# ── Common pip packages (installed once in base conda) ───────────────────────
 RUN python3 -m pip install --no-cache-dir --upgrade pip && \
     python3 -m pip install --no-cache-dir \
       pandas \
@@ -48,12 +75,55 @@ RUN python3 -m pip install --no-cache-dir --upgrade pip && \
       sympy \
       networkx \
       jinja2 \
-      fsspec && \
-    python3 -m pip install --no-cache-dir \
-      --index-url https://download.pytorch.org/whl/cu128 \
-      torch==2.11.0+cu128
+      fsspec
 
-WORKDIR /workspace/auto_research
+# ── Conda environments — one per CUDA/PyTorch combination ────────────────────
+# Each env has its own PyTorch build; wheels bundle matching CUDA libs.
+
+# cu128: CUDA 12.8  → torch 2.11.0+cu128
+RUN conda create -y -n cu128 python=3.12 && \
+    conda run -n cu128 python3 -m pip install --no-cache-dir \
+      --index-url https://download.pytorch.org/whl/cu128 \
+      torch==2.11.0+cu128 && \
+    conda run -n cu128 python3 -m pip install --no-cache-dir \
+      pandas pyyaml numpy scipy scikit-learn matplotlib plotly seaborn \
+      filelock typing-extensions sympy networkx jinja2 fsspec
+
+# cu130: CUDA 13.0  → torch 2.12.0+cu130
+RUN conda create -y -n cu130 python=3.12 && \
+    conda run -n cu130 python3 -m pip install --no-cache-dir \
+      --index-url https://download.pytorch.org/whl/cu130 \
+      torch==2.12.0+cu130 && \
+    conda run -n cu130 python3 -m pip install --no-cache-dir \
+      pandas pyyaml numpy scipy scikit-learn matplotlib plotly seaborn \
+      filelock typing-extensions sympy networkx jinja2 fsspec
+
+# cu132: CUDA 13.2  → torch 2.12.0+cu132 (default)
+RUN conda create -y -n cu132 python=3.12 && \
+    conda run -n cu132 python3 -m pip install --no-cache-dir \
+      --index-url https://download.pytorch.org/whl/cu132 \
+      torch==2.12.0+cu132 && \
+    conda run -n cu132 python3 -m pip install --no-cache-dir \
+      pandas pyyaml numpy scipy scikit-learn matplotlib plotly seaborn \
+      filelock typing-extensions sympy networkx jinja2 fsspec
+
+# ── Convenience env-switch script ────────────────────────────────────────────
+RUN printf '#!/bin/bash\n\
+# Usage: source /opt/cuda-env.sh [cu128|cu130|cu132]\n\
+TARGET="${1:-cu132}"\n\
+case "${TARGET}" in\n\
+  cu128|cu130|cu132)\n\
+    conda activate "${TARGET}"\n\
+    echo "Switched to conda env: ${TARGET}  (torch=$(python3 -c "import torch; print(torch.__version__)" 2>/dev/null || echo "??"))"\n\
+    ;;\n\
+  *)\n\
+    echo "Usage: source /opt/cuda-env.sh [cu128|cu130|cu132]" >&2\n\
+    return 1\n\
+    ;;\n\
+esac\n' > /opt/cuda-env.sh && chmod 644 /opt/cuda-env.sh
+
+# Default: cu132 active for new shells
+RUN printf 'source /opt/conda/etc/profile.d/conda.sh\nconda activate cu132\n' >> /etc/bash.bashrc
 
 ENTRYPOINT ["/usr/bin/tini", "--"]
 CMD ["/bin/bash"]
