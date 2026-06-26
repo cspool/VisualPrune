@@ -1,0 +1,29 @@
+{
+  "timestamp_utc": "2026-06-24T10:32:45.961074+00:00",
+  "config": "visipruner-full",
+  "model_path": "liuhaotian/llava-v1.5-7b",
+  "image_path": "/workspace/VisiPrune/autoresearch/data/benchmark_images/002901d9d194c4fb.jpg",
+  "prompt": "Describe the image briefly.",
+  "max_new_tokens": 32,
+  "comparison": {
+    "same_shape": true,
+    "same_output_ids": true,
+    "same_decoded_text": true,
+    "unwrapped_output_shape": [
+      1,
+      33
+    ],
+    "wrapped_output_shape": [
+      1,
+      33
+    ],
+    "unwrapped_output_text": "The image features a vintage car with a custom paint job, parked on a street. The car is adorned with a custom paint job and",
+    "wrapped_output_text": "The image features a vintage car with a custom paint job, parked on a street. The car is adorned with a custom paint job and"
+  },
+  "trace_side_effect_check": {
+    "forward_events": 32,
+    "layer_events": 1024,
+    "selection_events": 21
+  },
+  "method": "Run generate once without wrappers, then monkey-patch wrappers and run generate again on the same loaded model and same deterministic inputs."
+}

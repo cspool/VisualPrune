@@ -1,0 +1,443 @@
+{
+  "event_id": "input1_layer10",
+  "torch_flow_dir": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow",
+  "dispatch_reconstruction": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/dispatch_reconstructed.py",
+  "toy_tensor_compute": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/toy_tensor_compute.py",
+  "layer_profile": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/layer_profile.json",
+  "process_index": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/process_index.md",
+  "split_small_tensor_files": {
+    "input_rmsnorm": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/rmsnorm.py",
+    "qkv_projection": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/qkv_projection.py",
+    "rope": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/rope.py",
+    "kv_cache_concat": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/kv_cache.py",
+    "attention": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/attention.py",
+    "visual_adjust": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/visual_adjust.py",
+    "visipruner_similarity_check": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/visipruner_similarity.py",
+    "attention_output": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/attention_output.py",
+    "mlp": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/mlp.py",
+    "full_flow": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/run_full_flow.py",
+    "export_stage_onnx": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/export_stage_onnx.py"
+  },
+  "expected_stages": [
+    "input_rmsnorm",
+    "qkv_projection",
+    "rope",
+    "attention",
+    "visipruner_similarity_check",
+    "attention_output",
+    "mlp"
+  ],
+  "original_dimensions": {
+    "q_len": 624,
+    "kv_len": 624,
+    "hidden": 4096,
+    "heads": 32,
+    "head_dim": 128,
+    "ffn": 11008
+  },
+  "small_config": {
+    "seq": 16,
+    "q_seq": 16,
+    "kv_seq": 16,
+    "hidden": 32,
+    "heads": 4,
+    "head_dim": 8,
+    "visual_start": 3,
+    "visual_end": 13,
+    "tail_start": 13,
+    "ffn": 64
+  },
+  "onnx_code_review": {
+    "event_id": "input1_layer10",
+    "torch_flow_dir": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow",
+    "onnx_code_review_dir": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/dispatch_review/onnx_code",
+    "onnx_sidecar": {
+      "onnx_dir": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/onnx",
+      "layout": "flat",
+      "pages": 8
+    },
+    "onnx_code_index": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/dispatch_review/onnx_code_index.md",
+    "entries": [
+      {
+        "onnx_path": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/onnx/01_input_rmsnorm.onnx",
+        "onnx_file": "01_input_rmsnorm.onnx",
+        "stage": "input_rmsnorm",
+        "stage_title": "Input RMSNorm",
+        "code_review_markdown": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/dispatch_review/onnx_code/01_input_rmsnorm_code.md",
+        "export_wrapper": {
+          "file": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/export_stage_onnx.py",
+          "class": "InputRMSNormStage"
+        },
+        "primary_code_files": [
+          "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/rmsnorm.py"
+        ],
+        "support_code_files": [
+          "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/config.py",
+          "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/init_data.py",
+          "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/export_stage_onnx.py"
+        ],
+        "inputs": {
+          "hidden_states": [
+            16,
+            32
+          ]
+        },
+        "outputs": {
+          "x_norm": [
+            16,
+            32
+          ],
+          "variance": [
+            16,
+            1
+          ],
+          "inv_rms": [
+            16,
+            1
+          ]
+        },
+        "nodes": 10,
+        "initializers": 1,
+        "explanation": "Normalizes the incoming hidden states with RMSNorm and exposes variance/inverse-RMS tensors for inspection.",
+        "dispatch_evidence_count": 8,
+        "onnx_sidecar_markdown": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/onnx/01_input_rmsnorm_code.md"
+      },
+      {
+        "onnx_path": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/onnx/02_qkv_projection.onnx",
+        "onnx_file": "02_qkv_projection.onnx",
+        "stage": "qkv_projection",
+        "stage_title": "Q/K/V Projection",
+        "code_review_markdown": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/dispatch_review/onnx_code/02_qkv_projection_code.md",
+        "export_wrapper": {
+          "file": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/export_stage_onnx.py",
+          "class": "QKVProjectionStage"
+        },
+        "primary_code_files": [
+          "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/qkv_projection.py"
+        ],
+        "support_code_files": [
+          "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/config.py",
+          "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/init_data.py",
+          "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/export_stage_onnx.py"
+        ],
+        "inputs": {
+          "x_norm": [
+            16,
+            32
+          ]
+        },
+        "outputs": {
+          "q_heads": [
+            4,
+            16,
+            8
+          ],
+          "k_heads": [
+            4,
+            16,
+            8
+          ],
+          "v_heads": [
+            4,
+            16,
+            8
+          ]
+        },
+        "nodes": 29,
+        "initializers": 3,
+        "explanation": "Applies the query/key/value linear projections and reshapes the projected hidden states into attention heads.",
+        "dispatch_evidence_count": 9,
+        "onnx_sidecar_markdown": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/onnx/02_qkv_projection_code.md"
+      },
+      {
+        "onnx_path": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/onnx/03_rope.onnx",
+        "onnx_file": "03_rope.onnx",
+        "stage": "rope",
+        "stage_title": "RoPE",
+        "code_review_markdown": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/dispatch_review/onnx_code/03_rope_code.md",
+        "export_wrapper": {
+          "file": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/export_stage_onnx.py",
+          "class": "RoPEStage"
+        },
+        "primary_code_files": [
+          "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/rope.py"
+        ],
+        "support_code_files": [
+          "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/config.py",
+          "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/init_data.py",
+          "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/export_stage_onnx.py"
+        ],
+        "inputs": {
+          "q_heads": [
+            4,
+            16,
+            8
+          ],
+          "k_heads": [
+            4,
+            16,
+            8
+          ],
+          "position_ids": [
+            16
+          ]
+        },
+        "outputs": {
+          "q_rope": [
+            4,
+            16,
+            8
+          ],
+          "k_current_rope": [
+            4,
+            16,
+            8
+          ]
+        },
+        "nodes": 41,
+        "initializers": 2,
+        "explanation": "Gathers rotary-position cos/sin values and applies rotate-half RoPE to query and key heads.",
+        "dispatch_evidence_count": 14,
+        "onnx_sidecar_markdown": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/onnx/03_rope_code.md"
+      },
+      {
+        "onnx_path": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/onnx/04_attention.onnx",
+        "onnx_file": "04_attention.onnx",
+        "stage": "attention",
+        "stage_title": "Scaled Dot-Product Attention",
+        "code_review_markdown": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/dispatch_review/onnx_code/04_attention_code.md",
+        "export_wrapper": {
+          "file": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/export_stage_onnx.py",
+          "class": "AttentionStage"
+        },
+        "primary_code_files": [
+          "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/attention.py"
+        ],
+        "support_code_files": [
+          "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/config.py",
+          "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/init_data.py",
+          "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/export_stage_onnx.py"
+        ],
+        "inputs": {
+          "q_rope": [
+            4,
+            16,
+            8
+          ],
+          "k_heads": [
+            4,
+            16,
+            8
+          ],
+          "attention_mask": [
+            1,
+            16,
+            16
+          ]
+        },
+        "outputs": {
+          "raw_scores": [
+            4,
+            16,
+            16
+          ],
+          "masked_scores": [
+            4,
+            16,
+            16
+          ],
+          "attn": [
+            4,
+            16,
+            16
+          ]
+        },
+        "nodes": 6,
+        "initializers": 0,
+        "explanation": "Computes rectangular or square attention scores, applies the mask, and materializes softmax attention probabilities.",
+        "dispatch_evidence_count": 12,
+        "onnx_sidecar_markdown": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/onnx/04_attention_code.md"
+      },
+      {
+        "onnx_path": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/onnx/05_visipruner_similarity_check.onnx",
+        "onnx_file": "05_visipruner_similarity_check.onnx",
+        "stage": "visipruner_similarity_check",
+        "stage_title": "VisiPrune Similarity Check",
+        "code_review_markdown": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/dispatch_review/onnx_code/05_visipruner_similarity_check_code.md",
+        "export_wrapper": {
+          "file": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/export_stage_onnx.py",
+          "class": "VisiPrunerSimilarityCheckStage"
+        },
+        "primary_code_files": [
+          "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/visipruner_similarity.py"
+        ],
+        "support_code_files": [
+          "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/config.py",
+          "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/init_data.py",
+          "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/export_stage_onnx.py"
+        ],
+        "inputs": {
+          "hidden_states": [
+            16,
+            32
+          ]
+        },
+        "outputs": {
+          "similarity": [
+            15
+          ],
+          "any_close": []
+        },
+        "nodes": 32,
+        "initializers": 0,
+        "explanation": "Computes cosine-similarity based VisiPrune probe/check signals when dispatch contains the similarity sub-process.",
+        "dispatch_evidence_count": 8,
+        "onnx_sidecar_markdown": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/onnx/05_visipruner_similarity_check_code.md"
+      },
+      {
+        "onnx_path": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/onnx/06_attention_output.onnx",
+        "onnx_file": "06_attention_output.onnx",
+        "stage": "attention_output",
+        "stage_title": "Attention Output",
+        "code_review_markdown": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/dispatch_review/onnx_code/06_attention_output_code.md",
+        "export_wrapper": {
+          "file": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/export_stage_onnx.py",
+          "class": "AttentionOutputStage"
+        },
+        "primary_code_files": [
+          "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/attention_output.py"
+        ],
+        "support_code_files": [
+          "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/config.py",
+          "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/init_data.py",
+          "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/export_stage_onnx.py"
+        ],
+        "inputs": {
+          "adjusted_attn": [
+            4,
+            16,
+            16
+          ],
+          "v_heads": [
+            4,
+            16,
+            8
+          ],
+          "hidden_states": [
+            16,
+            32
+          ]
+        },
+        "outputs": {
+          "context": [
+            16,
+            32
+          ],
+          "attn_out": [
+            16,
+            32
+          ],
+          "after_attn": [
+            16,
+            32
+          ]
+        },
+        "nodes": 11,
+        "initializers": 1,
+        "explanation": "Multiplies attention probabilities by value heads, merges heads back to hidden size, applies output projection, and adds the residual.",
+        "dispatch_evidence_count": 8,
+        "onnx_sidecar_markdown": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/onnx/06_attention_output_code.md"
+      },
+      {
+        "onnx_path": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/onnx/07_mlp.onnx",
+        "onnx_file": "07_mlp.onnx",
+        "stage": "mlp",
+        "stage_title": "MLP",
+        "code_review_markdown": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/dispatch_review/onnx_code/07_mlp_code.md",
+        "export_wrapper": {
+          "file": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/export_stage_onnx.py",
+          "class": "MLPStage"
+        },
+        "primary_code_files": [
+          "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/mlp.py",
+          "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/rmsnorm.py"
+        ],
+        "support_code_files": [
+          "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/config.py",
+          "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/init_data.py",
+          "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/export_stage_onnx.py"
+        ],
+        "inputs": {
+          "after_attn": [
+            16,
+            32
+          ]
+        },
+        "outputs": {
+          "gated": [
+            16,
+            64
+          ],
+          "ffn_out": [
+            16,
+            32
+          ],
+          "output": [
+            16,
+            32
+          ]
+        },
+        "nodes": 20,
+        "initializers": 4,
+        "explanation": "Runs post-attention RMSNorm, gated SiLU MLP, down projection, and residual addition.",
+        "dispatch_evidence_count": 14,
+        "onnx_sidecar_markdown": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/onnx/07_mlp_code.md"
+      },
+      {
+        "onnx_path": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/onnx/08_full_flow.onnx",
+        "onnx_file": "08_full_flow.onnx",
+        "stage": "full_flow",
+        "stage_title": "Full Layer Flow",
+        "code_review_markdown": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/dispatch_review/onnx_code/08_full_flow_code.md",
+        "export_wrapper": {
+          "file": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/export_stage_onnx.py",
+          "class": "FullFlowStage"
+        },
+        "primary_code_files": [
+          "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/run_full_flow.py"
+        ],
+        "support_code_files": [
+          "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/config.py",
+          "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/init_data.py",
+          "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/torch_flow/export_stage_onnx.py"
+        ],
+        "inputs": {
+          "hidden_states": [
+            16,
+            32
+          ],
+          "position_ids": [
+            16
+          ],
+          "attention_mask": [
+            1,
+            16,
+            16
+          ]
+        },
+        "outputs": {
+          "output": [
+            16,
+            32
+          ]
+        },
+        "nodes": 117,
+        "initializers": 10,
+        "explanation": "Aggregates the split small-tensor stages into one end-to-end layer flow for whole-layer visualization.",
+        "dispatch_evidence_count": 1,
+        "onnx_sidecar_markdown": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/onnx/08_full_flow_code.md"
+      }
+    ],
+    "onnx_code_map": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer10/dispatch_review/onnx_code_map.json"
+  }
+}

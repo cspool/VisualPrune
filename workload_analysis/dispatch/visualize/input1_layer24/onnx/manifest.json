@@ -1,0 +1,228 @@
+[
+  {
+    "path": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer24/onnx/01_input_rmsnorm.onnx",
+    "inputs": {
+      "hidden_states": [
+        16,
+        32
+      ]
+    },
+    "outputs": {
+      "x_norm": [
+        16,
+        32
+      ],
+      "variance": [
+        16,
+        1
+      ],
+      "inv_rms": [
+        16,
+        1
+      ]
+    },
+    "nodes": 10,
+    "initializers": 1
+  },
+  {
+    "path": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer24/onnx/02_qkv_projection.onnx",
+    "inputs": {
+      "x_norm": [
+        16,
+        32
+      ]
+    },
+    "outputs": {
+      "q_heads": [
+        4,
+        16,
+        8
+      ],
+      "k_heads": [
+        4,
+        16,
+        8
+      ],
+      "v_heads": [
+        4,
+        16,
+        8
+      ]
+    },
+    "nodes": 29,
+    "initializers": 3
+  },
+  {
+    "path": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer24/onnx/03_rope.onnx",
+    "inputs": {
+      "q_heads": [
+        4,
+        16,
+        8
+      ],
+      "k_heads": [
+        4,
+        16,
+        8
+      ],
+      "position_ids": [
+        16
+      ]
+    },
+    "outputs": {
+      "q_rope": [
+        4,
+        16,
+        8
+      ],
+      "k_current_rope": [
+        4,
+        16,
+        8
+      ]
+    },
+    "nodes": 41,
+    "initializers": 2
+  },
+  {
+    "path": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer24/onnx/04_attention.onnx",
+    "inputs": {
+      "q_rope": [
+        4,
+        16,
+        8
+      ],
+      "k_heads": [
+        4,
+        16,
+        8
+      ],
+      "attention_mask": [
+        1,
+        16,
+        16
+      ]
+    },
+    "outputs": {
+      "raw_scores": [
+        4,
+        16,
+        16
+      ],
+      "masked_scores": [
+        4,
+        16,
+        16
+      ],
+      "attn": [
+        4,
+        16,
+        16
+      ]
+    },
+    "nodes": 6,
+    "initializers": 0
+  },
+  {
+    "path": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer24/onnx/05_visipruner_similarity_check.onnx",
+    "inputs": {
+      "hidden_states": [
+        16,
+        32
+      ]
+    },
+    "outputs": {
+      "similarity": [
+        15
+      ],
+      "any_close": []
+    },
+    "nodes": 32,
+    "initializers": 0
+  },
+  {
+    "path": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer24/onnx/06_attention_output.onnx",
+    "inputs": {
+      "adjusted_attn": [
+        4,
+        16,
+        16
+      ],
+      "v_heads": [
+        4,
+        16,
+        8
+      ],
+      "hidden_states": [
+        16,
+        32
+      ]
+    },
+    "outputs": {
+      "context": [
+        16,
+        32
+      ],
+      "attn_out": [
+        16,
+        32
+      ],
+      "after_attn": [
+        16,
+        32
+      ]
+    },
+    "nodes": 11,
+    "initializers": 1
+  },
+  {
+    "path": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer24/onnx/07_mlp.onnx",
+    "inputs": {
+      "after_attn": [
+        16,
+        32
+      ]
+    },
+    "outputs": {
+      "gated": [
+        16,
+        64
+      ],
+      "ffn_out": [
+        16,
+        32
+      ],
+      "output": [
+        16,
+        32
+      ]
+    },
+    "nodes": 20,
+    "initializers": 4
+  },
+  {
+    "path": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer24/onnx/08_full_flow.onnx",
+    "inputs": {
+      "hidden_states": [
+        16,
+        32
+      ],
+      "position_ids": [
+        16
+      ],
+      "attention_mask": [
+        1,
+        16,
+        16
+      ]
+    },
+    "outputs": {
+      "output": [
+        16,
+        32
+      ]
+    },
+    "nodes": 117,
+    "initializers": 10
+  }
+]

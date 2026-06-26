@@ -1,0 +1,184 @@
+{
+  "baseline_trace": "/workspace/VisiPrune/workload_analysis/algorithmic_trace/traces/fresh_forward_dense_eager_32tok/algorithmic_trace.json",
+  "candidate_trace": "/workspace/VisiPrune/workload_analysis/algorithmic_trace/traces/fresh_forward_visipruner_full_32tok/algorithmic_trace.json",
+  "baseline_config": "dense-eager",
+  "candidate_config": "visipruner-full",
+  "baseline_total_flops_actual_model_path": 9275895808000,
+  "candidate_total_flops_actual_model_path": 6044742909952,
+  "saved_flops_actual_model_path": 3231152898048,
+  "saved_pct_actual_model_path": 34.83386364971123,
+  "baseline_total_flops_with_ideal_lm_head": 9112580096000,
+  "candidate_total_flops_with_ideal_lm_head": 6032422141952,
+  "phase_comparison": [
+    {
+      "phase": "decode",
+      "baseline_flops": 428167135232,
+      "candidate_flops": 424409661440,
+      "saved_flops": 3757473792,
+      "saved_pct_of_baseline_phase": 0.8775717430914061
+    },
+    {
+      "phase": "prefill",
+      "baseline_flops": 8450039873536,
+      "candidate_flops": 5222644449280,
+      "saved_flops": 3227395424256,
+      "saved_pct_of_baseline_phase": 38.193848461752474
+    },
+    {
+      "phase": "vision",
+      "baseline_flops": 381918216192,
+      "candidate_flops": 381918216192,
+      "saved_flops": 0,
+      "saved_pct_of_baseline_phase": 0.0
+    },
+    {
+      "phase": "vision_projector",
+      "baseline_flops": 24159191040,
+      "candidate_flops": 24159191040,
+      "saved_flops": 0,
+      "saved_pct_of_baseline_phase": 0.0
+    }
+  ],
+  "top_saved_ops": [
+    {
+      "op_name": "mlp_down_proj",
+      "baseline_flops": 1890121154560,
+      "candidate_flops": 1222987743232,
+      "saved_flops": 667133411328,
+      "saved_pct_of_baseline_op": 35.295801526717554
+    },
+    {
+      "op_name": "mlp_gate_proj",
+      "baseline_flops": 1890121154560,
+      "candidate_flops": 1222987743232,
+      "saved_flops": 667133411328,
+      "saved_pct_of_baseline_op": 35.295801526717554
+    },
+    {
+      "op_name": "mlp_up_proj",
+      "baseline_flops": 1890121154560,
+      "candidate_flops": 1222987743232,
+      "saved_flops": 667133411328,
+      "saved_pct_of_baseline_op": 35.295801526717554
+    },
+    {
+      "op_name": "k_proj",
+      "baseline_flops": 703300894720,
+      "candidate_flops": 455065206784,
+      "saved_flops": 248235687936,
+      "saved_pct_of_baseline_op": 35.295801526717554
+    },
+    {
+      "op_name": "o_proj",
+      "baseline_flops": 703300894720,
+      "candidate_flops": 455065206784,
+      "saved_flops": 248235687936,
+      "saved_pct_of_baseline_op": 35.295801526717554
+    },
+    {
+      "op_name": "q_proj",
+      "baseline_flops": 703300894720,
+      "candidate_flops": 455065206784,
+      "saved_flops": 248235687936,
+      "saved_pct_of_baseline_op": 35.295801526717554
+    },
+    {
+      "op_name": "v_proj",
+      "baseline_flops": 703300894720,
+      "candidate_flops": 455065206784,
+      "saved_flops": 248235687936,
+      "saved_pct_of_baseline_op": 35.295801526717554
+    },
+    {
+      "op_name": "lm_head_actual_model_path",
+      "baseline_flops": 171704320000,
+      "candidate_flops": 20709376000,
+      "saved_flops": 150994944000,
+      "saved_pct_of_baseline_op": 87.93893129770993
+    },
+    {
+      "op_name": "attn_qk_matmul",
+      "baseline_flops": 107273519104,
+      "candidate_flops": 64251314176,
+      "saved_flops": 43022204928,
+      "saved_pct_of_baseline_op": 40.10514923658899
+    },
+    {
+      "op_name": "attn_sv_matmul",
+      "baseline_flops": 107273519104,
+      "candidate_flops": 64251314176,
+      "saved_flops": 43022204928,
+      "saved_pct_of_baseline_op": 40.10514923658899
+    },
+    {
+      "op_name": "clip_attn_qk_matmul",
+      "baseline_flops": 16364126208,
+      "candidate_flops": 16364126208,
+      "saved_flops": 0,
+      "saved_pct_of_baseline_op": 0.0
+    },
+    {
+      "op_name": "clip_attn_sv_matmul",
+      "baseline_flops": 16364126208,
+      "candidate_flops": 16364126208,
+      "saved_flops": 0,
+      "saved_pct_of_baseline_op": 0.0
+    },
+    {
+      "op_name": "clip_mlp_fc1",
+      "baseline_flops": 116165443584,
+      "candidate_flops": 116165443584,
+      "saved_flops": 0,
+      "saved_pct_of_baseline_op": 0.0
+    },
+    {
+      "op_name": "clip_mlp_fc2",
+      "baseline_flops": 116165443584,
+      "candidate_flops": 116165443584,
+      "saved_flops": 0,
+      "saved_pct_of_baseline_op": 0.0
+    },
+    {
+      "op_name": "clip_o_proj",
+      "baseline_flops": 29041360896,
+      "candidate_flops": 29041360896,
+      "saved_flops": 0,
+      "saved_pct_of_baseline_op": 0.0
+    },
+    {
+      "op_name": "clip_patch_embed",
+      "baseline_flops": 693633024,
+      "candidate_flops": 693633024,
+      "saved_flops": 0,
+      "saved_pct_of_baseline_op": 0.0
+    },
+    {
+      "op_name": "clip_qkv_proj",
+      "baseline_flops": 87124082688,
+      "candidate_flops": 87124082688,
+      "saved_flops": 0,
+      "saved_pct_of_baseline_op": 0.0
+    },
+    {
+      "op_name": "lm_head_ideal_last_token_only",
+      "baseline_flops": 8388608000,
+      "candidate_flops": 8388608000,
+      "saved_flops": 0,
+      "saved_pct_of_baseline_op": 0.0
+    },
+    {
+      "op_name": "mm_projector_mlp2x_gelu",
+      "baseline_flops": 24159191040,
+      "candidate_flops": 24159191040,
+      "saved_flops": 0,
+      "saved_pct_of_baseline_op": 0.0
+    },
+    {
+      "op_name": "visipruner_value_selection_aux",
+      "baseline_flops": 0,
+      "candidate_flops": 229441536,
+      "saved_flops": -229441536,
+      "saved_pct_of_baseline_op": 0.0
+    }
+  ]
+}

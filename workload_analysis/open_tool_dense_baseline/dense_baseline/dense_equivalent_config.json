@@ -1,0 +1,19 @@
+{
+  "language_model": {
+    "name": "llava-v1.5-7b-language-backbone",
+    "num_layers": 32,
+    "n_head": 32,
+    "hidden_dim": 4096,
+    "vocab_size": 32000,
+    "max_seq_len": null,
+    "num_key_value_heads": 32,
+    "ffn_embed_dim": 11008,
+    "model_type": "llama",
+    "mlp_gated_linear_units": true
+  },
+  "input": {
+    "batch_size": 1,
+    "dense_prefill_seq_len": 48,
+    "num_tokens_to_generate": 33
+  }
+}

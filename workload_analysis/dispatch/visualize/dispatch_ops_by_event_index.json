@@ -1,0 +1,177 @@
+[
+  {
+    "event_id": "input1_layer0",
+    "row_count": 91,
+    "output_csv": "input1_layer0/dispatch_ops.csv"
+  },
+  {
+    "event_id": "input1_layer5",
+    "row_count": 83,
+    "output_csv": "input1_layer5/dispatch_ops.csv"
+  },
+  {
+    "event_id": "input1_layer6",
+    "row_count": 75,
+    "output_csv": "input1_layer6/dispatch_ops.csv"
+  },
+  {
+    "event_id": "input1_layer7",
+    "row_count": 97,
+    "output_csv": "input1_layer7/dispatch_ops.csv"
+  },
+  {
+    "event_id": "input1_layer8",
+    "row_count": 97,
+    "output_csv": "input1_layer8/dispatch_ops.csv"
+  },
+  {
+    "event_id": "input1_layer9",
+    "row_count": 97,
+    "output_csv": "input1_layer9/dispatch_ops.csv"
+  },
+  {
+    "event_id": "input1_layer10",
+    "row_count": 97,
+    "output_csv": "input1_layer10/dispatch_ops.csv"
+  },
+  {
+    "event_id": "input1_layer11",
+    "row_count": 97,
+    "output_csv": "input1_layer11/dispatch_ops.csv"
+  },
+  {
+    "event_id": "input1_layer12",
+    "row_count": 97,
+    "output_csv": "input1_layer12/dispatch_ops.csv"
+  },
+  {
+    "event_id": "input1_layer13",
+    "row_count": 97,
+    "output_csv": "input1_layer13/dispatch_ops.csv"
+  },
+  {
+    "event_id": "input1_layer14",
+    "row_count": 97,
+    "output_csv": "input1_layer14/dispatch_ops.csv"
+  },
+  {
+    "event_id": "input1_layer15",
+    "row_count": 97,
+    "output_csv": "input1_layer15/dispatch_ops.csv"
+  },
+  {
+    "event_id": "input1_layer16",
+    "row_count": 97,
+    "output_csv": "input1_layer16/dispatch_ops.csv"
+  },
+  {
+    "event_id": "input1_layer17",
+    "row_count": 97,
+    "output_csv": "input1_layer17/dispatch_ops.csv"
+  },
+  {
+    "event_id": "input1_layer18",
+    "row_count": 104,
+    "output_csv": "input1_layer18/dispatch_ops.csv"
+  },
+  {
+    "event_id": "input1_layer19",
+    "row_count": 100,
+    "output_csv": "input1_layer19/dispatch_ops.csv"
+  },
+  {
+    "event_id": "input1_layer20",
+    "row_count": 100,
+    "output_csv": "input1_layer20/dispatch_ops.csv"
+  },
+  {
+    "event_id": "input1_layer21",
+    "row_count": 100,
+    "output_csv": "input1_layer21/dispatch_ops.csv"
+  },
+  {
+    "event_id": "input1_layer22",
+    "row_count": 100,
+    "output_csv": "input1_layer22/dispatch_ops.csv"
+  },
+  {
+    "event_id": "input1_layer23",
+    "row_count": 100,
+    "output_csv": "input1_layer23/dispatch_ops.csv"
+  },
+  {
+    "event_id": "input1_layer24",
+    "row_count": 100,
+    "output_csv": "input1_layer24/dispatch_ops.csv"
+  },
+  {
+    "event_id": "input1_layer25",
+    "row_count": 100,
+    "output_csv": "input1_layer25/dispatch_ops.csv"
+  },
+  {
+    "event_id": "input1_layer26",
+    "row_count": 100,
+    "output_csv": "input1_layer26/dispatch_ops.csv"
+  },
+  {
+    "event_id": "input1_layer27",
+    "row_count": 100,
+    "output_csv": "input1_layer27/dispatch_ops.csv"
+  },
+  {
+    "event_id": "input1_layer28",
+    "row_count": 83,
+    "output_csv": "input1_layer28/dispatch_ops.csv"
+  },
+  {
+    "event_id": "input2_layer18",
+    "row_count": 76,
+    "output_csv": "input2_layer18/dispatch_ops.csv"
+  },
+  {
+    "event_id": "input2_layer19",
+    "row_count": 76,
+    "output_csv": "input2_layer19/dispatch_ops.csv"
+  },
+  {
+    "event_id": "input2_layer27",
+    "row_count": 76,
+    "output_csv": "input2_layer27/dispatch_ops.csv"
+  },
+  {
+    "event_id": "input2_layer28",
+    "row_count": 76,
+    "output_csv": "input2_layer28/dispatch_ops.csv"
+  },
+  {
+    "event_id": "input2_layer31",
+    "row_count": 76,
+    "output_csv": "input2_layer31/dispatch_ops.csv"
+  },
+  {
+    "event_id": "input32_layer18",
+    "row_count": 76,
+    "output_csv": "input32_layer18/dispatch_ops.csv"
+  },
+  {
+    "event_id": "input32_layer19",
+    "row_count": 76,
+    "output_csv": "input32_layer19/dispatch_ops.csv"
+  },
+  {
+    "event_id": "input32_layer27",
+    "row_count": 76,
+    "output_csv": "input32_layer27/dispatch_ops.csv"
+  },
+  {
+    "event_id": "input32_layer28",
+    "row_count": 76,
+    "output_csv": "input32_layer28/dispatch_ops.csv"
+  },
+  {
+    "event_id": "input32_layer31",
+    "row_count": 76,
+    "output_csv": "input32_layer31/dispatch_ops.csv"
+  }
+]

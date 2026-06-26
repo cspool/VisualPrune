@@ -1,0 +1,5 @@
+source,scope,flops_or_ops,notes
+algorithmic_trace_custom_visipruner,full_vlm_actual_model_path,6044742909952,"Includes CLIP vision tower, projector, dynamic VisiPrune LLM schedule, and actual lm_head path."
+algorithmic_trace_custom_visipruner,full_vlm_ideal_last_token_lm_head,6032422141952,Same as above but counts lm_head only for last token in each forward.
+llm_viewer_dense,language_model_prefill_one_layer_repeated,623160590336,Dense LLaMA language-backbone estimate; excludes CLIP/projector and dynamic pruning.
+llm_viewer_dense,language_model_decode_one_step,13110853632,Dense LLaMA decode step at prompt length; excludes per-token growth and VisiPrune pruning.

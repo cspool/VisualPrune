@@ -1,0 +1,545 @@
+{
+  "event_id": "input32_layer27",
+  "summary": {
+    "input_id": 32,
+    "layer_id": 27,
+    "event_id": "input32_layer27",
+    "row_count": 76,
+    "phase": "decode",
+    "priority": "P3",
+    "token_state": "middle_pruned_cache",
+    "visipruner_role": "decode_prune_effect",
+    "q_len": 1,
+    "kv_len": 89,
+    "past_len": 88,
+    "original_dimensions": {
+      "seq": 1,
+      "kv_len": 89,
+      "hidden": 4096,
+      "heads": 32,
+      "head_dim": 128,
+      "ffn": 11008,
+      "visual_start": null,
+      "visual_end": null,
+      "tail_start": null
+    },
+    "small_config": {
+      "seq": 16,
+      "q_seq": 1,
+      "kv_seq": 16,
+      "hidden": 32,
+      "heads": 4,
+      "head_dim": 8,
+      "visual_start": 3,
+      "visual_end": 13,
+      "tail_start": 13,
+      "ffn": 64
+    },
+    "op_counts": {
+      "to.dtype": 7,
+      "pow.Tensor_Scalar": 2,
+      "mean.dim": 2,
+      "add.Tensor": 8,
+      "rsqrt.default": 2,
+      "mul.Tensor": 9,
+      "linear.default": 7,
+      "view.default": 3,
+      "transpose.int": 5,
+      "select.int": 2,
+      "gt.Scalar": 2,
+      "is_nonzero.default": 2,
+      "item.default": 2,
+      "slice.Tensor": 6,
+      "index.Tensor": 2,
+      "unsqueeze.default": 2,
+      "neg.default": 2,
+      "cat.default": 4,
+      "matmul.default": 2,
+      "div.Tensor": 1,
+      "softmax.int": 1,
+      "dropout.default": 1,
+      "reshape.default": 1,
+      "silu.default": 1
+    },
+    "dispatch_features": {
+      "phase": "decode",
+      "role": "decode_prune_effect",
+      "token_state": "middle_pruned_cache",
+      "q_len": 1,
+      "kv_len": 89,
+      "op_counts": {
+        "to.dtype": 7,
+        "pow.Tensor_Scalar": 2,
+        "mean.dim": 2,
+        "add.Tensor": 8,
+        "rsqrt.default": 2,
+        "mul.Tensor": 9,
+        "linear.default": 7,
+        "view.default": 3,
+        "transpose.int": 5,
+        "select.int": 2,
+        "gt.Scalar": 2,
+        "is_nonzero.default": 2,
+        "item.default": 2,
+        "slice.Tensor": 6,
+        "index.Tensor": 2,
+        "unsqueeze.default": 2,
+        "neg.default": 2,
+        "cat.default": 4,
+        "matmul.default": 2,
+        "div.Tensor": 1,
+        "softmax.int": 1,
+        "dropout.default": 1,
+        "reshape.default": 1,
+        "silu.default": 1
+      },
+      "has_rope": true,
+      "has_attention": true,
+      "has_mlp": true,
+      "has_cache_concat": true,
+      "visual_adjust_kind": null,
+      "prune_probe_kind": null,
+      "expected_stages": [
+        "input_rmsnorm",
+        "qkv_projection",
+        "rope",
+        "kv_cache_concat",
+        "attention",
+        "attention_output",
+        "mlp"
+      ]
+    }
+  },
+  "original_dimensions": {
+    "q_len": 1,
+    "kv_len": 89,
+    "hidden": 4096,
+    "heads": 32,
+    "head_dim": 128,
+    "ffn": 11008
+  },
+  "dispatch_features": {
+    "phase": "decode",
+    "role": "decode_prune_effect",
+    "token_state": "middle_pruned_cache",
+    "q_len": 1,
+    "kv_len": 89,
+    "op_counts": {
+      "to.dtype": 7,
+      "pow.Tensor_Scalar": 2,
+      "mean.dim": 2,
+      "add.Tensor": 8,
+      "rsqrt.default": 2,
+      "mul.Tensor": 9,
+      "linear.default": 7,
+      "view.default": 3,
+      "transpose.int": 5,
+      "select.int": 2,
+      "gt.Scalar": 2,
+      "is_nonzero.default": 2,
+      "item.default": 2,
+      "slice.Tensor": 6,
+      "index.Tensor": 2,
+      "unsqueeze.default": 2,
+      "neg.default": 2,
+      "cat.default": 4,
+      "matmul.default": 2,
+      "div.Tensor": 1,
+      "softmax.int": 1,
+      "dropout.default": 1,
+      "reshape.default": 1,
+      "silu.default": 1
+    },
+    "has_rope": true,
+    "has_attention": true,
+    "has_mlp": true,
+    "has_cache_concat": true,
+    "visual_adjust_kind": null,
+    "prune_probe_kind": null,
+    "expected_stages": [
+      "input_rmsnorm",
+      "qkv_projection",
+      "rope",
+      "kv_cache_concat",
+      "attention",
+      "attention_output",
+      "mlp"
+    ]
+  },
+  "core_evidence": {
+    "input_rmsnorm": {
+      "stage": "input_rmsnorm",
+      "summary": "RMSNorm evidence is the initial cast, square, mean, eps-add, rsqrt, and weight multiply sequence.",
+      "evidence_ops": [
+        {
+          "event_op_index": 1,
+          "op_name": "to.dtype",
+          "output": "shape=[1, 1, 4096], dtype=float32"
+        },
+        {
+          "event_op_index": 2,
+          "op_name": "pow.Tensor_Scalar",
+          "output": "shape=[1, 1, 4096], dtype=float32"
+        },
+        {
+          "event_op_index": 3,
+          "op_name": "mean.dim",
+          "output": "shape=[1, 1, 1], dtype=float32"
+        },
+        {
+          "event_op_index": 4,
+          "op_name": "add.Tensor",
+          "output": "shape=[1, 1, 1], dtype=float32"
+        },
+        {
+          "event_op_index": 5,
+          "op_name": "rsqrt.default",
+          "output": "shape=[1, 1, 1], dtype=float32"
+        },
+        {
+          "event_op_index": 6,
+          "op_name": "mul.Tensor",
+          "output": "shape=[1, 1, 4096], dtype=float32"
+        },
+        {
+          "event_op_index": 7,
+          "op_name": "to.dtype",
+          "output": "shape=[1, 1, 4096], dtype=float16"
+        },
+        {
+          "event_op_index": 8,
+          "op_name": "mul.Tensor",
+          "output": "shape=[1, 1, 4096], dtype=float16"
+        }
+      ],
+      "dispatch_supported": true
+    },
+    "qkv_projection": {
+      "stage": "qkv_projection",
+      "summary": "Q/K/V evidence is three hidden-size linear projections followed by view/transpose head split.",
+      "evidence_ops": [
+        {
+          "event_op_index": 9,
+          "op_name": "linear.default",
+          "output": "shape=[1, 1, 4096], dtype=float16"
+        },
+        {
+          "event_op_index": 10,
+          "op_name": "linear.default",
+          "output": "shape=[1, 1, 4096], dtype=float16"
+        },
+        {
+          "event_op_index": 11,
+          "op_name": "linear.default",
+          "output": "shape=[1, 1, 4096], dtype=float16"
+        },
+        {
+          "event_op_index": 12,
+          "op_name": "view.default",
+          "output": "shape=[1, 1, 32, 128], dtype=float16"
+        },
+        {
+          "event_op_index": 13,
+          "op_name": "transpose.int",
+          "output": "shape=[1, 32, 1, 128], dtype=float16"
+        },
+        {
+          "event_op_index": 14,
+          "op_name": "view.default",
+          "output": "shape=[1, 1, 32, 128], dtype=float16"
+        },
+        {
+          "event_op_index": 15,
+          "op_name": "transpose.int",
+          "output": "shape=[1, 32, 1, 128], dtype=float16"
+        },
+        {
+          "event_op_index": 16,
+          "op_name": "view.default",
+          "output": "shape=[1, 1, 32, 128], dtype=float16"
+        },
+        {
+          "event_op_index": 17,
+          "op_name": "transpose.int",
+          "output": "shape=[1, 32, 1, 128], dtype=float16"
+        }
+      ],
+      "dispatch_supported": true
+    },
+    "rope": {
+      "stage": "rope",
+      "summary": "RoPE evidence is cos/sin index+unsqueeze, rotate-half slice/neg/cat, then multiply/add.",
+      "evidence_ops": [
+        {
+          "event_op_index": 20,
+          "op_name": "add.Tensor",
+          "output": "shape=[], dtype=int64"
+        },
+        {
+          "event_op_index": 24,
+          "op_name": "slice.Tensor",
+          "output": "shape=[655, 128], dtype=float16"
+        },
+        {
+          "event_op_index": 27,
+          "op_name": "slice.Tensor",
+          "output": "shape=[655, 128], dtype=float16"
+        },
+        {
+          "event_op_index": 29,
+          "op_name": "index.Tensor",
+          "output": "shape=[1, 1, 128], dtype=float16"
+        },
+        {
+          "event_op_index": 30,
+          "op_name": "unsqueeze.default",
+          "output": "shape=[1, 1, 1, 128], dtype=float16"
+        },
+        {
+          "event_op_index": 31,
+          "op_name": "index.Tensor",
+          "output": "shape=[1, 1, 128], dtype=float16"
+        },
+        {
+          "event_op_index": 32,
+          "op_name": "unsqueeze.default",
+          "output": "shape=[1, 1, 1, 128], dtype=float16"
+        },
+        {
+          "event_op_index": 33,
+          "op_name": "mul.Tensor",
+          "output": "shape=[1, 32, 1, 128], dtype=float16"
+        },
+        {
+          "event_op_index": 34,
+          "op_name": "slice.Tensor",
+          "output": "shape=[1, 32, 1, 64], dtype=float16"
+        },
+        {
+          "event_op_index": 35,
+          "op_name": "slice.Tensor",
+          "output": "shape=[1, 32, 1, 64], dtype=float16"
+        },
+        {
+          "event_op_index": 36,
+          "op_name": "neg.default",
+          "output": "shape=[1, 32, 1, 64], dtype=float16"
+        },
+        {
+          "event_op_index": 37,
+          "op_name": "cat.default",
+          "output": "shape=[1, 32, 1, 128], dtype=float16"
+        },
+        {
+          "event_op_index": 38,
+          "op_name": "mul.Tensor",
+          "output": "shape=[1, 32, 1, 128], dtype=float16"
+        },
+        {
+          "event_op_index": 39,
+          "op_name": "add.Tensor",
+          "output": "shape=[1, 32, 1, 128], dtype=float16"
+        }
+      ],
+      "dispatch_supported": true
+    },
+    "kv_cache_concat": {
+      "stage": "kv_cache_concat",
+      "summary": "Decode cache evidence is K/V cat outputs whose sequence dimension equals dispatch kv_len.",
+      "evidence_ops": [
+        {
+          "event_op_index": 47,
+          "op_name": "cat.default",
+          "output": "shape=[1, 32, 89, 128], dtype=float16"
+        },
+        {
+          "event_op_index": 48,
+          "op_name": "cat.default",
+          "output": "shape=[1, 32, 89, 128], dtype=float16"
+        }
+      ],
+      "dispatch_supported": true
+    },
+    "attention": {
+      "stage": "attention",
+      "summary": "Attention evidence is q @ k^T, scale/div, mask add, softmax, and dropout over q_len x kv_len scores.",
+      "evidence_ops": [
+        {
+          "event_op_index": 13,
+          "op_name": "transpose.int",
+          "output": "shape=[1, 32, 1, 128], dtype=float16"
+        },
+        {
+          "event_op_index": 15,
+          "op_name": "transpose.int",
+          "output": "shape=[1, 32, 1, 128], dtype=float16"
+        },
+        {
+          "event_op_index": 17,
+          "op_name": "transpose.int",
+          "output": "shape=[1, 32, 1, 128], dtype=float16"
+        },
+        {
+          "event_op_index": 39,
+          "op_name": "add.Tensor",
+          "output": "shape=[1, 32, 1, 128], dtype=float16"
+        },
+        {
+          "event_op_index": 46,
+          "op_name": "add.Tensor",
+          "output": "shape=[1, 32, 1, 128], dtype=float16"
+        },
+        {
+          "event_op_index": 49,
+          "op_name": "transpose.int",
+          "output": "shape=[1, 32, 128, 89], dtype=float16"
+        },
+        {
+          "event_op_index": 50,
+          "op_name": "matmul.default",
+          "output": "shape=[1, 32, 1, 89], dtype=float16"
+        },
+        {
+          "event_op_index": 51,
+          "op_name": "div.Tensor",
+          "output": "shape=[1, 32, 1, 89], dtype=float16"
+        },
+        {
+          "event_op_index": 52,
+          "op_name": "add.Tensor",
+          "output": "shape=[1, 32, 1, 89], dtype=float16"
+        },
+        {
+          "event_op_index": 53,
+          "op_name": "softmax.int",
+          "output": "shape=[1, 32, 1, 89], dtype=float32"
+        },
+        {
+          "event_op_index": 55,
+          "op_name": "dropout.default",
+          "output": "shape=[1, 32, 1, 89], dtype=float16"
+        },
+        {
+          "event_op_index": 56,
+          "op_name": "matmul.default",
+          "output": "shape=[1, 32, 1, 128], dtype=float16"
+        }
+      ],
+      "dispatch_supported": true
+    },
+    "attention_output": {
+      "stage": "attention_output",
+      "summary": "Attention-output evidence is attn @ V, transpose/reshape, output projection, and residual add.",
+      "evidence_ops": [
+        {
+          "event_op_index": 56,
+          "op_name": "matmul.default",
+          "output": "shape=[1, 32, 1, 128], dtype=float16"
+        },
+        {
+          "event_op_index": 58,
+          "op_name": "reshape.default",
+          "output": "shape=[1, 1, 4096], dtype=float16"
+        },
+        {
+          "event_op_index": 61,
+          "op_name": "linear.default",
+          "output": "shape=[1, 1, 4096], dtype=float16"
+        },
+        {
+          "event_op_index": 62,
+          "op_name": "add.Tensor",
+          "output": "shape=[1, 1, 4096], dtype=float16"
+        },
+        {
+          "event_op_index": 75,
+          "op_name": "linear.default",
+          "output": "shape=[1, 1, 4096], dtype=float16"
+        },
+        {
+          "event_op_index": 76,
+          "op_name": "add.Tensor",
+          "output": "shape=[1, 1, 4096], dtype=float16"
+        }
+      ],
+      "dispatch_supported": true
+    },
+    "mlp": {
+      "stage": "mlp",
+      "summary": "MLP evidence is post-attention RMSNorm, gate/up linear, SiLU, gated product, down linear, residual add.",
+      "evidence_ops": [
+        {
+          "event_op_index": 54,
+          "op_name": "to.dtype",
+          "output": "shape=[1, 32, 1, 89], dtype=float16"
+        },
+        {
+          "event_op_index": 61,
+          "op_name": "linear.default",
+          "output": "shape=[1, 1, 4096], dtype=float16"
+        },
+        {
+          "event_op_index": 62,
+          "op_name": "add.Tensor",
+          "output": "shape=[1, 1, 4096], dtype=float16"
+        },
+        {
+          "event_op_index": 63,
+          "op_name": "to.dtype",
+          "output": "shape=[1, 1, 4096], dtype=float32"
+        },
+        {
+          "event_op_index": 64,
+          "op_name": "pow.Tensor_Scalar",
+          "output": "shape=[1, 1, 4096], dtype=float32"
+        },
+        {
+          "event_op_index": 65,
+          "op_name": "mean.dim",
+          "output": "shape=[1, 1, 1], dtype=float32"
+        },
+        {
+          "event_op_index": 66,
+          "op_name": "add.Tensor",
+          "output": "shape=[1, 1, 1], dtype=float32"
+        },
+        {
+          "event_op_index": 67,
+          "op_name": "rsqrt.default",
+          "output": "shape=[1, 1, 1], dtype=float32"
+        },
+        {
+          "event_op_index": 68,
+          "op_name": "mul.Tensor",
+          "output": "shape=[1, 1, 4096], dtype=float32"
+        },
+        {
+          "event_op_index": 69,
+          "op_name": "to.dtype",
+          "output": "shape=[1, 1, 4096], dtype=float16"
+        },
+        {
+          "event_op_index": 70,
+          "op_name": "mul.Tensor",
+          "output": "shape=[1, 1, 4096], dtype=float16"
+        },
+        {
+          "event_op_index": 71,
+          "op_name": "linear.default",
+          "output": "shape=[1, 1, 11008], dtype=float16"
+        },
+        {
+          "event_op_index": 72,
+          "op_name": "silu.default",
+          "output": "shape=[1, 1, 11008], dtype=float16"
+        },
+        {
+          "event_op_index": 73,
+          "op_name": "linear.default",
+          "output": "shape=[1, 1, 11008], dtype=float16"
+        }
+      ],
+      "dispatch_supported": true
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "timestamp_utc": "2026-06-24T13:44:24.855341+00:00",
+  "analysis_type": "visipruner_filtered_torch_dispatch_profile",
+  "full_profile_forbidden": true,
+  "dispatch_scope": "TorchDispatchMode is entered only inside manifest-selected layer.forward calls.",
+  "source_trace": "/workspace/VisiPrune/workload_analysis/algorithmic_trace/traces/fresh_forward_visipruner_full_32tok/algorithmic_trace.json",
+  "tag": "filtered_dispatch_visipruner_full_32tok",
+  "config": "visipruner-full",
+  "model_path": "liuhaotian/llava-v1.5-7b",
+  "image_path": "/workspace/VisiPrune/autoresearch/data/benchmark_images/002901d9d194c4fb.jpg",
+  "prompt": "Describe the image briefly.",
+  "conv_mode": "llava_v1",
+  "max_new_tokens": 32,
+  "context_len": 2048,
+  "target_event_count": 35,
+  "total_layer_events_in_source_trace": 1024,
+  "observed_forward_count": 32,
+  "observed_layer_event_count": 1024,
+  "captured_dispatch_op_count": 3163,
+  "output_token_count": 33,
+  "output_text": "The image features a vintage car with a custom paint job, parked on a street. The car is adorned with a custom paint job and",
+  "matches_source_output_text": true,
+  "outputs": {
+    "manifest": "/workspace/VisiPrune/workload_analysis/dispatch/profiles/filtered_dispatch_visipruner_full_32tok/dispatch_manifest.csv",
+    "dispatch_ops": "/workspace/VisiPrune/workload_analysis/dispatch/profiles/filtered_dispatch_visipruner_full_32tok/dispatch_ops.csv",
+    "dispatch_op_summary": "/workspace/VisiPrune/workload_analysis/dispatch/profiles/filtered_dispatch_visipruner_full_32tok/dispatch_op_summary.csv",
+    "observed_layer_events": "/workspace/VisiPrune/workload_analysis/dispatch/profiles/filtered_dispatch_visipruner_full_32tok/observed_layer_events.csv"
+  }
+}

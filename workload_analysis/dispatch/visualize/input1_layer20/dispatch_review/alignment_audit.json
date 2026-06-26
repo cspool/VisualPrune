@@ -1,0 +1,759 @@
+{
+  "event_id": "input1_layer20",
+  "row_count": 100,
+  "dimensions": {
+    "q_len": 58,
+    "kv_len": 58,
+    "hidden": 4096,
+    "heads": 32,
+    "head_dim": 128,
+    "ffn": 11008
+  },
+  "features": {
+    "phase": "prefill",
+    "role": "deep_check",
+    "token_state": "middle_pruned",
+    "q_len": 58,
+    "kv_len": 58,
+    "op_counts": {
+      "to.dtype": 7,
+      "pow.Tensor_Scalar": 2,
+      "mean.dim": 2,
+      "add.Tensor": 10,
+      "rsqrt.default": 2,
+      "mul.Tensor": 11,
+      "linear.default": 7,
+      "view.default": 4,
+      "transpose.int": 5,
+      "select.int": 6,
+      "gt.Scalar": 2,
+      "is_nonzero.default": 3,
+      "item.default": 3,
+      "slice.Tensor": 6,
+      "index.Tensor": 3,
+      "unsqueeze.default": 5,
+      "neg.default": 2,
+      "cat.default": 2,
+      "matmul.default": 2,
+      "div.Tensor": 1,
+      "softmax.int": 1,
+      "dropout.default": 1,
+      "contiguous.default": 2,
+      "reshape.default": 1,
+      "sub.Tensor": 2,
+      "eq.Scalar": 1,
+      "permute.default": 1,
+      "arange.start": 1,
+      "cosine_similarity.default": 1,
+      "squeeze.dim": 1,
+      "lt.Scalar": 1,
+      "any.default": 1,
+      "silu.default": 1
+    },
+    "has_rope": true,
+    "has_attention": true,
+    "has_mlp": true,
+    "has_cache_concat": false,
+    "visual_adjust_kind": null,
+    "prune_probe_kind": "deep_exit_similarity_check",
+    "expected_stages": [
+      "input_rmsnorm",
+      "qkv_projection",
+      "rope",
+      "attention",
+      "visipruner_similarity_check",
+      "attention_output",
+      "mlp"
+    ]
+  },
+  "generated_stages": [
+    "input_rmsnorm",
+    "qkv_projection",
+    "rope",
+    "attention",
+    "visipruner_similarity_check",
+    "attention_output",
+    "mlp",
+    "full_flow"
+  ],
+  "generated_stage_details": {
+    "input_rmsnorm": {
+      "path": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer20/onnx/01_input_rmsnorm.onnx",
+      "inputs": {
+        "hidden_states": [
+          16,
+          32
+        ]
+      },
+      "outputs": {
+        "x_norm": [
+          16,
+          32
+        ],
+        "variance": [
+          16,
+          1
+        ],
+        "inv_rms": [
+          16,
+          1
+        ]
+      },
+      "nodes": 10,
+      "initializers": 1
+    },
+    "qkv_projection": {
+      "path": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer20/onnx/02_qkv_projection.onnx",
+      "inputs": {
+        "x_norm": [
+          16,
+          32
+        ]
+      },
+      "outputs": {
+        "q_heads": [
+          4,
+          16,
+          8
+        ],
+        "k_heads": [
+          4,
+          16,
+          8
+        ],
+        "v_heads": [
+          4,
+          16,
+          8
+        ]
+      },
+      "nodes": 29,
+      "initializers": 3
+    },
+    "rope": {
+      "path": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer20/onnx/03_rope.onnx",
+      "inputs": {
+        "q_heads": [
+          4,
+          16,
+          8
+        ],
+        "k_heads": [
+          4,
+          16,
+          8
+        ],
+        "position_ids": [
+          16
+        ]
+      },
+      "outputs": {
+        "q_rope": [
+          4,
+          16,
+          8
+        ],
+        "k_current_rope": [
+          4,
+          16,
+          8
+        ]
+      },
+      "nodes": 41,
+      "initializers": 2
+    },
+    "attention": {
+      "path": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer20/onnx/04_attention.onnx",
+      "inputs": {
+        "q_rope": [
+          4,
+          16,
+          8
+        ],
+        "k_heads": [
+          4,
+          16,
+          8
+        ],
+        "attention_mask": [
+          1,
+          16,
+          16
+        ]
+      },
+      "outputs": {
+        "raw_scores": [
+          4,
+          16,
+          16
+        ],
+        "masked_scores": [
+          4,
+          16,
+          16
+        ],
+        "attn": [
+          4,
+          16,
+          16
+        ]
+      },
+      "nodes": 6,
+      "initializers": 0
+    },
+    "visipruner_similarity_check": {
+      "path": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer20/onnx/05_visipruner_similarity_check.onnx",
+      "inputs": {
+        "hidden_states": [
+          16,
+          32
+        ]
+      },
+      "outputs": {
+        "similarity": [
+          15
+        ],
+        "any_close": []
+      },
+      "nodes": 32,
+      "initializers": 0
+    },
+    "attention_output": {
+      "path": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer20/onnx/06_attention_output.onnx",
+      "inputs": {
+        "adjusted_attn": [
+          4,
+          16,
+          16
+        ],
+        "v_heads": [
+          4,
+          16,
+          8
+        ],
+        "hidden_states": [
+          16,
+          32
+        ]
+      },
+      "outputs": {
+        "context": [
+          16,
+          32
+        ],
+        "attn_out": [
+          16,
+          32
+        ],
+        "after_attn": [
+          16,
+          32
+        ]
+      },
+      "nodes": 11,
+      "initializers": 1
+    },
+    "mlp": {
+      "path": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer20/onnx/07_mlp.onnx",
+      "inputs": {
+        "after_attn": [
+          16,
+          32
+        ]
+      },
+      "outputs": {
+        "gated": [
+          16,
+          64
+        ],
+        "ffn_out": [
+          16,
+          32
+        ],
+        "output": [
+          16,
+          32
+        ]
+      },
+      "nodes": 20,
+      "initializers": 4
+    },
+    "full_flow": {
+      "path": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer20/onnx/08_full_flow.onnx",
+      "inputs": {
+        "hidden_states": [
+          16,
+          32
+        ],
+        "position_ids": [
+          16
+        ],
+        "attention_mask": [
+          1,
+          16,
+          16
+        ]
+      },
+      "outputs": {
+        "output": [
+          16,
+          32
+        ]
+      },
+      "nodes": 117,
+      "initializers": 10
+    }
+  },
+  "generated_code_files": {
+    "input_rmsnorm": true,
+    "qkv_projection": true,
+    "rope": true,
+    "kv_cache_concat": true,
+    "attention": true,
+    "visual_adjust": true,
+    "visipruner_similarity_check": true,
+    "attention_output": true,
+    "mlp": true,
+    "full_flow": true
+  },
+  "generated_process_files": {
+    "dispatch_reconstruction": true,
+    "toy_tensor_compute": true,
+    "layer_profile": true,
+    "process_index": true
+  },
+  "split_alignment": "aligned",
+  "process_alignment": "aligned",
+  "core_evidence": {
+    "input_rmsnorm": {
+      "stage": "input_rmsnorm",
+      "summary": "RMSNorm evidence is the initial cast, square, mean, eps-add, rsqrt, and weight multiply sequence.",
+      "evidence_ops": [
+        {
+          "event_op_index": 1,
+          "op_name": "to.dtype",
+          "output": "shape=[1, 58, 4096], dtype=float32"
+        },
+        {
+          "event_op_index": 2,
+          "op_name": "pow.Tensor_Scalar",
+          "output": "shape=[1, 58, 4096], dtype=float32"
+        },
+        {
+          "event_op_index": 3,
+          "op_name": "mean.dim",
+          "output": "shape=[1, 58, 1], dtype=float32"
+        },
+        {
+          "event_op_index": 4,
+          "op_name": "add.Tensor",
+          "output": "shape=[1, 58, 1], dtype=float32"
+        },
+        {
+          "event_op_index": 5,
+          "op_name": "rsqrt.default",
+          "output": "shape=[1, 58, 1], dtype=float32"
+        },
+        {
+          "event_op_index": 6,
+          "op_name": "mul.Tensor",
+          "output": "shape=[1, 58, 4096], dtype=float32"
+        },
+        {
+          "event_op_index": 7,
+          "op_name": "to.dtype",
+          "output": "shape=[1, 58, 4096], dtype=float16"
+        },
+        {
+          "event_op_index": 8,
+          "op_name": "mul.Tensor",
+          "output": "shape=[1, 58, 4096], dtype=float16"
+        }
+      ],
+      "dispatch_supported": true
+    },
+    "qkv_projection": {
+      "stage": "qkv_projection",
+      "summary": "Q/K/V evidence is three hidden-size linear projections followed by view/transpose head split.",
+      "evidence_ops": [
+        {
+          "event_op_index": 9,
+          "op_name": "linear.default",
+          "output": "shape=[1, 58, 4096], dtype=float16"
+        },
+        {
+          "event_op_index": 10,
+          "op_name": "linear.default",
+          "output": "shape=[1, 58, 4096], dtype=float16"
+        },
+        {
+          "event_op_index": 11,
+          "op_name": "linear.default",
+          "output": "shape=[1, 58, 4096], dtype=float16"
+        },
+        {
+          "event_op_index": 12,
+          "op_name": "view.default",
+          "output": "shape=[1, 58, 32, 128], dtype=float16"
+        },
+        {
+          "event_op_index": 13,
+          "op_name": "transpose.int",
+          "output": "shape=[1, 32, 58, 128], dtype=float16"
+        },
+        {
+          "event_op_index": 14,
+          "op_name": "view.default",
+          "output": "shape=[1, 58, 32, 128], dtype=float16"
+        },
+        {
+          "event_op_index": 15,
+          "op_name": "transpose.int",
+          "output": "shape=[1, 32, 58, 128], dtype=float16"
+        },
+        {
+          "event_op_index": 16,
+          "op_name": "view.default",
+          "output": "shape=[1, 58, 32, 128], dtype=float16"
+        },
+        {
+          "event_op_index": 17,
+          "op_name": "transpose.int",
+          "output": "shape=[1, 32, 58, 128], dtype=float16"
+        }
+      ],
+      "dispatch_supported": true
+    },
+    "rope": {
+      "stage": "rope",
+      "summary": "RoPE evidence is cos/sin index+unsqueeze, rotate-half slice/neg/cat, then multiply/add.",
+      "evidence_ops": [
+        {
+          "event_op_index": 20,
+          "op_name": "add.Tensor",
+          "output": "shape=[], dtype=int64"
+        },
+        {
+          "event_op_index": 24,
+          "op_name": "slice.Tensor",
+          "output": "shape=[624, 128], dtype=float16"
+        },
+        {
+          "event_op_index": 27,
+          "op_name": "slice.Tensor",
+          "output": "shape=[624, 128], dtype=float16"
+        },
+        {
+          "event_op_index": 29,
+          "op_name": "index.Tensor",
+          "output": "shape=[1, 58, 128], dtype=float16"
+        },
+        {
+          "event_op_index": 30,
+          "op_name": "unsqueeze.default",
+          "output": "shape=[1, 1, 58, 128], dtype=float16"
+        },
+        {
+          "event_op_index": 31,
+          "op_name": "index.Tensor",
+          "output": "shape=[1, 58, 128], dtype=float16"
+        },
+        {
+          "event_op_index": 32,
+          "op_name": "unsqueeze.default",
+          "output": "shape=[1, 1, 58, 128], dtype=float16"
+        },
+        {
+          "event_op_index": 33,
+          "op_name": "mul.Tensor",
+          "output": "shape=[1, 32, 58, 128], dtype=float16"
+        },
+        {
+          "event_op_index": 34,
+          "op_name": "slice.Tensor",
+          "output": "shape=[1, 32, 58, 64], dtype=float16"
+        },
+        {
+          "event_op_index": 35,
+          "op_name": "slice.Tensor",
+          "output": "shape=[1, 32, 58, 64], dtype=float16"
+        },
+        {
+          "event_op_index": 36,
+          "op_name": "neg.default",
+          "output": "shape=[1, 32, 58, 64], dtype=float16"
+        },
+        {
+          "event_op_index": 37,
+          "op_name": "cat.default",
+          "output": "shape=[1, 32, 58, 128], dtype=float16"
+        },
+        {
+          "event_op_index": 38,
+          "op_name": "mul.Tensor",
+          "output": "shape=[1, 32, 58, 128], dtype=float16"
+        },
+        {
+          "event_op_index": 39,
+          "op_name": "add.Tensor",
+          "output": "shape=[1, 32, 58, 128], dtype=float16"
+        }
+      ],
+      "dispatch_supported": true
+    },
+    "attention": {
+      "stage": "attention",
+      "summary": "Attention evidence is q @ k^T, scale/div, mask add, softmax, and dropout over q_len x kv_len scores.",
+      "evidence_ops": [
+        {
+          "event_op_index": 13,
+          "op_name": "transpose.int",
+          "output": "shape=[1, 32, 58, 128], dtype=float16"
+        },
+        {
+          "event_op_index": 15,
+          "op_name": "transpose.int",
+          "output": "shape=[1, 32, 58, 128], dtype=float16"
+        },
+        {
+          "event_op_index": 17,
+          "op_name": "transpose.int",
+          "output": "shape=[1, 32, 58, 128], dtype=float16"
+        },
+        {
+          "event_op_index": 39,
+          "op_name": "add.Tensor",
+          "output": "shape=[1, 32, 58, 128], dtype=float16"
+        },
+        {
+          "event_op_index": 46,
+          "op_name": "add.Tensor",
+          "output": "shape=[1, 32, 58, 128], dtype=float16"
+        },
+        {
+          "event_op_index": 47,
+          "op_name": "transpose.int",
+          "output": "shape=[1, 32, 128, 58], dtype=float16"
+        },
+        {
+          "event_op_index": 48,
+          "op_name": "matmul.default",
+          "output": "shape=[1, 32, 58, 58], dtype=float16"
+        },
+        {
+          "event_op_index": 49,
+          "op_name": "div.Tensor",
+          "output": "shape=[1, 32, 58, 58], dtype=float16"
+        },
+        {
+          "event_op_index": 50,
+          "op_name": "add.Tensor",
+          "output": "shape=[1, 32, 58, 58], dtype=float16"
+        },
+        {
+          "event_op_index": 51,
+          "op_name": "softmax.int",
+          "output": "shape=[1, 32, 58, 58], dtype=float32"
+        },
+        {
+          "event_op_index": 53,
+          "op_name": "dropout.default",
+          "output": "shape=[1, 32, 58, 58], dtype=float16"
+        },
+        {
+          "event_op_index": 54,
+          "op_name": "matmul.default",
+          "output": "shape=[1, 32, 58, 128], dtype=float16"
+        }
+      ],
+      "dispatch_supported": true
+    },
+    "visipruner_similarity_check": {
+      "stage": "visipruner_similarity_check",
+      "summary": "VisiPrune check evidence kind: deep_exit_similarity_check.",
+      "evidence_ops": [
+        {
+          "event_op_index": 21,
+          "op_name": "gt.Scalar",
+          "output": "shape=[], dtype=bool"
+        },
+        {
+          "event_op_index": 22,
+          "op_name": "is_nonzero.default",
+          "output": "False"
+        },
+        {
+          "event_op_index": 58,
+          "op_name": "gt.Scalar",
+          "output": "shape=[], dtype=bool"
+        },
+        {
+          "event_op_index": 59,
+          "op_name": "is_nonzero.default",
+          "output": "True"
+        },
+        {
+          "event_op_index": 64,
+          "op_name": "sub.Tensor",
+          "output": "shape=[], dtype=int64"
+        },
+        {
+          "event_op_index": 67,
+          "op_name": "is_nonzero.default",
+          "output": "True"
+        },
+        {
+          "event_op_index": 75,
+          "op_name": "arange.start",
+          "output": "shape=[10], dtype=int64"
+        },
+        {
+          "event_op_index": 78,
+          "op_name": "sub.Tensor",
+          "output": "shape=[1, 10, 4096], dtype=float16"
+        },
+        {
+          "event_op_index": 80,
+          "op_name": "cosine_similarity.default",
+          "output": "shape=[1, 10], dtype=float16"
+        },
+        {
+          "event_op_index": 83,
+          "op_name": "any.default",
+          "output": "shape=[], dtype=bool"
+        }
+      ],
+      "dispatch_supported": true
+    },
+    "attention_output": {
+      "stage": "attention_output",
+      "summary": "Attention-output evidence is attn @ V, transpose/reshape, output projection, and residual add.",
+      "evidence_ops": [
+        {
+          "event_op_index": 54,
+          "op_name": "matmul.default",
+          "output": "shape=[1, 32, 58, 128], dtype=float16"
+        },
+        {
+          "event_op_index": 56,
+          "op_name": "contiguous.default",
+          "output": "shape=[1, 58, 32, 128], dtype=float16"
+        },
+        {
+          "event_op_index": 57,
+          "op_name": "reshape.default",
+          "output": "shape=[1, 58, 4096], dtype=float16"
+        },
+        {
+          "event_op_index": 73,
+          "op_name": "contiguous.default",
+          "output": "shape=[1, 58, 32, 128], dtype=float16"
+        },
+        {
+          "event_op_index": 85,
+          "op_name": "linear.default",
+          "output": "shape=[1, 58, 4096], dtype=float16"
+        },
+        {
+          "event_op_index": 86,
+          "op_name": "add.Tensor",
+          "output": "shape=[1, 58, 4096], dtype=float16"
+        },
+        {
+          "event_op_index": 99,
+          "op_name": "linear.default",
+          "output": "shape=[1, 58, 4096], dtype=float16"
+        },
+        {
+          "event_op_index": 100,
+          "op_name": "add.Tensor",
+          "output": "shape=[1, 58, 4096], dtype=float16"
+        }
+      ],
+      "dispatch_supported": true
+    },
+    "mlp": {
+      "stage": "mlp",
+      "summary": "MLP evidence is post-attention RMSNorm, gate/up linear, SiLU, gated product, down linear, residual add.",
+      "evidence_ops": [
+        {
+          "event_op_index": 85,
+          "op_name": "linear.default",
+          "output": "shape=[1, 58, 4096], dtype=float16"
+        },
+        {
+          "event_op_index": 86,
+          "op_name": "add.Tensor",
+          "output": "shape=[1, 58, 4096], dtype=float16"
+        },
+        {
+          "event_op_index": 87,
+          "op_name": "to.dtype",
+          "output": "shape=[1, 58, 4096], dtype=float32"
+        },
+        {
+          "event_op_index": 88,
+          "op_name": "pow.Tensor_Scalar",
+          "output": "shape=[1, 58, 4096], dtype=float32"
+        },
+        {
+          "event_op_index": 89,
+          "op_name": "mean.dim",
+          "output": "shape=[1, 58, 1], dtype=float32"
+        },
+        {
+          "event_op_index": 90,
+          "op_name": "add.Tensor",
+          "output": "shape=[1, 58, 1], dtype=float32"
+        },
+        {
+          "event_op_index": 91,
+          "op_name": "rsqrt.default",
+          "output": "shape=[1, 58, 1], dtype=float32"
+        },
+        {
+          "event_op_index": 92,
+          "op_name": "mul.Tensor",
+          "output": "shape=[1, 58, 4096], dtype=float32"
+        },
+        {
+          "event_op_index": 93,
+          "op_name": "to.dtype",
+          "output": "shape=[1, 58, 4096], dtype=float16"
+        },
+        {
+          "event_op_index": 94,
+          "op_name": "mul.Tensor",
+          "output": "shape=[1, 58, 4096], dtype=float16"
+        },
+        {
+          "event_op_index": 95,
+          "op_name": "linear.default",
+          "output": "shape=[1, 58, 11008], dtype=float16"
+        },
+        {
+          "event_op_index": 96,
+          "op_name": "silu.default",
+          "output": "shape=[1, 58, 11008], dtype=float16"
+        },
+        {
+          "event_op_index": 97,
+          "op_name": "linear.default",
+          "output": "shape=[1, 58, 11008], dtype=float16"
+        },
+        {
+          "event_op_index": 98,
+          "op_name": "mul.Tensor",
+          "output": "shape=[1, 58, 11008], dtype=float16"
+        }
+      ],
+      "dispatch_supported": true
+    }
+  },
+  "missing_expected_stages": [],
+  "extra_generated_stages": [],
+  "notes": [],
+  "torch_flow_dir": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer20/torch_flow",
+  "layer_dir": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer20",
+  "status": "match"
+}

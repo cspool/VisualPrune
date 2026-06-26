@@ -26,15 +26,18 @@ DEFAULT_PROJECT_DIR="$(cd -- "${SCRIPT_DIR}/.." >/dev/null 2>&1 && pwd -P)"
 PROJECT_DIR="${PROJECT_DIR:-${DEFAULT_PROJECT_DIR}}"
 PROJECT_NAME="${PROJECT_NAME:-$(basename "${PROJECT_DIR}")}"
 CONTAINER_NAME="${CONTAINER_NAME:-${PROJECT_NAME}_dev}"
-CACHE_DIR="${CACHE_DIR:-/data3/${PROJECT_NAME}_docker_cache}"
+DOCKER_CACHE_ROOT="${DOCKER_CACHE_ROOT:-/data3/docker_cache}"
+CACHE_DIR="${CACHE_DIR:-${DOCKER_CACHE_ROOT}/${PROJECT_NAME}}"
 HOST_HOME="${HOST_HOME:-${HOME}}"
 HOST_UID="${HOST_UID:-$(id -u)}"
 HOST_GID="${HOST_GID:-$(id -g)}"
 HOST_USER="${HOST_USER:-$(id -un)}"
 HOST_GROUP="${HOST_GROUP:-$(id -gn)}"
+CONTAINER_LOGIN_USER="${CONTAINER_LOGIN_USER:-root}"
 CONTAINER_HOME="${CONTAINER_HOME:-${HOST_HOME}}"
-CONTAINER_CACHE_DIR="${CONTAINER_CACHE_DIR:-/data3/${PROJECT_NAME}_docker_cache}"
+CONTAINER_CACHE_DIR="${CONTAINER_CACHE_DIR:-${CACHE_DIR}}"
 CONTAINER_HOME_CACHE_DIR="${CONTAINER_HOME_CACHE_DIR:-${CACHE_DIR}/home/${HOST_USER}}"
+CONTAINER_HOST_HOME_DIR="${CONTAINER_HOST_HOME_DIR:-${CONTAINER_HOME}/.host-home}"
 NPM_GLOBAL_DIR="${NPM_GLOBAL_DIR:-${CACHE_DIR}/npm-global}"
 CONTAINER_NPM_GLOBAL_DIR="${CONTAINER_NPM_GLOBAL_DIR:-${CONTAINER_CACHE_DIR}/npm-global}"
 HOST_NVIDIA_DIR="${HOST_NVIDIA_DIR:-/opt/nvidia}"
@@ -42,10 +45,23 @@ CONTAINER_NVIDIA_DIR="${CONTAINER_NVIDIA_DIR:-/opt/nvidia}"
 HOST_NVIDIA_MODE="${HOST_NVIDIA_MODE:-ro,rshared}"
 CLAUDE_CONFIG_MODE="${CLAUDE_CONFIG_MODE:-rw}"
 CODEX_CONFIG_MODE="${CODEX_CONFIG_MODE:-rw}"
+AGENTS_CONFIG_MODE="${AGENTS_CONFIG_MODE:-rw}"
+ORCHESTRA_CONFIG_MODE="${ORCHESTRA_CONFIG_MODE:-rw}"
 SKILL_SYMLINK_TARGET_MODE="${SKILL_SYMLINK_TARGET_MODE:-${CLAUDE_SYMLINK_TARGET_MODE:-ro}}"
 BLOCKED_PATH_MODE="${BLOCKED_PATH_MODE:-ro,rshared}"
 SHARE_HOST_HOME_PACKAGES="${SHARE_HOST_HOME_PACKAGES:-1}"
+ROOT_LOGIN_ACL="${ROOT_LOGIN_ACL:-1}"
+ROOT_LOGIN_ACL_RECURSIVE="${ROOT_LOGIN_ACL_RECURSIVE:-1}"
 RECREATE="${RECREATE:-0}"
+
+case "${CONTAINER_LOGIN_USER}" in
+  root|host) ;;
+  *)
+    echo "Unknown CONTAINER_LOGIN_USER: ${CONTAINER_LOGIN_USER}" >&2
+    echo "Valid: root host" >&2
+    exit 1
+    ;;
+esac
 
 mkdir -p "${CACHE_DIR}"
 
@@ -200,6 +216,43 @@ reject_forbidden_home_cache
 
 mkdir -p "${CONTAINER_HOME_CACHE_DIR}" "${NPM_GLOBAL_DIR}" "${CACHE_DIR}/xdg-cache"
 
+grant_host_user_acl() {
+  local path="$1"
+  local recursive="${2:-${ROOT_LOGIN_ACL_RECURSIVE}}"
+
+  if [ "${CONTAINER_LOGIN_USER}" != "root" ] || [ "${ROOT_LOGIN_ACL}" != "1" ]; then
+    return
+  fi
+
+  if [ ! -e "${path}" ]; then
+    return
+  fi
+
+  if ! command -v setfacl >/dev/null 2>&1; then
+    echo "setfacl is required for CONTAINER_LOGIN_USER=root with ROOT_LOGIN_ACL=1." >&2
+    echo "Install the host acl package, or set CONTAINER_LOGIN_USER=host." >&2
+    exit 1
+  fi
+
+  if [ -d "${path}" ]; then
+    if ! setfacl -m "u:${HOST_USER}:rwX,d:u:${HOST_USER}:rwX" "${path}" 2>/dev/null; then
+      echo "Warning: unable to set ACL on ${path}; continuing." >&2
+      return
+    fi
+    if [ "${recursive}" = "1" ]; then
+      find "${path}" -type d -exec setfacl -m "u:${HOST_USER}:rwX,d:u:${HOST_USER}:rwX" {} + 2>/dev/null || true
+    fi
+  else
+    setfacl -m "u:${HOST_USER}:rw" "${path}" 2>/dev/null || \
+      echo "Warning: unable to set ACL on ${path}; continuing." >&2
+  fi
+}
+
+grant_host_user_acl "${PROJECT_DIR}" "1"
+grant_host_user_acl "${CACHE_DIR}" "1"
+grant_host_user_acl "${CONTAINER_HOME_CACHE_DIR}" "1"
+grant_host_user_acl "${NPM_GLOBAL_DIR}" "1"
+
 build_nvidia_path_prefix() {
   local host_dir
   local rel_path
@@ -241,6 +294,7 @@ if container_exists; then
     if container_running; then
       echo "Container ${CONTAINER_NAME} is already running."
       echo "Attach with: docker exec -it ${CONTAINER_NAME} /bin/bash"
+
     else
       echo "Container ${CONTAINER_NAME} already exists but is stopped."
       echo "Start it with: docker start -ai ${CONTAINER_NAME}"
@@ -255,14 +309,11 @@ docker_args=(
   run
   -itd
   --name "${CONTAINER_NAME}"
-  --user "${HOST_UID}:${HOST_GID}"
   --gpus all
   --network host
   --ipc host
   --ulimit memlock=-1
   --ulimit stack=67108864
-  -e USER="${HOST_USER}"
-  -e LOGNAME="${HOST_USER}"
   -e HOME="${CONTAINER_HOME}"
   -e NVIDIA_VISIBLE_DEVICES=all
   -e NVIDIA_DRIVER_CAPABILITIES=all
@@ -272,7 +323,8 @@ docker_args=(
   -e XDG_CACHE_HOME="${CONTAINER_CACHE_DIR}/xdg-cache"
   -e NPM_CONFIG_PREFIX="${CONTAINER_NPM_GLOBAL_DIR}"
   -e CODEX_HOME="${CONTAINER_HOME}/.codex"
-  -e PATH="${NVIDIA_PATH_PREFIX:+${NVIDIA_PATH_PREFIX}:}${CONTAINER_HOME}/.local/bin:${CONTAINER_NPM_GLOBAL_DIR}/bin:/opt/conda/bin:/opt/conda/condabin:/usr/local/cuda-${CUDA_SHORT}/bin:/usr/local/bin:/usr/bin:/bin"
+  -e HOST_HOME_READONLY="${CONTAINER_HOST_HOME_DIR}"
+  -e PATH="${NVIDIA_PATH_PREFIX:+${NVIDIA_PATH_PREFIX}:}${CONTAINER_HOME}/.local/bin:${CONTAINER_HOST_HOME_DIR}/.local/bin:${CONTAINER_NPM_GLOBAL_DIR}/bin:/opt/conda/bin:/opt/conda/condabin:/usr/local/cuda-${CUDA_SHORT}/bin:/usr/local/bin:/usr/bin:/bin"
   -e CUDA_DEFAULT="${CUDA_DEFAULT}"
   -v "${PROJECT_DIR}:/workspace/${PROJECT_NAME}"
   -v "${CONTAINER_HOME_CACHE_DIR}:${CONTAINER_HOME}"
@@ -283,6 +335,20 @@ docker_args=(
   -w "/workspace/${PROJECT_NAME}"
 )
 
+if [ "${CONTAINER_LOGIN_USER}" = "root" ]; then
+  docker_args+=(
+    --user "0:${HOST_GID}"
+    -e USER="root"
+    -e LOGNAME="root"
+  )
+else
+  docker_args+=(
+    --user "${HOST_UID}:${HOST_GID}"
+    -e USER="${HOST_USER}"
+    -e LOGNAME="${HOST_USER}"
+  )
+fi
+
 for group_id in $(id -G); do
   if [ "${group_id}" != "${HOST_GID}" ]; then
     docker_args+=(--group-add "${group_id}")
@@ -291,6 +357,33 @@ done
 
 declare -A ADDED_MOUNTS=()
 declare -a SYMLINK_SCAN_ROOTS=()
+
+backup_conflicting_cache_target() {
+  local cache_target="$1"
+  local expected_type="$2"
+  local backup_target
+
+  if [ ! -e "${cache_target}" ] && [ ! -L "${cache_target}" ]; then
+    return
+  fi
+
+  case "${expected_type}" in
+    dir)
+      [ -d "${cache_target}" ] && return
+      ;;
+    file)
+      [ -f "${cache_target}" ] && return
+      ;;
+    *)
+      echo "Unknown expected cache target type: ${expected_type}" >&2
+      exit 1
+      ;;
+  esac
+
+  backup_target="${cache_target}.mount-conflict-backup-$(date +%Y%m%d%H%M%S)-$$"
+  echo "Backing up conflicting cached mount target: ${cache_target} -> ${backup_target}" >&2
+  mv -- "${cache_target}" "${backup_target}"
+}
 
 prepare_container_home_target() {
   local target_path="$1"
@@ -305,10 +398,12 @@ prepare_container_home_target() {
   relative_path="${target_path#"${CONTAINER_HOME}/"}"
   cache_target="${CONTAINER_HOME_CACHE_DIR}/${relative_path}"
 
+  mkdir -p "$(dirname -- "${cache_target}")"
   if [ -d "${source_real}" ]; then
+    backup_conflicting_cache_target "${cache_target}" "dir"
     mkdir -p "${cache_target}"
   else
-    mkdir -p "$(dirname -- "${cache_target}")"
+    backup_conflicting_cache_target "${cache_target}" "file"
     touch "${cache_target}"
   fi
 }
@@ -318,6 +413,7 @@ add_mount_if_exists() {
   local target_path="$2"
   local mode="${3:-}"
   local scan_symlinks="${4:-0}"
+  local acl_recursive="${5:-}"
   local source_real
   local blocked_mount_root
   local blocked_mount="0"
@@ -337,6 +433,14 @@ add_mount_if_exists() {
     blocked_mount="1"
   fi
 
+  if [[ ",${mode}," == *,ro,* ]] &&
+    path_is_under "${source_real}" "${HOST_HOME_REAL}" &&
+    path_is_under "${target_path}" "${CONTAINER_HOME}" &&
+    ! path_is_under "${target_path}" "${CONTAINER_HOST_HOME_DIR}"
+  then
+    target_path="${CONTAINER_HOST_HOME_DIR}${target_path#"${CONTAINER_HOME}"}"
+  fi
+
   mount_key="${source_real}=>${target_path}"
   if [ -n "${ADDED_MOUNTS[${mount_key}]:-}" ]; then
     return
@@ -348,6 +452,15 @@ add_mount_if_exists() {
   fi
 
   prepare_container_home_target "${target_path}" "${source_real}"
+  if [ "${blocked_mount}" != "1" ] && [[ ",${mode}," != *,ro,* ]]; then
+    if [ -n "${acl_recursive}" ]; then
+      grant_host_user_acl "${source_real}" "${acl_recursive}"
+    elif path_is_under "${source_real}" "${HOST_HOME_REAL}"; then
+      grant_host_user_acl "${source_real}" "0"
+    else
+      grant_host_user_acl "${source_real}"
+    fi
+  fi
 
   mount_spec="${source_real}:${target_path}"
   if [ -n "${mode}" ]; then
@@ -357,6 +470,24 @@ add_mount_if_exists() {
 
   if [ "${scan_symlinks}" = "1" ] && [ -d "${source_real}" ]; then
     SYMLINK_SCAN_ROOTS+=("${source_real}")
+  fi
+}
+
+add_host_home_readonly_mount() {
+  local home_entry="$1"
+  local scan_symlinks="${2:-0}"
+  local mode="${BLOCKED_PATH_MODE}"
+
+  if [ -e "${HOST_HOME}/${home_entry}" ]; then
+    if [ ! -d "${HOST_HOME}/${home_entry}" ]; then
+      mode="ro"
+    fi
+
+    add_mount_if_exists \
+      "${HOST_HOME}/${home_entry}" \
+      "${CONTAINER_HOST_HOME_DIR}/${home_entry}" \
+      "${mode}" \
+      "${scan_symlinks}"
   fi
 }
 
@@ -391,12 +522,7 @@ add_host_home_package_mounts() {
     "miniconda3" \
     "venv"
   do
-    if [ -e "${HOST_HOME}/${package_dir}" ]; then
-      add_mount_if_exists \
-        "${HOST_HOME}/${package_dir}" \
-        "${CONTAINER_HOME}/${package_dir}" \
-        "${BLOCKED_PATH_MODE}"
-    fi
+    add_host_home_readonly_mount "${package_dir}"
   done
 }
 
@@ -491,6 +617,7 @@ add_claude_code_mounts() {
     "${HOST_HOME}/.claude" \
     "${CONTAINER_HOME}/.claude" \
     "${CLAUDE_CONFIG_MODE}" \
+    "1" \
     "1"
 
   add_mount_if_exists \
@@ -498,10 +625,7 @@ add_claude_code_mounts() {
     "${CONTAINER_HOME}/.claude.json" \
     "${CLAUDE_CONFIG_MODE}"
 
-  add_mount_if_exists \
-    "${HOST_HOME}/.bashrc" \
-    "${CONTAINER_HOME}/.bashrc" \
-    "ro"
+  add_host_home_readonly_mount ".bashrc"
 }
 
 add_codex_mounts() {
@@ -509,18 +633,35 @@ add_codex_mounts() {
     "${HOST_HOME}/.codex" \
     "${CONTAINER_HOME}/.codex" \
     "${CODEX_CONFIG_MODE}" \
+    "1" \
+    "1"
+}
+
+add_agent_skill_mounts() {
+  add_mount_if_exists \
+    "${HOST_HOME}/.agents" \
+    "${CONTAINER_HOME}/.agents" \
+    "${AGENTS_CONFIG_MODE}" \
+    "1"
+
+  add_mount_if_exists \
+    "${HOST_HOME}/.orchestra" \
+    "${CONTAINER_HOME}/.orchestra" \
+    "${ORCHESTRA_CONFIG_MODE}" \
     "1"
 }
 
 add_nvidia_tool_mounts
 add_claude_code_mounts
 add_codex_mounts
+add_agent_skill_mounts
 add_host_home_package_mounts
 scan_registered_symlink_roots
 
 docker "${docker_args[@]}" \
   "${IMAGE_NAME}" \
   bash -lc '
+    umask 0002
     source /opt/conda/etc/profile.d/conda.sh
     source /opt/cuda-env.sh "${CUDA_DEFAULT}"
     mkdir -p "${XDG_CACHE_HOME}" "${NPM_CONFIG_PREFIX}"
