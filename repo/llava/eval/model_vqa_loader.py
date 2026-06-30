@@ -83,7 +83,16 @@ def eval_model(args):
     print(f'Pruning config: {pruning_config}')
     model_path = os.path.expanduser(args.model_path)
     model_name = get_model_name_from_path(model_path)
-    tokenizer, model, image_processor, context_len = load_pretrained_model(model_path, args.model_base, model_name, device_map="cuda:0")
+    tokenizer, model, image_processor, context_len = load_pretrained_model(
+        model_path,
+        args.model_base,
+        model_name,
+        device_map="cuda:0",
+        use_visipruner=pruning_config is not None,
+        visipruner_decode_backend=args.visipruner_decode_backend,
+    )
+    if pruning_config is not None:
+        print(f'VisiPruner decode backend: {getattr(model.config, "visipruner_decode_backend", None)}')
 
     questions = [json.loads(q) for q in open(os.path.expanduser(args.question_file), "r")]
     questions = get_chunk(questions, args.num_chunks, args.chunk_idx)
@@ -143,6 +152,13 @@ if __name__ == "__main__":
     parser.add_argument("--num_beams", type=int, default=1)
     parser.add_argument("--max_new_tokens", type=int, default=128)
     parser.add_argument("--pruning-config", type=str, default=None, help="JSON string for pruning configuration")
+    parser.add_argument(
+        "--visipruner-decode-backend",
+        type=str,
+        default=os.environ.get("VISIPRUNER_DECODE_BACKEND", "eager"),
+        choices=["off", "eager", "fa2", "flash_attention_2", "vp-fa", "vp_fa", "auto"],
+        help="Decode backend for VisiPruner pruning runs. 'eager' keeps the original path; 'auto' uses FA2 when available.",
+    )
     args = parser.parse_args()
     
     if args.pruning_config:

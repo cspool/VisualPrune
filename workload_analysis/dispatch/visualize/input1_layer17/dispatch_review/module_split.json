@@ -1,0 +1,720 @@
+[
+  {
+    "module_path": "model.layers.17.input_layernorm",
+    "module_relative_path": "input_layernorm",
+    "module_type": "LlamaRMSNorm",
+    "module_class": "llava.model.language_model.custom_modeling_llama.LlamaRMSNorm",
+    "module_forward_file": "/workspace/VisiPrune/repo/llava/model/language_model/custom_modeling_llama.py",
+    "module_forward_lineno": "139",
+    "first_event_op_index": 1,
+    "last_event_op_index": 8,
+    "op_count": 8,
+    "op_counts": {
+      "mul.Tensor": 2,
+      "to.dtype": 2,
+      "add.Tensor": 1,
+      "mean.dim": 1,
+      "pow.Tensor_Scalar": 1,
+      "rsqrt.default": 1
+    },
+    "event_op_indices": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "input_tensor_ids": [
+      "t00001247",
+      "t00001248",
+      "t00001249",
+      "t00001250",
+      "t00001251",
+      "t00001252",
+      "t00001253",
+      "t00001255",
+      "t00001254"
+    ],
+    "output_tensor_ids": [
+      "t00001248",
+      "t00001249",
+      "t00001250",
+      "t00001251",
+      "t00001252",
+      "t00001253",
+      "t00001254",
+      "t00001256"
+    ],
+    "external_input_tensor_ids": [
+      "t00001247",
+      "t00001255"
+    ],
+    "module_output_tensor_ids": [
+      "t00001256"
+    ]
+  },
+  {
+    "module_path": "model.layers.17.self_attn.q_proj",
+    "module_relative_path": "self_attn.q_proj",
+    "module_type": "Linear",
+    "module_class": "torch.nn.modules.linear.Linear",
+    "module_forward_file": "/opt/conda/envs/cu132/lib/python3.12/site-packages/torch/nn/modules/linear.py",
+    "module_forward_lineno": "130",
+    "first_event_op_index": 9,
+    "last_event_op_index": 9,
+    "op_count": 1,
+    "op_counts": {
+      "linear.default": 1
+    },
+    "event_op_indices": [
+      9
+    ],
+    "input_tensor_ids": [
+      "t00001256",
+      "t00001257"
+    ],
+    "output_tensor_ids": [
+      "t00001258"
+    ],
+    "external_input_tensor_ids": [
+      "t00001256",
+      "t00001257"
+    ],
+    "module_output_tensor_ids": [
+      "t00001258"
+    ]
+  },
+  {
+    "module_path": "model.layers.17.self_attn.k_proj",
+    "module_relative_path": "self_attn.k_proj",
+    "module_type": "Linear",
+    "module_class": "torch.nn.modules.linear.Linear",
+    "module_forward_file": "/opt/conda/envs/cu132/lib/python3.12/site-packages/torch/nn/modules/linear.py",
+    "module_forward_lineno": "130",
+    "first_event_op_index": 10,
+    "last_event_op_index": 10,
+    "op_count": 1,
+    "op_counts": {
+      "linear.default": 1
+    },
+    "event_op_indices": [
+      10
+    ],
+    "input_tensor_ids": [
+      "t00001256",
+      "t00001259"
+    ],
+    "output_tensor_ids": [
+      "t00001260"
+    ],
+    "external_input_tensor_ids": [
+      "t00001256",
+      "t00001259"
+    ],
+    "module_output_tensor_ids": [
+      "t00001260"
+    ]
+  },
+  {
+    "module_path": "model.layers.17.self_attn.v_proj",
+    "module_relative_path": "self_attn.v_proj",
+    "module_type": "Linear",
+    "module_class": "torch.nn.modules.linear.Linear",
+    "module_forward_file": "/opt/conda/envs/cu132/lib/python3.12/site-packages/torch/nn/modules/linear.py",
+    "module_forward_lineno": "130",
+    "first_event_op_index": 11,
+    "last_event_op_index": 11,
+    "op_count": 1,
+    "op_counts": {
+      "linear.default": 1
+    },
+    "event_op_indices": [
+      11
+    ],
+    "input_tensor_ids": [
+      "t00001256",
+      "t00001261"
+    ],
+    "output_tensor_ids": [
+      "t00001262"
+    ],
+    "external_input_tensor_ids": [
+      "t00001256",
+      "t00001261"
+    ],
+    "module_output_tensor_ids": [
+      "t00001262"
+    ]
+  },
+  {
+    "module_path": "model.layers.17.self_attn",
+    "module_relative_path": "self_attn",
+    "module_type": "VisiPrunerLlamaAttention",
+    "module_class": "llava.model.language_model.custom_modeling_llama.VisiPrunerLlamaAttention",
+    "module_forward_file": "/workspace/VisiPrune/repo/llava/model/language_model/custom_modeling_llama.py",
+    "module_forward_lineno": "614",
+    "first_event_op_index": 12,
+    "last_event_op_index": 81,
+    "op_count": 62,
+    "op_counts": {
+      "select.int": 6,
+      "add.Tensor": 5,
+      "mul.Tensor": 5,
+      "slice.Tensor": 5,
+      "transpose.int": 5,
+      "unsqueeze.default": 5,
+      "view.default": 4,
+      "cat.default": 2,
+      "contiguous.default": 2,
+      "index.Tensor": 2,
+      "is_nonzero.default": 2,
+      "item.default": 2,
+      "matmul.default": 2,
+      "neg.default": 2,
+      "any.default": 1,
+      "cosine_similarity.default": 1,
+      "div.Tensor": 1,
+      "dropout.default": 1,
+      "eq.Scalar": 1,
+      "gt.Scalar": 1,
+      "lt.Scalar": 1,
+      "permute.default": 1,
+      "reshape.default": 1,
+      "softmax.int": 1,
+      "squeeze.dim": 1,
+      "sub.Tensor": 1,
+      "to.dtype": 1
+    },
+    "event_op_indices": [
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79,
+      80,
+      81
+    ],
+    "input_tensor_ids": [
+      "t00001258",
+      "t00001263",
+      "t00001260",
+      "t00001265",
+      "t00001262",
+      "t00001267",
+      "t00000023",
+      "t00001269",
+      "t00001270",
+      "t00001274",
+      "t00001277",
+      "t00001276",
+      "t00001279",
+      "t00001264",
+      "t00001278",
+      "t00001283",
+      "t00001284",
+      "t00001282",
+      "t00001285",
+      "t00001280",
+      "t00001281",
+      "t00001286",
+      "t00001266",
+      "t00001290",
+      "t00001291",
+      "t00001289",
+      "t00001292",
+      "t00001288",
+      "t00001293",
+      "t00001294",
+      "t00001287",
+      "t00001295",
+      "t00001296",
+      "t00001297",
+      "t00000053",
+      "t00001298",
+      "t00001299",
+      "t00001300",
+      "t00001268",
+      "t00001301",
+      "t00001302",
+      "t00001303",
+      "t00000057",
+      "t00001305",
+      "t00001306",
+      "t00001307",
+      "t00001308",
+      "t00001309",
+      "t00001304",
+      "t00001311",
+      "t00001312",
+      "t00001313",
+      "t00001314",
+      "t00001315",
+      "t00001317",
+      "t00001316",
+      "t00001310",
+      "t00001319",
+      "t00001318",
+      "t00001320",
+      "t00001321",
+      "t00001322",
+      "t00001323",
+      "t00001324",
+      "t00001325"
+    ],
+    "output_tensor_ids": [
+      "t00001263",
+      "t00001264",
+      "t00001265",
+      "t00001266",
+      "t00001267",
+      "t00001268",
+      "t00001269",
+      "t00001270",
+      "t00001271",
+      "t00001277",
+      "t00001278",
+      "t00001279",
+      "t00001280",
+      "t00001281",
+      "t00001282",
+      "t00001283",
+      "t00001284",
+      "t00001285",
+      "t00001286",
+      "t00001287",
+      "t00001288",
+      "t00001289",
+      "t00001290",
+      "t00001291",
+      "t00001292",
+      "t00001293",
+      "t00001294",
+      "t00001295",
+      "t00001296",
+      "t00001297",
+      "t00001298",
+      "t00001299",
+      "t00001300",
+      "t00001301",
+      "t00001302",
+      "t00001303",
+      "t00001304",
+      "t00001305",
+      "t00001306",
+      "t00001307",
+      "t00001308",
+      "t00001309",
+      "t00001310",
+      "t00001311",
+      "t00001312",
+      "t00001313",
+      "t00001314",
+      "t00001315",
+      "t00001316",
+      "t00001318",
+      "t00001319",
+      "t00001320",
+      "t00001321",
+      "t00001322",
+      "t00001323",
+      "t00001324",
+      "t00001325"
+    ],
+    "external_input_tensor_ids": [
+      "t00001258",
+      "t00001260",
+      "t00001262",
+      "t00000023",
+      "t00001274",
+      "t00001276",
+      "t00000053",
+      "t00000057",
+      "t00001317"
+    ],
+    "module_output_tensor_ids": [
+      "t00001271"
+    ]
+  },
+  {
+    "module_path": "model.layers.17.self_attn.rotary_emb",
+    "module_relative_path": "self_attn.rotary_emb",
+    "module_type": "LlamaRotaryEmbedding",
+    "module_class": "llava.model.language_model.custom_modeling_llama.LlamaRotaryEmbedding",
+    "module_forward_file": "/workspace/VisiPrune/repo/llava/model/language_model/custom_modeling_llama.py",
+    "module_forward_lineno": "175",
+    "first_event_op_index": 21,
+    "last_event_op_index": 28,
+    "op_count": 8,
+    "op_counts": {
+      "item.default": 2,
+      "slice.Tensor": 2,
+      "to.dtype": 2,
+      "gt.Scalar": 1,
+      "is_nonzero.default": 1
+    },
+    "event_op_indices": [
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28
+    ],
+    "input_tensor_ids": [
+      "t00001271",
+      "t00001272",
+      "t00001273",
+      "t00001274",
+      "t00001275",
+      "t00001276"
+    ],
+    "output_tensor_ids": [
+      "t00001272",
+      "t00001274",
+      "t00001276"
+    ],
+    "external_input_tensor_ids": [
+      "t00001271",
+      "t00001273",
+      "t00001275"
+    ],
+    "module_output_tensor_ids": []
+  },
+  {
+    "module_path": "model.layers.17.self_attn.o_proj",
+    "module_relative_path": "self_attn.o_proj",
+    "module_type": "Linear",
+    "module_class": "torch.nn.modules.linear.Linear",
+    "module_forward_file": "/opt/conda/envs/cu132/lib/python3.12/site-packages/torch/nn/modules/linear.py",
+    "module_forward_lineno": "130",
+    "first_event_op_index": 82,
+    "last_event_op_index": 82,
+    "op_count": 1,
+    "op_counts": {
+      "linear.default": 1
+    },
+    "event_op_indices": [
+      82
+    ],
+    "input_tensor_ids": [
+      "t00001304",
+      "t00001326"
+    ],
+    "output_tensor_ids": [
+      "t00001327"
+    ],
+    "external_input_tensor_ids": [
+      "t00001304",
+      "t00001326"
+    ],
+    "module_output_tensor_ids": [
+      "t00001327"
+    ]
+  },
+  {
+    "module_path": "model.layers.17",
+    "module_relative_path": "",
+    "module_type": "LlamaDecoderLayer",
+    "module_class": "llava.model.language_model.custom_modeling_llama.LlamaDecoderLayer",
+    "module_forward_file": "/workspace/VisiPrune/workload_analysis/dispatch/tools/visipruner_filtered_dispatch_profile.py",
+    "module_forward_lineno": "881",
+    "first_event_op_index": 83,
+    "last_event_op_index": 97,
+    "op_count": 2,
+    "op_counts": {
+      "add.Tensor": 2
+    },
+    "event_op_indices": [
+      83,
+      97
+    ],
+    "input_tensor_ids": [
+      "t00001247",
+      "t00001327",
+      "t00001328",
+      "t00001345"
+    ],
+    "output_tensor_ids": [
+      "t00001328",
+      "t00001346"
+    ],
+    "external_input_tensor_ids": [
+      "t00001247",
+      "t00001327",
+      "t00001345"
+    ],
+    "module_output_tensor_ids": [
+      "t00001346"
+    ]
+  },
+  {
+    "module_path": "model.layers.17.post_attention_layernorm",
+    "module_relative_path": "post_attention_layernorm",
+    "module_type": "LlamaRMSNorm",
+    "module_class": "llava.model.language_model.custom_modeling_llama.LlamaRMSNorm",
+    "module_forward_file": "/workspace/VisiPrune/repo/llava/model/language_model/custom_modeling_llama.py",
+    "module_forward_lineno": "139",
+    "first_event_op_index": 84,
+    "last_event_op_index": 91,
+    "op_count": 8,
+    "op_counts": {
+      "mul.Tensor": 2,
+      "to.dtype": 2,
+      "add.Tensor": 1,
+      "mean.dim": 1,
+      "pow.Tensor_Scalar": 1,
+      "rsqrt.default": 1
+    },
+    "event_op_indices": [
+      84,
+      85,
+      86,
+      87,
+      88,
+      89,
+      90,
+      91
+    ],
+    "input_tensor_ids": [
+      "t00001328",
+      "t00001329",
+      "t00001330",
+      "t00001331",
+      "t00001332",
+      "t00001333",
+      "t00001334",
+      "t00001336",
+      "t00001335"
+    ],
+    "output_tensor_ids": [
+      "t00001329",
+      "t00001330",
+      "t00001331",
+      "t00001332",
+      "t00001333",
+      "t00001334",
+      "t00001335",
+      "t00001337"
+    ],
+    "external_input_tensor_ids": [
+      "t00001328",
+      "t00001336"
+    ],
+    "module_output_tensor_ids": [
+      "t00001337"
+    ]
+  },
+  {
+    "module_path": "model.layers.17.mlp.gate_proj",
+    "module_relative_path": "mlp.gate_proj",
+    "module_type": "Linear",
+    "module_class": "torch.nn.modules.linear.Linear",
+    "module_forward_file": "/opt/conda/envs/cu132/lib/python3.12/site-packages/torch/nn/modules/linear.py",
+    "module_forward_lineno": "130",
+    "first_event_op_index": 92,
+    "last_event_op_index": 92,
+    "op_count": 1,
+    "op_counts": {
+      "linear.default": 1
+    },
+    "event_op_indices": [
+      92
+    ],
+    "input_tensor_ids": [
+      "t00001337",
+      "t00001338"
+    ],
+    "output_tensor_ids": [
+      "t00001339"
+    ],
+    "external_input_tensor_ids": [
+      "t00001337",
+      "t00001338"
+    ],
+    "module_output_tensor_ids": [
+      "t00001339"
+    ]
+  },
+  {
+    "module_path": "model.layers.17.mlp.act_fn",
+    "module_relative_path": "mlp.act_fn",
+    "module_type": "SiLU",
+    "module_class": "torch.nn.modules.activation.SiLU",
+    "module_forward_file": "/opt/conda/envs/cu132/lib/python3.12/site-packages/torch/nn/modules/activation.py",
+    "module_forward_lineno": "471",
+    "first_event_op_index": 93,
+    "last_event_op_index": 93,
+    "op_count": 1,
+    "op_counts": {
+      "silu.default": 1
+    },
+    "event_op_indices": [
+      93
+    ],
+    "input_tensor_ids": [
+      "t00001339"
+    ],
+    "output_tensor_ids": [
+      "t00001340"
+    ],
+    "external_input_tensor_ids": [
+      "t00001339"
+    ],
+    "module_output_tensor_ids": [
+      "t00001340"
+    ]
+  },
+  {
+    "module_path": "model.layers.17.mlp.up_proj",
+    "module_relative_path": "mlp.up_proj",
+    "module_type": "Linear",
+    "module_class": "torch.nn.modules.linear.Linear",
+    "module_forward_file": "/opt/conda/envs/cu132/lib/python3.12/site-packages/torch/nn/modules/linear.py",
+    "module_forward_lineno": "130",
+    "first_event_op_index": 94,
+    "last_event_op_index": 94,
+    "op_count": 1,
+    "op_counts": {
+      "linear.default": 1
+    },
+    "event_op_indices": [
+      94
+    ],
+    "input_tensor_ids": [
+      "t00001337",
+      "t00001341"
+    ],
+    "output_tensor_ids": [
+      "t00001342"
+    ],
+    "external_input_tensor_ids": [
+      "t00001337",
+      "t00001341"
+    ],
+    "module_output_tensor_ids": [
+      "t00001342"
+    ]
+  },
+  {
+    "module_path": "model.layers.17.mlp",
+    "module_relative_path": "mlp",
+    "module_type": "LlamaMLP",
+    "module_class": "llava.model.language_model.custom_modeling_llama.LlamaMLP",
+    "module_forward_file": "/workspace/VisiPrune/repo/llava/model/language_model/custom_modeling_llama.py",
+    "module_forward_lineno": "277",
+    "first_event_op_index": 95,
+    "last_event_op_index": 95,
+    "op_count": 1,
+    "op_counts": {
+      "mul.Tensor": 1
+    },
+    "event_op_indices": [
+      95
+    ],
+    "input_tensor_ids": [
+      "t00001340",
+      "t00001342"
+    ],
+    "output_tensor_ids": [
+      "t00001343"
+    ],
+    "external_input_tensor_ids": [
+      "t00001340",
+      "t00001342"
+    ],
+    "module_output_tensor_ids": [
+      "t00001343"
+    ]
+  },
+  {
+    "module_path": "model.layers.17.mlp.down_proj",
+    "module_relative_path": "mlp.down_proj",
+    "module_type": "Linear",
+    "module_class": "torch.nn.modules.linear.Linear",
+    "module_forward_file": "/opt/conda/envs/cu132/lib/python3.12/site-packages/torch/nn/modules/linear.py",
+    "module_forward_lineno": "130",
+    "first_event_op_index": 96,
+    "last_event_op_index": 96,
+    "op_count": 1,
+    "op_counts": {
+      "linear.default": 1
+    },
+    "event_op_indices": [
+      96
+    ],
+    "input_tensor_ids": [
+      "t00001343",
+      "t00001344"
+    ],
+    "output_tensor_ids": [
+      "t00001345"
+    ],
+    "external_input_tensor_ids": [
+      "t00001343",
+      "t00001344"
+    ],
+    "module_output_tensor_ids": [
+      "t00001345"
+    ]
+  }
+]

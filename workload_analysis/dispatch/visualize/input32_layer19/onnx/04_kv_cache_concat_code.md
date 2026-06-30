@@ -20,11 +20,17 @@
 - `k_heads`: `[4, 16, 8]`
 - `v_heads`: `[4, 16, 8]`
 
+### Dispatch Tensor ID Inputs/Outputs
+
+- Dispatch input tensor ids: `['t00002945', 't00002944', 't00002947', 't00002920']`
+- Dispatch output tensor ids: `['t00002946', 't00002948']`
+- Dispatch tensor-id dependencies inside evidence rows: `[]`
+
 ## Corresponding `torch_flow` Code
 
-- Export wrapper: `/workspace/VisiPrune/workload_analysis/dispatch/visualize/input32_layer19/torch_flow/export_stage_onnx.py::KVCacheConcatStage`
-- Primary implementation: `/workspace/VisiPrune/workload_analysis/dispatch/visualize/input32_layer19/torch_flow/kv_cache.py`
-- Support files: `/workspace/VisiPrune/workload_analysis/dispatch/visualize/input32_layer19/torch_flow/config.py`, `/workspace/VisiPrune/workload_analysis/dispatch/visualize/input32_layer19/torch_flow/init_data.py`, `/workspace/VisiPrune/workload_analysis/dispatch/visualize/input32_layer19/torch_flow/export_stage_onnx.py`
+- Export wrapper: `workload_analysis/dispatch/visualize/input32_layer19/torch_flow/export_stage_onnx.py::KVCacheConcatStage`
+- Primary implementation: `workload_analysis/dispatch/visualize/input32_layer19/torch_flow/kv_cache.py`
+- Support files: `workload_analysis/dispatch/visualize/input32_layer19/torch_flow/config.py`, `workload_analysis/dispatch/visualize/input32_layer19/torch_flow/init_data.py`, `workload_analysis/dispatch/visualize/input32_layer19/torch_flow/export_stage_onnx.py`
 
 ## Code Explanation
 
@@ -39,8 +45,8 @@ Concatenates past decode K/V cache with the current token's K/V heads before rec
 
 ## Dispatch Evidence Notes
 
-- `#47 cat.default` -> shape=[1, 32, 89, 128], dtype=float16
-- `#48 cat.default` -> shape=[1, 32, 89, 128], dtype=float16
+- `#47 cat.default` inputs=`['t00002945', 't00002944']` outputs=`['t00002946']` -> shape=[1, 32, 89, 128], dtype=float16
+- `#48 cat.default` inputs=`['t00002947', 't00002920']` outputs=`['t00002948']` -> shape=[1, 32, 89, 128], dtype=float16
 
 ## Export Wrapper Source
 

@@ -138,17 +138,13 @@
         16,
         16
       ],
-      "tail_visual_sum": [
-        4,
-        3
-      ],
       "cleared_visual_region": [
         4,
         13,
         10
       ]
     },
-    "nodes": 81,
+    "nodes": 70,
     "initializers": 0
   },
   {

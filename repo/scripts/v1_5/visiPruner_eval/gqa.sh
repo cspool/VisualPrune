@@ -8,6 +8,7 @@ CHUNKS=${#GPULIST[@]}
 CKPT="llava-v1.5-7b"
 SPLIT="llava_gqa_testdev_balanced"
 GQADIR="./LLaVA_dated/playground/data/eval/gqa/data"
+VISIPRUNER_DECODE_BACKEND="${VISIPRUNER_DECODE_BACKEND:-auto}"
 
 for IDX in $(seq 0 $((CHUNKS-1))); do
     CUDA_VISIBLE_DEVICES=${GPULIST[$IDX]} python -m llava.eval.model_vqa_loader \
@@ -19,6 +20,7 @@ for IDX in $(seq 0 $((CHUNKS-1))); do
         --chunk-idx $IDX \
         --temperature 0 \
         --pruning-config '{"mode":["shallow","middle","deep"],"shallow_mid_layer":6,"layer_threshold":0.995,"tokens_threshold":0.2}' \
+        --visipruner-decode-backend "$VISIPRUNER_DECODE_BACKEND" \
         --conv-mode vicuna_v1 &
 done
 

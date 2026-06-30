@@ -31,7 +31,18 @@ def main(args):
     disable_torch_init()
 
     model_name = get_model_name_from_path(args.model_path)
-    tokenizer, model, image_processor, context_len = load_pretrained_model(args.model_path, args.model_base, model_name, args.load_8bit, args.load_4bit, device=args.device, cache_dir="/code/yingqi/models")
+    tokenizer, model, image_processor, context_len = load_pretrained_model(
+        args.model_path,
+        args.model_base,
+        model_name,
+        args.load_8bit,
+        args.load_4bit,
+        device=args.device,
+        use_visipruner=True,
+        visipruner_decode_backend=args.visipruner_decode_backend,
+        cache_dir="/code/yingqi/models",
+    )
+    print(f'VisiPruner decode backend: {getattr(model.config, "visipruner_decode_backend", None)}')
 
     if "llama-2" in model_name.lower():
         conv_mode = "llava_llama_2"
@@ -105,7 +116,7 @@ def main(args):
             streamer=streamer,
             use_cache=True,
             return_dict_in_generate=True,
-            output_attentions=True,
+            output_attentions=args.output_attentions,
             output_hidden_states=False,
             pruning_config=pruning_config,
         )
@@ -128,6 +139,14 @@ if __name__ == "__main__":
     parser.add_argument("--max-new-tokens", type=int, default=512)
     parser.add_argument("--load-8bit", action="store_true")
     parser.add_argument("--load-4bit", action="store_true")
+    parser.add_argument(
+        "--visipruner-decode-backend",
+        type=str,
+        default=os.environ.get("VISIPRUNER_DECODE_BACKEND", "auto"),
+        choices=["off", "eager", "fa2", "flash_attention_2", "vp-fa", "vp_fa", "auto"],
+        help="Decode backend for VisiPruner. Use 'eager' for the original path.",
+    )
+    parser.add_argument("--output-attentions", action="store_true")
     parser.add_argument("--debug", action="store_true")
     args = parser.parse_args()
     main(args)

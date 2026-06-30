@@ -8,7 +8,18 @@ import json
 import re
 from pathlib import Path
 
-from analyze import build_layer_summary, infer_original_dimensions, infer_small_config, write_process_markdown
+from analyze import (
+    build_layer_summary,
+    build_module_split,
+    build_dispatch_op_coverage,
+    build_tensor_dataflow,
+    infer_original_dimensions,
+    infer_small_config,
+    write_dispatch_op_coverage_outputs,
+    write_module_split_outputs,
+    write_process_markdown,
+    write_tensor_dataflow_outputs,
+)
 from dispatch_io import event_ids, filter_event, read_dispatch_rows, write_dispatch_rows
 from flow_codegen import copy_flow_template, export_stage_onnx, write_onnx_code_review, write_process_code_outputs
 from review_reconstruction import infer_dimensions_from_dispatch, infer_dispatch_features, stage_evidence
@@ -69,16 +80,41 @@ def process_layer(
         small_ffn=small_ffn,
     )
     summary = build_layer_summary(event_rows, event_id, small_config)
+    module_split = build_module_split(event_rows)
+    tensor_dataflow = build_tensor_dataflow(event_rows)
     dispatch_dims = infer_dimensions_from_dispatch(event_rows)
     dispatch_features = infer_dispatch_features(event_rows)
     summary["dispatch_features"] = dispatch_features
+    summary["module_split"] = module_split
+    summary["tensor_dataflow"] = {
+        "op_count": tensor_dataflow["op_count"],
+        "edge_count": tensor_dataflow["edge_count"],
+        "external_input_tensor_ids": tensor_dataflow["external_input_tensor_ids"],
+        "final_output_tensor_ids": tensor_dataflow["final_output_tensor_ids"],
+    }
     core_evidence = {
         stage: stage_evidence(stage, event_rows, dispatch_features, dispatch_dims)
         for stage in dispatch_features["expected_stages"]
     }
+    dispatch_op_coverage = build_dispatch_op_coverage(
+        rows=event_rows,
+        module_split=module_split,
+        tensor_dataflow=tensor_dataflow,
+        core_evidence=core_evidence,
+    )
+    summary["dispatch_op_coverage"] = {
+        "op_count": dispatch_op_coverage["op_count"],
+        "covered_op_count": dispatch_op_coverage["covered_op_count"],
+        "missing_event_op_indices": dispatch_op_coverage["missing_event_op_indices"],
+        "missing_from_module_split": dispatch_op_coverage["missing_from_module_split"],
+        "missing_from_tensor_dataflow": dispatch_op_coverage["missing_from_tensor_dataflow"],
+    }
     write_dispatch_rows(review_dir / "dispatch_ops.csv", event_rows)
     (review_dir / "summary.json").write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
     write_process_markdown(review_dir / "tensor_compute_process.md", summary)
+    module_split_outputs = write_module_split_outputs(review_dir, event_id, module_split)
+    tensor_dataflow_outputs = write_tensor_dataflow_outputs(review_dir, event_id, tensor_dataflow)
+    dispatch_op_coverage_outputs = write_dispatch_op_coverage_outputs(review_dir, event_id, dispatch_op_coverage)
 
     copy_flow_template(flow_dir, event_id, small_config, dispatch_features)
     process_manifest = write_process_code_outputs(
@@ -89,6 +125,10 @@ def process_layer(
         dims=dispatch_dims,
         features=dispatch_features,
         core_evidence=core_evidence,
+        tensor_dataflow=tensor_dataflow,
+        tensor_dataflow_outputs=tensor_dataflow_outputs,
+        dispatch_op_coverage=dispatch_op_coverage,
+        dispatch_op_coverage_outputs=dispatch_op_coverage_outputs,
     )
     if not skip_onnx:
         export_stage_onnx(flow_dir, onnx_dir)
@@ -117,6 +157,15 @@ def process_layer(
             "process": str(review_dir / "tensor_compute_process.md"),
             "process_manifest": str(review_dir / "process_manifest.json"),
             "process_code_index": str(review_dir / "process_code_index.md"),
+            "module_split_json": module_split_outputs["module_split_json"],
+            "module_split_csv": module_split_outputs["module_split_csv"],
+            "module_split_markdown": module_split_outputs["module_split_markdown"],
+            "tensor_dataflow_json": tensor_dataflow_outputs["tensor_dataflow_json"],
+            "tensor_dataflow_edges_csv": tensor_dataflow_outputs["tensor_dataflow_edges_csv"],
+            "tensor_dataflow_markdown": tensor_dataflow_outputs["tensor_dataflow_markdown"],
+            "dispatch_op_coverage_json": dispatch_op_coverage_outputs["dispatch_op_coverage_json"],
+            "dispatch_op_coverage_csv": dispatch_op_coverage_outputs["dispatch_op_coverage_csv"],
+            "dispatch_op_coverage_markdown": dispatch_op_coverage_outputs["dispatch_op_coverage_markdown"],
             "onnx_code_index": str(review_dir / "onnx_code_index.md") if onnx_code_review is not None else None,
             "onnx_code_map": str(review_dir / "onnx_code_map.json") if onnx_code_review is not None else None,
         },

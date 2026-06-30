@@ -33,7 +33,15 @@ def eval_model(args):
     print(f'Pruning config: {pruning_config}')
     model_path = os.path.expanduser(args.model_path)
     model_name = get_model_name_from_path(model_path)
-    tokenizer, model, image_processor, context_len = load_pretrained_model(model_path, args.model_base, model_name)
+    tokenizer, model, image_processor, context_len = load_pretrained_model(
+        model_path,
+        args.model_base,
+        model_name,
+        use_visipruner=pruning_config is not None,
+        visipruner_decode_backend=args.visipruner_decode_backend,
+    )
+    if pruning_config is not None:
+        print(f'VisiPruner decode backend: {getattr(model.config, "visipruner_decode_backend", None)}')
 
     questions = json.load(open(os.path.expanduser(args.question_file), "r"))
     questions = get_chunk(questions, args.num_chunks, args.chunk_idx)
@@ -110,6 +118,13 @@ if __name__ == "__main__":
     parser.add_argument("--answer-prompter", action="store_true")
     parser.add_argument("--single-pred-prompt", action="store_true")
     parser.add_argument("--pruning-config", type=str, default=None, help="JSON string for pruning configuration")
+    parser.add_argument(
+        "--visipruner-decode-backend",
+        type=str,
+        default=os.environ.get("VISIPRUNER_DECODE_BACKEND", "eager"),
+        choices=["off", "eager", "fa2", "flash_attention_2", "vp-fa", "vp_fa", "auto"],
+        help="Decode backend for VisiPruner pruning runs. 'eager' keeps the original path; 'auto' uses FA2 when available.",
+    )
     args = parser.parse_args()
 
     if args.pruning_config:

@@ -1,31 +1,628 @@
 {
   "event_id": "input2_layer19",
-  "torch_flow_dir": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/torch_flow",
-  "onnx_code_review_dir": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/dispatch_review/onnx_code",
+  "torch_flow_dir": "workload_analysis/dispatch/visualize/input2_layer19/torch_flow",
+  "onnx_code_review_dir": "workload_analysis/dispatch/visualize/input2_layer19/dispatch_review/onnx_code",
   "onnx_sidecar": {
     "onnx_dir": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/onnx",
     "layout": "flat",
     "pages": 8
   },
-  "onnx_code_index": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/dispatch_review/onnx_code_index.md",
+  "onnx_code_index": "workload_analysis/dispatch/visualize/input2_layer19/dispatch_review/onnx_code_index.md",
+  "stage_tensor_io": {
+    "input_rmsnorm": {
+      "input_tensor_ids": [
+        "t00002534",
+        "t00001461"
+      ],
+      "output_tensor_ids": [
+        "t00002542"
+      ],
+      "internal_tensor_ids": [
+        "t00002535",
+        "t00002536",
+        "t00002537",
+        "t00002538",
+        "t00002539",
+        "t00002540",
+        "t00002541"
+      ],
+      "evidence_input_tensor_ids": [
+        "t00002534",
+        "t00002535",
+        "t00002536",
+        "t00002537",
+        "t00002538",
+        "t00002539",
+        "t00002540",
+        "t00001461",
+        "t00002541"
+      ],
+      "evidence_output_tensor_ids": [
+        "t00002535",
+        "t00002536",
+        "t00002537",
+        "t00002538",
+        "t00002539",
+        "t00002540",
+        "t00002541",
+        "t00002542"
+      ],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00002535",
+          "consumer_event_op_index": 2,
+          "consumer_op_name": "pow.Tensor_Scalar"
+        },
+        {
+          "tensor_id": "t00002536",
+          "consumer_event_op_index": 3,
+          "consumer_op_name": "mean.dim"
+        },
+        {
+          "tensor_id": "t00002537",
+          "consumer_event_op_index": 4,
+          "consumer_op_name": "add.Tensor"
+        },
+        {
+          "tensor_id": "t00002538",
+          "consumer_event_op_index": 5,
+          "consumer_op_name": "rsqrt.default"
+        },
+        {
+          "tensor_id": "t00002535",
+          "consumer_event_op_index": 6,
+          "consumer_op_name": "mul.Tensor"
+        },
+        {
+          "tensor_id": "t00002539",
+          "consumer_event_op_index": 6,
+          "consumer_op_name": "mul.Tensor"
+        },
+        {
+          "tensor_id": "t00002540",
+          "consumer_event_op_index": 7,
+          "consumer_op_name": "to.dtype"
+        },
+        {
+          "tensor_id": "t00002541",
+          "consumer_event_op_index": 8,
+          "consumer_op_name": "mul.Tensor"
+        }
+      ]
+    },
+    "qkv_projection": {
+      "input_tensor_ids": [
+        "t00002542",
+        "t00001463",
+        "t00001465",
+        "t00001467"
+      ],
+      "output_tensor_ids": [
+        "t00002547",
+        "t00002549",
+        "t00002551"
+      ],
+      "internal_tensor_ids": [
+        "t00002543",
+        "t00002544",
+        "t00002545",
+        "t00002546",
+        "t00002548",
+        "t00002550"
+      ],
+      "evidence_input_tensor_ids": [
+        "t00002542",
+        "t00001463",
+        "t00001465",
+        "t00001467",
+        "t00002543",
+        "t00002546",
+        "t00002544",
+        "t00002548",
+        "t00002545",
+        "t00002550"
+      ],
+      "evidence_output_tensor_ids": [
+        "t00002543",
+        "t00002544",
+        "t00002545",
+        "t00002546",
+        "t00002547",
+        "t00002548",
+        "t00002549",
+        "t00002550",
+        "t00002551"
+      ],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00002543",
+          "consumer_event_op_index": 12,
+          "consumer_op_name": "view.default"
+        },
+        {
+          "tensor_id": "t00002546",
+          "consumer_event_op_index": 13,
+          "consumer_op_name": "transpose.int"
+        },
+        {
+          "tensor_id": "t00002544",
+          "consumer_event_op_index": 14,
+          "consumer_op_name": "view.default"
+        },
+        {
+          "tensor_id": "t00002548",
+          "consumer_event_op_index": 15,
+          "consumer_op_name": "transpose.int"
+        },
+        {
+          "tensor_id": "t00002545",
+          "consumer_event_op_index": 16,
+          "consumer_op_name": "view.default"
+        },
+        {
+          "tensor_id": "t00002550",
+          "consumer_event_op_index": 17,
+          "consumer_op_name": "transpose.int"
+        }
+      ]
+    },
+    "rope": {
+      "input_tensor_ids": [
+        "t00002553",
+        "t00001480",
+        "t00001482",
+        "t00002481",
+        "t00002547"
+      ],
+      "output_tensor_ids": [
+        "t00002554",
+        "t00002568"
+      ],
+      "internal_tensor_ids": [
+        "t00002556",
+        "t00002557",
+        "t00002558",
+        "t00002559",
+        "t00002560",
+        "t00002561",
+        "t00002562",
+        "t00002563",
+        "t00002564",
+        "t00002565",
+        "t00002566",
+        "t00002567"
+      ],
+      "evidence_input_tensor_ids": [
+        "t00002553",
+        "t00001480",
+        "t00001482",
+        "t00002556",
+        "t00002481",
+        "t00002558",
+        "t00002557",
+        "t00002560",
+        "t00002547",
+        "t00002559",
+        "t00002564",
+        "t00002565",
+        "t00002563",
+        "t00002566",
+        "t00002561",
+        "t00002562",
+        "t00002567"
+      ],
+      "evidence_output_tensor_ids": [
+        "t00002554",
+        "t00002556",
+        "t00002557",
+        "t00002558",
+        "t00002559",
+        "t00002560",
+        "t00002561",
+        "t00002562",
+        "t00002563",
+        "t00002564",
+        "t00002565",
+        "t00002566",
+        "t00002567",
+        "t00002568"
+      ],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00002556",
+          "consumer_event_op_index": 29,
+          "consumer_op_name": "index.Tensor"
+        },
+        {
+          "tensor_id": "t00002558",
+          "consumer_event_op_index": 30,
+          "consumer_op_name": "unsqueeze.default"
+        },
+        {
+          "tensor_id": "t00002557",
+          "consumer_event_op_index": 31,
+          "consumer_op_name": "index.Tensor"
+        },
+        {
+          "tensor_id": "t00002560",
+          "consumer_event_op_index": 32,
+          "consumer_op_name": "unsqueeze.default"
+        },
+        {
+          "tensor_id": "t00002559",
+          "consumer_event_op_index": 33,
+          "consumer_op_name": "mul.Tensor"
+        },
+        {
+          "tensor_id": "t00002564",
+          "consumer_event_op_index": 36,
+          "consumer_op_name": "neg.default"
+        },
+        {
+          "tensor_id": "t00002565",
+          "consumer_event_op_index": 37,
+          "consumer_op_name": "cat.default"
+        },
+        {
+          "tensor_id": "t00002563",
+          "consumer_event_op_index": 37,
+          "consumer_op_name": "cat.default"
+        },
+        {
+          "tensor_id": "t00002566",
+          "consumer_event_op_index": 38,
+          "consumer_op_name": "mul.Tensor"
+        },
+        {
+          "tensor_id": "t00002561",
+          "consumer_event_op_index": 38,
+          "consumer_op_name": "mul.Tensor"
+        },
+        {
+          "tensor_id": "t00002562",
+          "consumer_event_op_index": 39,
+          "consumer_op_name": "add.Tensor"
+        },
+        {
+          "tensor_id": "t00002567",
+          "consumer_event_op_index": 39,
+          "consumer_op_name": "add.Tensor"
+        }
+      ]
+    },
+    "kv_cache_concat": {
+      "input_tensor_ids": [
+        "t00001501",
+        "t00002575",
+        "t00001474",
+        "t00002551"
+      ],
+      "output_tensor_ids": [
+        "t00002576",
+        "t00002577"
+      ],
+      "internal_tensor_ids": [],
+      "evidence_input_tensor_ids": [
+        "t00001501",
+        "t00002575",
+        "t00001474",
+        "t00002551"
+      ],
+      "evidence_output_tensor_ids": [
+        "t00002576",
+        "t00002577"
+      ],
+      "data_dependencies": []
+    },
+    "attention": {
+      "input_tensor_ids": [
+        "t00002546",
+        "t00002548",
+        "t00002550",
+        "t00002562",
+        "t00002567",
+        "t00002569",
+        "t00002574",
+        "t00002576",
+        "t00002581",
+        "t00002577"
+      ],
+      "output_tensor_ids": [
+        "t00002547",
+        "t00002549",
+        "t00002551",
+        "t00002575",
+        "t00002583",
+        "t00002585"
+      ],
+      "internal_tensor_ids": [
+        "t00002568",
+        "t00002578",
+        "t00002579",
+        "t00002580",
+        "t00002582",
+        "t00002584"
+      ],
+      "evidence_input_tensor_ids": [
+        "t00002546",
+        "t00002548",
+        "t00002550",
+        "t00002562",
+        "t00002567",
+        "t00002569",
+        "t00002574",
+        "t00002576",
+        "t00002568",
+        "t00002578",
+        "t00002579",
+        "t00002580",
+        "t00002581",
+        "t00002582",
+        "t00002584",
+        "t00002577"
+      ],
+      "evidence_output_tensor_ids": [
+        "t00002547",
+        "t00002549",
+        "t00002551",
+        "t00002568",
+        "t00002575",
+        "t00002578",
+        "t00002579",
+        "t00002580",
+        "t00002582",
+        "t00002583",
+        "t00002584",
+        "t00002585"
+      ],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00002568",
+          "consumer_event_op_index": 50,
+          "consumer_op_name": "matmul.default"
+        },
+        {
+          "tensor_id": "t00002578",
+          "consumer_event_op_index": 50,
+          "consumer_op_name": "matmul.default"
+        },
+        {
+          "tensor_id": "t00002579",
+          "consumer_event_op_index": 51,
+          "consumer_op_name": "div.Tensor"
+        },
+        {
+          "tensor_id": "t00002580",
+          "consumer_event_op_index": 52,
+          "consumer_op_name": "add.Tensor"
+        },
+        {
+          "tensor_id": "t00002582",
+          "consumer_event_op_index": 53,
+          "consumer_op_name": "softmax.int"
+        },
+        {
+          "tensor_id": "t00002584",
+          "consumer_event_op_index": 56,
+          "consumer_op_name": "matmul.default"
+        }
+      ]
+    },
+    "attention_output": {
+      "input_tensor_ids": [
+        "t00002584",
+        "t00002577",
+        "t00002586",
+        "t00001537",
+        "t00002534",
+        "t00002602",
+        "t00001555"
+      ],
+      "output_tensor_ids": [
+        "t00002585",
+        "t00002604"
+      ],
+      "internal_tensor_ids": [
+        "t00002587",
+        "t00002589",
+        "t00002590",
+        "t00002603"
+      ],
+      "evidence_input_tensor_ids": [
+        "t00002584",
+        "t00002577",
+        "t00002586",
+        "t00002587",
+        "t00001537",
+        "t00002534",
+        "t00002589",
+        "t00002602",
+        "t00001555",
+        "t00002590",
+        "t00002603"
+      ],
+      "evidence_output_tensor_ids": [
+        "t00002585",
+        "t00002587",
+        "t00002589",
+        "t00002590",
+        "t00002603",
+        "t00002604"
+      ],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00002587",
+          "consumer_event_op_index": 61,
+          "consumer_op_name": "linear.default"
+        },
+        {
+          "tensor_id": "t00002589",
+          "consumer_event_op_index": 62,
+          "consumer_op_name": "add.Tensor"
+        },
+        {
+          "tensor_id": "t00002590",
+          "consumer_event_op_index": 76,
+          "consumer_op_name": "add.Tensor"
+        },
+        {
+          "tensor_id": "t00002603",
+          "consumer_event_op_index": 76,
+          "consumer_op_name": "add.Tensor"
+        }
+      ]
+    },
+    "mlp": {
+      "input_tensor_ids": [
+        "t00002583",
+        "t00002587",
+        "t00001537",
+        "t00002534",
+        "t00001547",
+        "t00001549",
+        "t00001552"
+      ],
+      "output_tensor_ids": [
+        "t00002584",
+        "t00002600",
+        "t00002601"
+      ],
+      "internal_tensor_ids": [
+        "t00002589",
+        "t00002590",
+        "t00002591",
+        "t00002592",
+        "t00002593",
+        "t00002594",
+        "t00002595",
+        "t00002596",
+        "t00002597",
+        "t00002598",
+        "t00002599"
+      ],
+      "evidence_input_tensor_ids": [
+        "t00002583",
+        "t00002587",
+        "t00001537",
+        "t00002534",
+        "t00002589",
+        "t00002590",
+        "t00002591",
+        "t00002592",
+        "t00002593",
+        "t00002594",
+        "t00002595",
+        "t00002596",
+        "t00001547",
+        "t00002597",
+        "t00002598",
+        "t00001549",
+        "t00002599",
+        "t00001552"
+      ],
+      "evidence_output_tensor_ids": [
+        "t00002584",
+        "t00002589",
+        "t00002590",
+        "t00002591",
+        "t00002592",
+        "t00002593",
+        "t00002594",
+        "t00002595",
+        "t00002596",
+        "t00002597",
+        "t00002598",
+        "t00002599",
+        "t00002600",
+        "t00002601"
+      ],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00002589",
+          "consumer_event_op_index": 62,
+          "consumer_op_name": "add.Tensor"
+        },
+        {
+          "tensor_id": "t00002590",
+          "consumer_event_op_index": 63,
+          "consumer_op_name": "to.dtype"
+        },
+        {
+          "tensor_id": "t00002591",
+          "consumer_event_op_index": 64,
+          "consumer_op_name": "pow.Tensor_Scalar"
+        },
+        {
+          "tensor_id": "t00002592",
+          "consumer_event_op_index": 65,
+          "consumer_op_name": "mean.dim"
+        },
+        {
+          "tensor_id": "t00002593",
+          "consumer_event_op_index": 66,
+          "consumer_op_name": "add.Tensor"
+        },
+        {
+          "tensor_id": "t00002594",
+          "consumer_event_op_index": 67,
+          "consumer_op_name": "rsqrt.default"
+        },
+        {
+          "tensor_id": "t00002591",
+          "consumer_event_op_index": 68,
+          "consumer_op_name": "mul.Tensor"
+        },
+        {
+          "tensor_id": "t00002595",
+          "consumer_event_op_index": 68,
+          "consumer_op_name": "mul.Tensor"
+        },
+        {
+          "tensor_id": "t00002596",
+          "consumer_event_op_index": 69,
+          "consumer_op_name": "to.dtype"
+        },
+        {
+          "tensor_id": "t00002597",
+          "consumer_event_op_index": 70,
+          "consumer_op_name": "mul.Tensor"
+        },
+        {
+          "tensor_id": "t00002598",
+          "consumer_event_op_index": 71,
+          "consumer_op_name": "linear.default"
+        },
+        {
+          "tensor_id": "t00002599",
+          "consumer_event_op_index": 72,
+          "consumer_op_name": "silu.default"
+        },
+        {
+          "tensor_id": "t00002598",
+          "consumer_event_op_index": 73,
+          "consumer_op_name": "linear.default"
+        }
+      ]
+    }
+  },
   "entries": [
     {
       "onnx_path": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/onnx/01_input_rmsnorm.onnx",
       "onnx_file": "01_input_rmsnorm.onnx",
       "stage": "input_rmsnorm",
       "stage_title": "Input RMSNorm",
-      "code_review_markdown": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/dispatch_review/onnx_code/01_input_rmsnorm_code.md",
+      "code_review_markdown": "workload_analysis/dispatch/visualize/input2_layer19/dispatch_review/onnx_code/01_input_rmsnorm_code.md",
       "export_wrapper": {
-        "file": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/torch_flow/export_stage_onnx.py",
+        "file": "workload_analysis/dispatch/visualize/input2_layer19/torch_flow/export_stage_onnx.py",
         "class": "InputRMSNormStage"
       },
       "primary_code_files": [
-        "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/torch_flow/rmsnorm.py"
+        "workload_analysis/dispatch/visualize/input2_layer19/torch_flow/rmsnorm.py"
       ],
       "support_code_files": [
-        "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/torch_flow/config.py",
-        "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/torch_flow/init_data.py",
-        "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/torch_flow/export_stage_onnx.py"
+        "workload_analysis/dispatch/visualize/input2_layer19/torch_flow/config.py",
+        "workload_analysis/dispatch/visualize/input2_layer19/torch_flow/init_data.py",
+        "workload_analysis/dispatch/visualize/input2_layer19/torch_flow/export_stage_onnx.py"
       ],
       "inputs": {
         "hidden_states": [
@@ -47,6 +644,55 @@
           1
         ]
       },
+      "dispatch_input_tensor_ids": [
+        "t00002534",
+        "t00001461"
+      ],
+      "dispatch_output_tensor_ids": [
+        "t00002542"
+      ],
+      "dispatch_tensor_dependencies": [
+        {
+          "tensor_id": "t00002535",
+          "consumer_event_op_index": 2,
+          "consumer_op_name": "pow.Tensor_Scalar"
+        },
+        {
+          "tensor_id": "t00002536",
+          "consumer_event_op_index": 3,
+          "consumer_op_name": "mean.dim"
+        },
+        {
+          "tensor_id": "t00002537",
+          "consumer_event_op_index": 4,
+          "consumer_op_name": "add.Tensor"
+        },
+        {
+          "tensor_id": "t00002538",
+          "consumer_event_op_index": 5,
+          "consumer_op_name": "rsqrt.default"
+        },
+        {
+          "tensor_id": "t00002535",
+          "consumer_event_op_index": 6,
+          "consumer_op_name": "mul.Tensor"
+        },
+        {
+          "tensor_id": "t00002539",
+          "consumer_event_op_index": 6,
+          "consumer_op_name": "mul.Tensor"
+        },
+        {
+          "tensor_id": "t00002540",
+          "consumer_event_op_index": 7,
+          "consumer_op_name": "to.dtype"
+        },
+        {
+          "tensor_id": "t00002541",
+          "consumer_event_op_index": 8,
+          "consumer_op_name": "mul.Tensor"
+        }
+      ],
       "nodes": 10,
       "initializers": 1,
       "explanation": "Normalizes the incoming hidden states with RMSNorm and exposes variance/inverse-RMS tensors for inspection.",
@@ -58,18 +704,18 @@
       "onnx_file": "02_qkv_projection.onnx",
       "stage": "qkv_projection",
       "stage_title": "Q/K/V Projection",
-      "code_review_markdown": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/dispatch_review/onnx_code/02_qkv_projection_code.md",
+      "code_review_markdown": "workload_analysis/dispatch/visualize/input2_layer19/dispatch_review/onnx_code/02_qkv_projection_code.md",
       "export_wrapper": {
-        "file": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/torch_flow/export_stage_onnx.py",
+        "file": "workload_analysis/dispatch/visualize/input2_layer19/torch_flow/export_stage_onnx.py",
         "class": "QKVProjectionStage"
       },
       "primary_code_files": [
-        "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/torch_flow/qkv_projection.py"
+        "workload_analysis/dispatch/visualize/input2_layer19/torch_flow/qkv_projection.py"
       ],
       "support_code_files": [
-        "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/torch_flow/config.py",
-        "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/torch_flow/init_data.py",
-        "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/torch_flow/export_stage_onnx.py"
+        "workload_analysis/dispatch/visualize/input2_layer19/torch_flow/config.py",
+        "workload_analysis/dispatch/visualize/input2_layer19/torch_flow/init_data.py",
+        "workload_analysis/dispatch/visualize/input2_layer19/torch_flow/export_stage_onnx.py"
       ],
       "inputs": {
         "x_norm": [
@@ -94,6 +740,49 @@
           8
         ]
       },
+      "dispatch_input_tensor_ids": [
+        "t00002542",
+        "t00001463",
+        "t00001465",
+        "t00001467"
+      ],
+      "dispatch_output_tensor_ids": [
+        "t00002547",
+        "t00002549",
+        "t00002551"
+      ],
+      "dispatch_tensor_dependencies": [
+        {
+          "tensor_id": "t00002543",
+          "consumer_event_op_index": 12,
+          "consumer_op_name": "view.default"
+        },
+        {
+          "tensor_id": "t00002546",
+          "consumer_event_op_index": 13,
+          "consumer_op_name": "transpose.int"
+        },
+        {
+          "tensor_id": "t00002544",
+          "consumer_event_op_index": 14,
+          "consumer_op_name": "view.default"
+        },
+        {
+          "tensor_id": "t00002548",
+          "consumer_event_op_index": 15,
+          "consumer_op_name": "transpose.int"
+        },
+        {
+          "tensor_id": "t00002545",
+          "consumer_event_op_index": 16,
+          "consumer_op_name": "view.default"
+        },
+        {
+          "tensor_id": "t00002550",
+          "consumer_event_op_index": 17,
+          "consumer_op_name": "transpose.int"
+        }
+      ],
       "nodes": 29,
       "initializers": 3,
       "explanation": "Applies the query/key/value linear projections and reshapes the projected hidden states into attention heads.",
@@ -105,18 +794,18 @@
       "onnx_file": "03_rope.onnx",
       "stage": "rope",
       "stage_title": "RoPE",
-      "code_review_markdown": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/dispatch_review/onnx_code/03_rope_code.md",
+      "code_review_markdown": "workload_analysis/dispatch/visualize/input2_layer19/dispatch_review/onnx_code/03_rope_code.md",
       "export_wrapper": {
-        "file": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/torch_flow/export_stage_onnx.py",
+        "file": "workload_analysis/dispatch/visualize/input2_layer19/torch_flow/export_stage_onnx.py",
         "class": "RoPEStage"
       },
       "primary_code_files": [
-        "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/torch_flow/rope.py"
+        "workload_analysis/dispatch/visualize/input2_layer19/torch_flow/rope.py"
       ],
       "support_code_files": [
-        "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/torch_flow/config.py",
-        "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/torch_flow/init_data.py",
-        "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/torch_flow/export_stage_onnx.py"
+        "workload_analysis/dispatch/visualize/input2_layer19/torch_flow/config.py",
+        "workload_analysis/dispatch/visualize/input2_layer19/torch_flow/init_data.py",
+        "workload_analysis/dispatch/visualize/input2_layer19/torch_flow/export_stage_onnx.py"
       ],
       "inputs": {
         "q_heads": [
@@ -145,6 +834,79 @@
           8
         ]
       },
+      "dispatch_input_tensor_ids": [
+        "t00002553",
+        "t00001480",
+        "t00001482",
+        "t00002481",
+        "t00002547"
+      ],
+      "dispatch_output_tensor_ids": [
+        "t00002554",
+        "t00002568"
+      ],
+      "dispatch_tensor_dependencies": [
+        {
+          "tensor_id": "t00002556",
+          "consumer_event_op_index": 29,
+          "consumer_op_name": "index.Tensor"
+        },
+        {
+          "tensor_id": "t00002558",
+          "consumer_event_op_index": 30,
+          "consumer_op_name": "unsqueeze.default"
+        },
+        {
+          "tensor_id": "t00002557",
+          "consumer_event_op_index": 31,
+          "consumer_op_name": "index.Tensor"
+        },
+        {
+          "tensor_id": "t00002560",
+          "consumer_event_op_index": 32,
+          "consumer_op_name": "unsqueeze.default"
+        },
+        {
+          "tensor_id": "t00002559",
+          "consumer_event_op_index": 33,
+          "consumer_op_name": "mul.Tensor"
+        },
+        {
+          "tensor_id": "t00002564",
+          "consumer_event_op_index": 36,
+          "consumer_op_name": "neg.default"
+        },
+        {
+          "tensor_id": "t00002565",
+          "consumer_event_op_index": 37,
+          "consumer_op_name": "cat.default"
+        },
+        {
+          "tensor_id": "t00002563",
+          "consumer_event_op_index": 37,
+          "consumer_op_name": "cat.default"
+        },
+        {
+          "tensor_id": "t00002566",
+          "consumer_event_op_index": 38,
+          "consumer_op_name": "mul.Tensor"
+        },
+        {
+          "tensor_id": "t00002561",
+          "consumer_event_op_index": 38,
+          "consumer_op_name": "mul.Tensor"
+        },
+        {
+          "tensor_id": "t00002562",
+          "consumer_event_op_index": 39,
+          "consumer_op_name": "add.Tensor"
+        },
+        {
+          "tensor_id": "t00002567",
+          "consumer_event_op_index": 39,
+          "consumer_op_name": "add.Tensor"
+        }
+      ],
       "nodes": 41,
       "initializers": 2,
       "explanation": "Gathers rotary-position cos/sin values and applies rotate-half RoPE to query and key heads.",
@@ -156,18 +918,18 @@
       "onnx_file": "04_kv_cache_concat.onnx",
       "stage": "kv_cache_concat",
       "stage_title": "K/V Cache Concatenation",
-      "code_review_markdown": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/dispatch_review/onnx_code/04_kv_cache_concat_code.md",
+      "code_review_markdown": "workload_analysis/dispatch/visualize/input2_layer19/dispatch_review/onnx_code/04_kv_cache_concat_code.md",
       "export_wrapper": {
-        "file": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/torch_flow/export_stage_onnx.py",
+        "file": "workload_analysis/dispatch/visualize/input2_layer19/torch_flow/export_stage_onnx.py",
         "class": "KVCacheConcatStage"
       },
       "primary_code_files": [
-        "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/torch_flow/kv_cache.py"
+        "workload_analysis/dispatch/visualize/input2_layer19/torch_flow/kv_cache.py"
       ],
       "support_code_files": [
-        "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/torch_flow/config.py",
-        "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/torch_flow/init_data.py",
-        "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/torch_flow/export_stage_onnx.py"
+        "workload_analysis/dispatch/visualize/input2_layer19/torch_flow/config.py",
+        "workload_analysis/dispatch/visualize/input2_layer19/torch_flow/init_data.py",
+        "workload_analysis/dispatch/visualize/input2_layer19/torch_flow/export_stage_onnx.py"
       ],
       "inputs": {
         "k_current_rope": [
@@ -203,6 +965,17 @@
           8
         ]
       },
+      "dispatch_input_tensor_ids": [
+        "t00001501",
+        "t00002575",
+        "t00001474",
+        "t00002551"
+      ],
+      "dispatch_output_tensor_ids": [
+        "t00002576",
+        "t00002577"
+      ],
+      "dispatch_tensor_dependencies": [],
       "nodes": 2,
       "initializers": 0,
       "explanation": "Concatenates past decode K/V cache with the current token's K/V heads before rectangular attention.",
@@ -214,18 +987,18 @@
       "onnx_file": "05_attention.onnx",
       "stage": "attention",
       "stage_title": "Scaled Dot-Product Attention",
-      "code_review_markdown": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/dispatch_review/onnx_code/05_attention_code.md",
+      "code_review_markdown": "workload_analysis/dispatch/visualize/input2_layer19/dispatch_review/onnx_code/05_attention_code.md",
       "export_wrapper": {
-        "file": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/torch_flow/export_stage_onnx.py",
+        "file": "workload_analysis/dispatch/visualize/input2_layer19/torch_flow/export_stage_onnx.py",
         "class": "AttentionStage"
       },
       "primary_code_files": [
-        "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/torch_flow/attention.py"
+        "workload_analysis/dispatch/visualize/input2_layer19/torch_flow/attention.py"
       ],
       "support_code_files": [
-        "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/torch_flow/config.py",
-        "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/torch_flow/init_data.py",
-        "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/torch_flow/export_stage_onnx.py"
+        "workload_analysis/dispatch/visualize/input2_layer19/torch_flow/config.py",
+        "workload_analysis/dispatch/visualize/input2_layer19/torch_flow/init_data.py",
+        "workload_analysis/dispatch/visualize/input2_layer19/torch_flow/export_stage_onnx.py"
       ],
       "inputs": {
         "q_rope": [
@@ -261,6 +1034,58 @@
           16
         ]
       },
+      "dispatch_input_tensor_ids": [
+        "t00002546",
+        "t00002548",
+        "t00002550",
+        "t00002562",
+        "t00002567",
+        "t00002569",
+        "t00002574",
+        "t00002576",
+        "t00002581",
+        "t00002577"
+      ],
+      "dispatch_output_tensor_ids": [
+        "t00002547",
+        "t00002549",
+        "t00002551",
+        "t00002575",
+        "t00002583",
+        "t00002585"
+      ],
+      "dispatch_tensor_dependencies": [
+        {
+          "tensor_id": "t00002568",
+          "consumer_event_op_index": 50,
+          "consumer_op_name": "matmul.default"
+        },
+        {
+          "tensor_id": "t00002578",
+          "consumer_event_op_index": 50,
+          "consumer_op_name": "matmul.default"
+        },
+        {
+          "tensor_id": "t00002579",
+          "consumer_event_op_index": 51,
+          "consumer_op_name": "div.Tensor"
+        },
+        {
+          "tensor_id": "t00002580",
+          "consumer_event_op_index": 52,
+          "consumer_op_name": "add.Tensor"
+        },
+        {
+          "tensor_id": "t00002582",
+          "consumer_event_op_index": 53,
+          "consumer_op_name": "softmax.int"
+        },
+        {
+          "tensor_id": "t00002584",
+          "consumer_event_op_index": 56,
+          "consumer_op_name": "matmul.default"
+        }
+      ],
       "nodes": 6,
       "initializers": 0,
       "explanation": "Computes rectangular or square attention scores, applies the mask, and materializes softmax attention probabilities.",
@@ -272,18 +1097,18 @@
       "onnx_file": "06_attention_output.onnx",
       "stage": "attention_output",
       "stage_title": "Attention Output",
-      "code_review_markdown": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/dispatch_review/onnx_code/06_attention_output_code.md",
+      "code_review_markdown": "workload_analysis/dispatch/visualize/input2_layer19/dispatch_review/onnx_code/06_attention_output_code.md",
       "export_wrapper": {
-        "file": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/torch_flow/export_stage_onnx.py",
+        "file": "workload_analysis/dispatch/visualize/input2_layer19/torch_flow/export_stage_onnx.py",
         "class": "AttentionOutputStage"
       },
       "primary_code_files": [
-        "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/torch_flow/attention_output.py"
+        "workload_analysis/dispatch/visualize/input2_layer19/torch_flow/attention_output.py"
       ],
       "support_code_files": [
-        "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/torch_flow/config.py",
-        "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/torch_flow/init_data.py",
-        "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/torch_flow/export_stage_onnx.py"
+        "workload_analysis/dispatch/visualize/input2_layer19/torch_flow/config.py",
+        "workload_analysis/dispatch/visualize/input2_layer19/torch_flow/init_data.py",
+        "workload_analysis/dispatch/visualize/input2_layer19/torch_flow/export_stage_onnx.py"
       ],
       "inputs": {
         "adjusted_attn": [
@@ -315,6 +1140,41 @@
           32
         ]
       },
+      "dispatch_input_tensor_ids": [
+        "t00002584",
+        "t00002577",
+        "t00002586",
+        "t00001537",
+        "t00002534",
+        "t00002602",
+        "t00001555"
+      ],
+      "dispatch_output_tensor_ids": [
+        "t00002585",
+        "t00002604"
+      ],
+      "dispatch_tensor_dependencies": [
+        {
+          "tensor_id": "t00002587",
+          "consumer_event_op_index": 61,
+          "consumer_op_name": "linear.default"
+        },
+        {
+          "tensor_id": "t00002589",
+          "consumer_event_op_index": 62,
+          "consumer_op_name": "add.Tensor"
+        },
+        {
+          "tensor_id": "t00002590",
+          "consumer_event_op_index": 76,
+          "consumer_op_name": "add.Tensor"
+        },
+        {
+          "tensor_id": "t00002603",
+          "consumer_event_op_index": 76,
+          "consumer_op_name": "add.Tensor"
+        }
+      ],
       "nodes": 11,
       "initializers": 1,
       "explanation": "Multiplies attention probabilities by value heads, merges heads back to hidden size, applies output projection, and adds the residual.",
@@ -326,19 +1186,19 @@
       "onnx_file": "07_mlp.onnx",
       "stage": "mlp",
       "stage_title": "MLP",
-      "code_review_markdown": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/dispatch_review/onnx_code/07_mlp_code.md",
+      "code_review_markdown": "workload_analysis/dispatch/visualize/input2_layer19/dispatch_review/onnx_code/07_mlp_code.md",
       "export_wrapper": {
-        "file": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/torch_flow/export_stage_onnx.py",
+        "file": "workload_analysis/dispatch/visualize/input2_layer19/torch_flow/export_stage_onnx.py",
         "class": "MLPStage"
       },
       "primary_code_files": [
-        "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/torch_flow/mlp.py",
-        "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/torch_flow/rmsnorm.py"
+        "workload_analysis/dispatch/visualize/input2_layer19/torch_flow/mlp.py",
+        "workload_analysis/dispatch/visualize/input2_layer19/torch_flow/rmsnorm.py"
       ],
       "support_code_files": [
-        "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/torch_flow/config.py",
-        "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/torch_flow/init_data.py",
-        "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/torch_flow/export_stage_onnx.py"
+        "workload_analysis/dispatch/visualize/input2_layer19/torch_flow/config.py",
+        "workload_analysis/dispatch/visualize/input2_layer19/torch_flow/init_data.py",
+        "workload_analysis/dispatch/visualize/input2_layer19/torch_flow/export_stage_onnx.py"
       ],
       "inputs": {
         "after_attn": [
@@ -360,6 +1220,87 @@
           32
         ]
       },
+      "dispatch_input_tensor_ids": [
+        "t00002583",
+        "t00002587",
+        "t00001537",
+        "t00002534",
+        "t00001547",
+        "t00001549",
+        "t00001552"
+      ],
+      "dispatch_output_tensor_ids": [
+        "t00002584",
+        "t00002600",
+        "t00002601"
+      ],
+      "dispatch_tensor_dependencies": [
+        {
+          "tensor_id": "t00002589",
+          "consumer_event_op_index": 62,
+          "consumer_op_name": "add.Tensor"
+        },
+        {
+          "tensor_id": "t00002590",
+          "consumer_event_op_index": 63,
+          "consumer_op_name": "to.dtype"
+        },
+        {
+          "tensor_id": "t00002591",
+          "consumer_event_op_index": 64,
+          "consumer_op_name": "pow.Tensor_Scalar"
+        },
+        {
+          "tensor_id": "t00002592",
+          "consumer_event_op_index": 65,
+          "consumer_op_name": "mean.dim"
+        },
+        {
+          "tensor_id": "t00002593",
+          "consumer_event_op_index": 66,
+          "consumer_op_name": "add.Tensor"
+        },
+        {
+          "tensor_id": "t00002594",
+          "consumer_event_op_index": 67,
+          "consumer_op_name": "rsqrt.default"
+        },
+        {
+          "tensor_id": "t00002591",
+          "consumer_event_op_index": 68,
+          "consumer_op_name": "mul.Tensor"
+        },
+        {
+          "tensor_id": "t00002595",
+          "consumer_event_op_index": 68,
+          "consumer_op_name": "mul.Tensor"
+        },
+        {
+          "tensor_id": "t00002596",
+          "consumer_event_op_index": 69,
+          "consumer_op_name": "to.dtype"
+        },
+        {
+          "tensor_id": "t00002597",
+          "consumer_event_op_index": 70,
+          "consumer_op_name": "mul.Tensor"
+        },
+        {
+          "tensor_id": "t00002598",
+          "consumer_event_op_index": 71,
+          "consumer_op_name": "linear.default"
+        },
+        {
+          "tensor_id": "t00002599",
+          "consumer_event_op_index": 72,
+          "consumer_op_name": "silu.default"
+        },
+        {
+          "tensor_id": "t00002598",
+          "consumer_event_op_index": 73,
+          "consumer_op_name": "linear.default"
+        }
+      ],
       "nodes": 20,
       "initializers": 4,
       "explanation": "Runs post-attention RMSNorm, gated SiLU MLP, down projection, and residual addition.",
@@ -371,18 +1312,18 @@
       "onnx_file": "08_full_flow.onnx",
       "stage": "full_flow",
       "stage_title": "Full Layer Flow",
-      "code_review_markdown": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/dispatch_review/onnx_code/08_full_flow_code.md",
+      "code_review_markdown": "workload_analysis/dispatch/visualize/input2_layer19/dispatch_review/onnx_code/08_full_flow_code.md",
       "export_wrapper": {
-        "file": "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/torch_flow/export_stage_onnx.py",
+        "file": "workload_analysis/dispatch/visualize/input2_layer19/torch_flow/export_stage_onnx.py",
         "class": "DecodeFullFlowStage"
       },
       "primary_code_files": [
-        "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/torch_flow/run_full_flow.py"
+        "workload_analysis/dispatch/visualize/input2_layer19/torch_flow/run_full_flow.py"
       ],
       "support_code_files": [
-        "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/torch_flow/config.py",
-        "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/torch_flow/init_data.py",
-        "/workspace/VisiPrune/workload_analysis/dispatch/visualize/input2_layer19/torch_flow/export_stage_onnx.py"
+        "workload_analysis/dispatch/visualize/input2_layer19/torch_flow/config.py",
+        "workload_analysis/dispatch/visualize/input2_layer19/torch_flow/init_data.py",
+        "workload_analysis/dispatch/visualize/input2_layer19/torch_flow/export_stage_onnx.py"
       ],
       "inputs": {
         "hidden_states": [
@@ -414,6 +1355,9 @@
           32
         ]
       },
+      "dispatch_input_tensor_ids": [],
+      "dispatch_output_tensor_ids": [],
+      "dispatch_tensor_dependencies": [],
       "nodes": 119,
       "initializers": 10,
       "explanation": "Aggregates the split small-tensor stages into one end-to-end layer flow for whole-layer visualization.",

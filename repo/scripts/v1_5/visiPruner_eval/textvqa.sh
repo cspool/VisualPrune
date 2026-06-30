@@ -1,4 +1,5 @@
 #!/bin/bash
+VISIPRUNER_DECODE_BACKEND="${VISIPRUNER_DECODE_BACKEND:-auto}"
 
 python -m llava.eval.model_vqa_loader \
     --model-path liuhaotian/llava-v1.5-7b \
@@ -7,7 +8,8 @@ python -m llava.eval.model_vqa_loader \
     --answers-file ./playground/data/eval/textvqa/answers/llava-v1.5-7b.jsonl \
     --temperature 0 \
     --pruning-config '{"mode":["shallow","middle","deep"],"shallow_mid_layer":6,"layer_threshold":0.995,"tokens_threshold":0.2}' \
-    --conv-mode vicuna_v1 \
+    --visipruner-decode-backend "$VISIPRUNER_DECODE_BACKEND" \
+    --conv-mode vicuna_v1
 
 python -m llava.eval.eval_textvqa \
     --annotation-file ./playground/data/eval/textvqa/TextVQA_0.5.1_val.json \

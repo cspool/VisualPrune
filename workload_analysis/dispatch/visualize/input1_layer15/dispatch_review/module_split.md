@@ -1,0 +1,20 @@
+# input1_layer15 Runtime Module Split
+
+This split is derived directly from sampled `module_*` columns in this layer's dispatch rows.
+
+| First op | Last op | Ops | Op indices | Module | Type | Tensor ID inputs | Tensor ID outputs | Forward source | Top ATen ops |
+|---:|---:|---:|---|---|---|---|---|---|---|
+| 1 | 8 | 8 | `1,2,3,4,5,6,7,8` | `model.layers.15.input_layernorm` | `LlamaRMSNorm` | `t00001049, t00001057` | `t00001058` | `/workspace/VisiPrune/repo/llava/model/language_model/custom_modeling_llama.py:139` | `mul.Tensor` x2, `to.dtype` x2, `add.Tensor` x1, `mean.dim` x1, `pow.Tensor_Scalar` x1, `rsqrt.default` x1 |
+| 9 | 9 | 1 | `9` | `model.layers.15.self_attn.q_proj` | `Linear` | `t00001058, t00001059` | `t00001060` | `/opt/conda/envs/cu132/lib/python3.12/site-packages/torch/nn/modules/linear.py:130` | `linear.default` x1 |
+| 10 | 10 | 1 | `10` | `model.layers.15.self_attn.k_proj` | `Linear` | `t00001058, t00001061` | `t00001062` | `/opt/conda/envs/cu132/lib/python3.12/site-packages/torch/nn/modules/linear.py:130` | `linear.default` x1 |
+| 11 | 11 | 1 | `11` | `model.layers.15.self_attn.v_proj` | `Linear` | `t00001058, t00001063` | `t00001064` | `/opt/conda/envs/cu132/lib/python3.12/site-packages/torch/nn/modules/linear.py:130` | `linear.default` x1 |
+| 12 | 81 | 62 | `12,13,14,15,16,17,18,19,20,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81` | `model.layers.15.self_attn` | `VisiPrunerLlamaAttention` | `t00001060, t00001062, t00001064, t00000023, t00001076, t00001078, t00000053, t00000057` | `t00001073` | `/workspace/VisiPrune/repo/llava/model/language_model/custom_modeling_llama.py:614` | `select.int` x6, `add.Tensor` x5, `mul.Tensor` x5, `slice.Tensor` x5, `transpose.int` x5, `unsqueeze.default` x5 |
+| 21 | 28 | 8 | `21,22,23,24,25,26,27,28` | `model.layers.15.self_attn.rotary_emb` | `LlamaRotaryEmbedding` | `t00001073, t00001075, t00001077` | `` | `/workspace/VisiPrune/repo/llava/model/language_model/custom_modeling_llama.py:175` | `item.default` x2, `slice.Tensor` x2, `to.dtype` x2, `gt.Scalar` x1, `is_nonzero.default` x1 |
+| 82 | 82 | 1 | `82` | `model.layers.15.self_attn.o_proj` | `Linear` | `t00001106, t00001128` | `t00001129` | `/opt/conda/envs/cu132/lib/python3.12/site-packages/torch/nn/modules/linear.py:130` | `linear.default` x1 |
+| 83 | 97 | 2 | `83,97` | `model.layers.15` | `LlamaDecoderLayer` | `t00001049, t00001129, t00001147` | `t00001148` | `/workspace/VisiPrune/workload_analysis/dispatch/tools/visipruner_filtered_dispatch_profile.py:881` | `add.Tensor` x2 |
+| 84 | 91 | 8 | `84,85,86,87,88,89,90,91` | `model.layers.15.post_attention_layernorm` | `LlamaRMSNorm` | `t00001130, t00001138` | `t00001139` | `/workspace/VisiPrune/repo/llava/model/language_model/custom_modeling_llama.py:139` | `mul.Tensor` x2, `to.dtype` x2, `add.Tensor` x1, `mean.dim` x1, `pow.Tensor_Scalar` x1, `rsqrt.default` x1 |
+| 92 | 92 | 1 | `92` | `model.layers.15.mlp.gate_proj` | `Linear` | `t00001139, t00001140` | `t00001141` | `/opt/conda/envs/cu132/lib/python3.12/site-packages/torch/nn/modules/linear.py:130` | `linear.default` x1 |
+| 93 | 93 | 1 | `93` | `model.layers.15.mlp.act_fn` | `SiLU` | `t00001141` | `t00001142` | `/opt/conda/envs/cu132/lib/python3.12/site-packages/torch/nn/modules/activation.py:471` | `silu.default` x1 |
+| 94 | 94 | 1 | `94` | `model.layers.15.mlp.up_proj` | `Linear` | `t00001139, t00001143` | `t00001144` | `/opt/conda/envs/cu132/lib/python3.12/site-packages/torch/nn/modules/linear.py:130` | `linear.default` x1 |
+| 95 | 95 | 1 | `95` | `model.layers.15.mlp` | `LlamaMLP` | `t00001142, t00001144` | `t00001145` | `/workspace/VisiPrune/repo/llava/model/language_model/custom_modeling_llama.py:277` | `mul.Tensor` x1 |
+| 96 | 96 | 1 | `96` | `model.layers.15.mlp.down_proj` | `Linear` | `t00001145, t00001146` | `t00001147` | `/opt/conda/envs/cu132/lib/python3.12/site-packages/torch/nn/modules/linear.py:130` | `linear.default` x1 |

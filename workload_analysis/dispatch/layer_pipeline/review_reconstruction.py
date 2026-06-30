@@ -11,7 +11,7 @@ from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any
 
-from dispatch_io import iter_arg_tensors, output_tensor_shape, parse_json_field, read_dispatch_rows, tensor_shape
+from dispatch_io import iter_arg_tensors, output_tensor_shape, parse_json_field, read_dispatch_rows, tensor_ids_from_row, tensor_shape
 
 
 WORKLOAD_ROOT = Path(__file__).resolve().parents[2]
@@ -268,6 +268,8 @@ def _compact_row(row: dict[str, str]) -> dict[str, Any]:
         "event_op_index": int(row.get("event_op_index") or 0),
         "op_name": row.get("op_name"),
         "output": _output_evidence(row),
+        "input_tensor_ids": tensor_ids_from_row(row, "input_tensor_ids"),
+        "output_tensor_ids": tensor_ids_from_row(row, "output_tensor_ids"),
     }
 
 

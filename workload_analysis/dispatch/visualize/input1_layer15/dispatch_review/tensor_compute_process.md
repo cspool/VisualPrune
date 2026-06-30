@@ -50,6 +50,24 @@
 6. `attention_output`: Attention output: attention @ value, merge heads, output projection, residual add.
 7. `mlp`: MLP: post RMSNorm, SiLU gate, up projection, gated product, down projection, final residual.
 
+## Tensor ID Data Dependencies
+
+Data dependencies are derived from `input_tensor_ids` and `output_tensor_ids` in `dispatch_ops.csv`.
+
+- tensor-id producer-consumer edges: `107`
+- external input tensor ids: `['t00001049', 't00001057', 't00001059', 't00001061', 't00001063', 't00000023', 't00001075', 't00001077', 't00000053', 't00000057', 't00001119', 't00001128', 't00001138', 't00001140', 't00001143', 't00001146']`
+- final output tensor ids: `['t00001148']`
+
+## Dispatch Op Coverage
+
+Every dispatch op row must be listed in `dispatch_op_coverage.*` and covered by runtime module split plus tensor-id dataflow.
+
+- ops in dispatch rows: `97`
+- ops listed in coverage: `97`
+- missing event_op_index values: `[]`
+- missing from module_split: `[]`
+- missing from tensor_dataflow: `[]`
+
 ## Top Ops
 
 - `mul.Tensor`: 10

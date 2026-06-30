@@ -1,0 +1,15 @@
+column_1_based,column_name
+1,args
+3,event_id
+7,kv_len
+8,kwargs
+13,module_class
+24,op_schema
+25,outputs
+26,past_len
+27,phase
+29,q_len
+31,token_state
+32,visipruner_role
+35,input_tensor_ids
+36,output_tensor_ids

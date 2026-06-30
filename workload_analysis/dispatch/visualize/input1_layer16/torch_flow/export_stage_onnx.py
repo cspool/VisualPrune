@@ -17,7 +17,7 @@ sys.path.insert(0, str(THIS_DIR))
 
 from attention import scaled_dot_product_attention
 from attention_output import attention_output
-from config import CFG, EXPECTED_STAGES, FlowConfig
+from config import CFG, EXPECTED_STAGES, VISUAL_ADJUST_KIND, FlowConfig
 from init_data import build_inputs, build_rope_cache, build_weights
 from kv_cache import concat_kv_cache
 from mlp import gated_mlp
@@ -111,9 +111,11 @@ class VisualAdjustStage(nn.Module):
         super().__init__()
         self.cfg = cfg
 
-    def forward(self, attn: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+    def forward(self, attn: torch.Tensor) -> tuple[torch.Tensor, ...]:
         out = shallow_full_visual_attention_adjust(attn, self.cfg)
-        return out["adjusted_attn"], out["tail_visual_sum"], out["cleared_visual_region"]
+        if VISUAL_ADJUST_KIND == "fold_tail_visual_mass_and_clear_region":
+            return out["adjusted_attn"], out["tail_visual_sum"], out["cleared_visual_region"]
+        return out["adjusted_attn"], out["cleared_visual_region"]
 
 
 class VisiPrunerSimilarityCheckStage(nn.Module):
@@ -325,7 +327,9 @@ def _stage_specs(out_dir: Path, cfg: FlowConfig, opset: int) -> list[tuple[str, 
             VisualAdjustStage(cfg),
             (tensors["attn"],),
             ["attn"],
-            ["adjusted_attn", "tail_visual_sum", "cleared_visual_region"],
+            ["adjusted_attn", "tail_visual_sum", "cleared_visual_region"]
+            if VISUAL_ADJUST_KIND == "fold_tail_visual_mass_and_clear_region"
+            else ["adjusted_attn", "cleared_visual_region"],
         ),
         "visipruner_similarity_check": (
             VisiPrunerSimilarityCheckStage(),

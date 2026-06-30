@@ -355,42 +355,92 @@
         {
           "event_op_index": 1,
           "op_name": "to.dtype",
-          "output": "shape=[1, 1, 4096], dtype=float32"
+          "output": "shape=[1, 1, 4096], dtype=float32",
+          "input_tensor_ids": [
+            "t00002534"
+          ],
+          "output_tensor_ids": [
+            "t00002535"
+          ]
         },
         {
           "event_op_index": 2,
           "op_name": "pow.Tensor_Scalar",
-          "output": "shape=[1, 1, 4096], dtype=float32"
+          "output": "shape=[1, 1, 4096], dtype=float32",
+          "input_tensor_ids": [
+            "t00002535"
+          ],
+          "output_tensor_ids": [
+            "t00002536"
+          ]
         },
         {
           "event_op_index": 3,
           "op_name": "mean.dim",
-          "output": "shape=[1, 1, 1], dtype=float32"
+          "output": "shape=[1, 1, 1], dtype=float32",
+          "input_tensor_ids": [
+            "t00002536"
+          ],
+          "output_tensor_ids": [
+            "t00002537"
+          ]
         },
         {
           "event_op_index": 4,
           "op_name": "add.Tensor",
-          "output": "shape=[1, 1, 1], dtype=float32"
+          "output": "shape=[1, 1, 1], dtype=float32",
+          "input_tensor_ids": [
+            "t00002537"
+          ],
+          "output_tensor_ids": [
+            "t00002538"
+          ]
         },
         {
           "event_op_index": 5,
           "op_name": "rsqrt.default",
-          "output": "shape=[1, 1, 1], dtype=float32"
+          "output": "shape=[1, 1, 1], dtype=float32",
+          "input_tensor_ids": [
+            "t00002538"
+          ],
+          "output_tensor_ids": [
+            "t00002539"
+          ]
         },
         {
           "event_op_index": 6,
           "op_name": "mul.Tensor",
-          "output": "shape=[1, 1, 4096], dtype=float32"
+          "output": "shape=[1, 1, 4096], dtype=float32",
+          "input_tensor_ids": [
+            "t00002535",
+            "t00002539"
+          ],
+          "output_tensor_ids": [
+            "t00002540"
+          ]
         },
         {
           "event_op_index": 7,
           "op_name": "to.dtype",
-          "output": "shape=[1, 1, 4096], dtype=float16"
+          "output": "shape=[1, 1, 4096], dtype=float16",
+          "input_tensor_ids": [
+            "t00002540"
+          ],
+          "output_tensor_ids": [
+            "t00002541"
+          ]
         },
         {
           "event_op_index": 8,
           "op_name": "mul.Tensor",
-          "output": "shape=[1, 1, 4096], dtype=float16"
+          "output": "shape=[1, 1, 4096], dtype=float16",
+          "input_tensor_ids": [
+            "t00001461",
+            "t00002541"
+          ],
+          "output_tensor_ids": [
+            "t00002542"
+          ]
         }
       ],
       "dispatch_supported": true
@@ -402,47 +452,104 @@
         {
           "event_op_index": 9,
           "op_name": "linear.default",
-          "output": "shape=[1, 1, 4096], dtype=float16"
+          "output": "shape=[1, 1, 4096], dtype=float16",
+          "input_tensor_ids": [
+            "t00002542",
+            "t00001463"
+          ],
+          "output_tensor_ids": [
+            "t00002543"
+          ]
         },
         {
           "event_op_index": 10,
           "op_name": "linear.default",
-          "output": "shape=[1, 1, 4096], dtype=float16"
+          "output": "shape=[1, 1, 4096], dtype=float16",
+          "input_tensor_ids": [
+            "t00002542",
+            "t00001465"
+          ],
+          "output_tensor_ids": [
+            "t00002544"
+          ]
         },
         {
           "event_op_index": 11,
           "op_name": "linear.default",
-          "output": "shape=[1, 1, 4096], dtype=float16"
+          "output": "shape=[1, 1, 4096], dtype=float16",
+          "input_tensor_ids": [
+            "t00002542",
+            "t00001467"
+          ],
+          "output_tensor_ids": [
+            "t00002545"
+          ]
         },
         {
           "event_op_index": 12,
           "op_name": "view.default",
-          "output": "shape=[1, 1, 32, 128], dtype=float16"
+          "output": "shape=[1, 1, 32, 128], dtype=float16",
+          "input_tensor_ids": [
+            "t00002543"
+          ],
+          "output_tensor_ids": [
+            "t00002546"
+          ]
         },
         {
           "event_op_index": 13,
           "op_name": "transpose.int",
-          "output": "shape=[1, 32, 1, 128], dtype=float16"
+          "output": "shape=[1, 32, 1, 128], dtype=float16",
+          "input_tensor_ids": [
+            "t00002546"
+          ],
+          "output_tensor_ids": [
+            "t00002547"
+          ]
         },
         {
           "event_op_index": 14,
           "op_name": "view.default",
-          "output": "shape=[1, 1, 32, 128], dtype=float16"
+          "output": "shape=[1, 1, 32, 128], dtype=float16",
+          "input_tensor_ids": [
+            "t00002544"
+          ],
+          "output_tensor_ids": [
+            "t00002548"
+          ]
         },
         {
           "event_op_index": 15,
           "op_name": "transpose.int",
-          "output": "shape=[1, 32, 1, 128], dtype=float16"
+          "output": "shape=[1, 32, 1, 128], dtype=float16",
+          "input_tensor_ids": [
+            "t00002548"
+          ],
+          "output_tensor_ids": [
+            "t00002549"
+          ]
         },
         {
           "event_op_index": 16,
           "op_name": "view.default",
-          "output": "shape=[1, 1, 32, 128], dtype=float16"
+          "output": "shape=[1, 1, 32, 128], dtype=float16",
+          "input_tensor_ids": [
+            "t00002545"
+          ],
+          "output_tensor_ids": [
+            "t00002550"
+          ]
         },
         {
           "event_op_index": 17,
           "op_name": "transpose.int",
-          "output": "shape=[1, 32, 1, 128], dtype=float16"
+          "output": "shape=[1, 32, 1, 128], dtype=float16",
+          "input_tensor_ids": [
+            "t00002550"
+          ],
+          "output_tensor_ids": [
+            "t00002551"
+          ]
         }
       ],
       "dispatch_supported": true
@@ -454,72 +561,162 @@
         {
           "event_op_index": 20,
           "op_name": "add.Tensor",
-          "output": "shape=[], dtype=int64"
+          "output": "shape=[], dtype=int64",
+          "input_tensor_ids": [
+            "t00002553"
+          ],
+          "output_tensor_ids": [
+            "t00002554"
+          ]
         },
         {
           "event_op_index": 24,
           "op_name": "slice.Tensor",
-          "output": "shape=[625, 128], dtype=float16"
+          "output": "shape=[625, 128], dtype=float16",
+          "input_tensor_ids": [
+            "t00001480"
+          ],
+          "output_tensor_ids": [
+            "t00002556"
+          ]
         },
         {
           "event_op_index": 27,
           "op_name": "slice.Tensor",
-          "output": "shape=[625, 128], dtype=float16"
+          "output": "shape=[625, 128], dtype=float16",
+          "input_tensor_ids": [
+            "t00001482"
+          ],
+          "output_tensor_ids": [
+            "t00002557"
+          ]
         },
         {
           "event_op_index": 29,
           "op_name": "index.Tensor",
-          "output": "shape=[1, 1, 128], dtype=float16"
+          "output": "shape=[1, 1, 128], dtype=float16",
+          "input_tensor_ids": [
+            "t00002556",
+            "t00002481"
+          ],
+          "output_tensor_ids": [
+            "t00002558"
+          ]
         },
         {
           "event_op_index": 30,
           "op_name": "unsqueeze.default",
-          "output": "shape=[1, 1, 1, 128], dtype=float16"
+          "output": "shape=[1, 1, 1, 128], dtype=float16",
+          "input_tensor_ids": [
+            "t00002558"
+          ],
+          "output_tensor_ids": [
+            "t00002559"
+          ]
         },
         {
           "event_op_index": 31,
           "op_name": "index.Tensor",
-          "output": "shape=[1, 1, 128], dtype=float16"
+          "output": "shape=[1, 1, 128], dtype=float16",
+          "input_tensor_ids": [
+            "t00002557",
+            "t00002481"
+          ],
+          "output_tensor_ids": [
+            "t00002560"
+          ]
         },
         {
           "event_op_index": 32,
           "op_name": "unsqueeze.default",
-          "output": "shape=[1, 1, 1, 128], dtype=float16"
+          "output": "shape=[1, 1, 1, 128], dtype=float16",
+          "input_tensor_ids": [
+            "t00002560"
+          ],
+          "output_tensor_ids": [
+            "t00002561"
+          ]
         },
         {
           "event_op_index": 33,
           "op_name": "mul.Tensor",
-          "output": "shape=[1, 32, 1, 128], dtype=float16"
+          "output": "shape=[1, 32, 1, 128], dtype=float16",
+          "input_tensor_ids": [
+            "t00002547",
+            "t00002559"
+          ],
+          "output_tensor_ids": [
+            "t00002562"
+          ]
         },
         {
           "event_op_index": 34,
           "op_name": "slice.Tensor",
-          "output": "shape=[1, 32, 1, 64], dtype=float16"
+          "output": "shape=[1, 32, 1, 64], dtype=float16",
+          "input_tensor_ids": [
+            "t00002547"
+          ],
+          "output_tensor_ids": [
+            "t00002563"
+          ]
         },
         {
           "event_op_index": 35,
           "op_name": "slice.Tensor",
-          "output": "shape=[1, 32, 1, 64], dtype=float16"
+          "output": "shape=[1, 32, 1, 64], dtype=float16",
+          "input_tensor_ids": [
+            "t00002547"
+          ],
+          "output_tensor_ids": [
+            "t00002564"
+          ]
         },
         {
           "event_op_index": 36,
           "op_name": "neg.default",
-          "output": "shape=[1, 32, 1, 64], dtype=float16"
+          "output": "shape=[1, 32, 1, 64], dtype=float16",
+          "input_tensor_ids": [
+            "t00002564"
+          ],
+          "output_tensor_ids": [
+            "t00002565"
+          ]
         },
         {
           "event_op_index": 37,
           "op_name": "cat.default",
-          "output": "shape=[1, 32, 1, 128], dtype=float16"
+          "output": "shape=[1, 32, 1, 128], dtype=float16",
+          "input_tensor_ids": [
+            "t00002565",
+            "t00002563"
+          ],
+          "output_tensor_ids": [
+            "t00002566"
+          ]
         },
         {
           "event_op_index": 38,
           "op_name": "mul.Tensor",
-          "output": "shape=[1, 32, 1, 128], dtype=float16"
+          "output": "shape=[1, 32, 1, 128], dtype=float16",
+          "input_tensor_ids": [
+            "t00002566",
+            "t00002561"
+          ],
+          "output_tensor_ids": [
+            "t00002567"
+          ]
         },
         {
           "event_op_index": 39,
           "op_name": "add.Tensor",
-          "output": "shape=[1, 32, 1, 128], dtype=float16"
+          "output": "shape=[1, 32, 1, 128], dtype=float16",
+          "input_tensor_ids": [
+            "t00002562",
+            "t00002567"
+          ],
+          "output_tensor_ids": [
+            "t00002568"
+          ]
         }
       ],
       "dispatch_supported": true
@@ -531,12 +728,26 @@
         {
           "event_op_index": 47,
           "op_name": "cat.default",
-          "output": "shape=[1, 32, 59, 128], dtype=float16"
+          "output": "shape=[1, 32, 59, 128], dtype=float16",
+          "input_tensor_ids": [
+            "t00001501",
+            "t00002575"
+          ],
+          "output_tensor_ids": [
+            "t00002576"
+          ]
         },
         {
           "event_op_index": 48,
           "op_name": "cat.default",
-          "output": "shape=[1, 32, 59, 128], dtype=float16"
+          "output": "shape=[1, 32, 59, 128], dtype=float16",
+          "input_tensor_ids": [
+            "t00001474",
+            "t00002551"
+          ],
+          "output_tensor_ids": [
+            "t00002577"
+          ]
         }
       ],
       "dispatch_supported": true
@@ -548,62 +759,139 @@
         {
           "event_op_index": 13,
           "op_name": "transpose.int",
-          "output": "shape=[1, 32, 1, 128], dtype=float16"
+          "output": "shape=[1, 32, 1, 128], dtype=float16",
+          "input_tensor_ids": [
+            "t00002546"
+          ],
+          "output_tensor_ids": [
+            "t00002547"
+          ]
         },
         {
           "event_op_index": 15,
           "op_name": "transpose.int",
-          "output": "shape=[1, 32, 1, 128], dtype=float16"
+          "output": "shape=[1, 32, 1, 128], dtype=float16",
+          "input_tensor_ids": [
+            "t00002548"
+          ],
+          "output_tensor_ids": [
+            "t00002549"
+          ]
         },
         {
           "event_op_index": 17,
           "op_name": "transpose.int",
-          "output": "shape=[1, 32, 1, 128], dtype=float16"
+          "output": "shape=[1, 32, 1, 128], dtype=float16",
+          "input_tensor_ids": [
+            "t00002550"
+          ],
+          "output_tensor_ids": [
+            "t00002551"
+          ]
         },
         {
           "event_op_index": 39,
           "op_name": "add.Tensor",
-          "output": "shape=[1, 32, 1, 128], dtype=float16"
+          "output": "shape=[1, 32, 1, 128], dtype=float16",
+          "input_tensor_ids": [
+            "t00002562",
+            "t00002567"
+          ],
+          "output_tensor_ids": [
+            "t00002568"
+          ]
         },
         {
           "event_op_index": 46,
           "op_name": "add.Tensor",
-          "output": "shape=[1, 32, 1, 128], dtype=float16"
+          "output": "shape=[1, 32, 1, 128], dtype=float16",
+          "input_tensor_ids": [
+            "t00002569",
+            "t00002574"
+          ],
+          "output_tensor_ids": [
+            "t00002575"
+          ]
         },
         {
           "event_op_index": 49,
           "op_name": "transpose.int",
-          "output": "shape=[1, 32, 128, 59], dtype=float16"
+          "output": "shape=[1, 32, 128, 59], dtype=float16",
+          "input_tensor_ids": [
+            "t00002576"
+          ],
+          "output_tensor_ids": [
+            "t00002578"
+          ]
         },
         {
           "event_op_index": 50,
           "op_name": "matmul.default",
-          "output": "shape=[1, 32, 1, 59], dtype=float16"
+          "output": "shape=[1, 32, 1, 59], dtype=float16",
+          "input_tensor_ids": [
+            "t00002568",
+            "t00002578"
+          ],
+          "output_tensor_ids": [
+            "t00002579"
+          ]
         },
         {
           "event_op_index": 51,
           "op_name": "div.Tensor",
-          "output": "shape=[1, 32, 1, 59], dtype=float16"
+          "output": "shape=[1, 32, 1, 59], dtype=float16",
+          "input_tensor_ids": [
+            "t00002579"
+          ],
+          "output_tensor_ids": [
+            "t00002580"
+          ]
         },
         {
           "event_op_index": 52,
           "op_name": "add.Tensor",
-          "output": "shape=[1, 32, 1, 59], dtype=float16"
+          "output": "shape=[1, 32, 1, 59], dtype=float16",
+          "input_tensor_ids": [
+            "t00002580",
+            "t00002581"
+          ],
+          "output_tensor_ids": [
+            "t00002582"
+          ]
         },
         {
           "event_op_index": 53,
           "op_name": "softmax.int",
-          "output": "shape=[1, 32, 1, 59], dtype=float32"
+          "output": "shape=[1, 32, 1, 59], dtype=float32",
+          "input_tensor_ids": [
+            "t00002582"
+          ],
+          "output_tensor_ids": [
+            "t00002583"
+          ]
         },
         {
           "event_op_index": 55,
           "op_name": "dropout.default",
-          "output": "shape=[1, 32, 1, 59], dtype=float16"
+          "output": "shape=[1, 32, 1, 59], dtype=float16",
+          "input_tensor_ids": [
+            "t00002584"
+          ],
+          "output_tensor_ids": [
+            "t00002584"
+          ]
         },
         {
           "event_op_index": 56,
           "op_name": "matmul.default",
-          "output": "shape=[1, 32, 1, 128], dtype=float16"
+          "output": "shape=[1, 32, 1, 128], dtype=float16",
+          "input_tensor_ids": [
+            "t00002584",
+            "t00002577"
+          ],
+          "output_tensor_ids": [
+            "t00002585"
+          ]
         }
       ],
       "dispatch_supported": true
@@ -615,32 +903,73 @@
         {
           "event_op_index": 56,
           "op_name": "matmul.default",
-          "output": "shape=[1, 32, 1, 128], dtype=float16"
+          "output": "shape=[1, 32, 1, 128], dtype=float16",
+          "input_tensor_ids": [
+            "t00002584",
+            "t00002577"
+          ],
+          "output_tensor_ids": [
+            "t00002585"
+          ]
         },
         {
           "event_op_index": 58,
           "op_name": "reshape.default",
-          "output": "shape=[1, 1, 4096], dtype=float16"
+          "output": "shape=[1, 1, 4096], dtype=float16",
+          "input_tensor_ids": [
+            "t00002586"
+          ],
+          "output_tensor_ids": [
+            "t00002587"
+          ]
         },
         {
           "event_op_index": 61,
           "op_name": "linear.default",
-          "output": "shape=[1, 1, 4096], dtype=float16"
+          "output": "shape=[1, 1, 4096], dtype=float16",
+          "input_tensor_ids": [
+            "t00002587",
+            "t00001537"
+          ],
+          "output_tensor_ids": [
+            "t00002589"
+          ]
         },
         {
           "event_op_index": 62,
           "op_name": "add.Tensor",
-          "output": "shape=[1, 1, 4096], dtype=float16"
+          "output": "shape=[1, 1, 4096], dtype=float16",
+          "input_tensor_ids": [
+            "t00002534",
+            "t00002589"
+          ],
+          "output_tensor_ids": [
+            "t00002590"
+          ]
         },
         {
           "event_op_index": 75,
           "op_name": "linear.default",
-          "output": "shape=[1, 1, 4096], dtype=float16"
+          "output": "shape=[1, 1, 4096], dtype=float16",
+          "input_tensor_ids": [
+            "t00002602",
+            "t00001555"
+          ],
+          "output_tensor_ids": [
+            "t00002603"
+          ]
         },
         {
           "event_op_index": 76,
           "op_name": "add.Tensor",
-          "output": "shape=[1, 1, 4096], dtype=float16"
+          "output": "shape=[1, 1, 4096], dtype=float16",
+          "input_tensor_ids": [
+            "t00002590",
+            "t00002603"
+          ],
+          "output_tensor_ids": [
+            "t00002604"
+          ]
         }
       ],
       "dispatch_supported": true
@@ -652,72 +981,162 @@
         {
           "event_op_index": 54,
           "op_name": "to.dtype",
-          "output": "shape=[1, 32, 1, 59], dtype=float16"
+          "output": "shape=[1, 32, 1, 59], dtype=float16",
+          "input_tensor_ids": [
+            "t00002583"
+          ],
+          "output_tensor_ids": [
+            "t00002584"
+          ]
         },
         {
           "event_op_index": 61,
           "op_name": "linear.default",
-          "output": "shape=[1, 1, 4096], dtype=float16"
+          "output": "shape=[1, 1, 4096], dtype=float16",
+          "input_tensor_ids": [
+            "t00002587",
+            "t00001537"
+          ],
+          "output_tensor_ids": [
+            "t00002589"
+          ]
         },
         {
           "event_op_index": 62,
           "op_name": "add.Tensor",
-          "output": "shape=[1, 1, 4096], dtype=float16"
+          "output": "shape=[1, 1, 4096], dtype=float16",
+          "input_tensor_ids": [
+            "t00002534",
+            "t00002589"
+          ],
+          "output_tensor_ids": [
+            "t00002590"
+          ]
         },
         {
           "event_op_index": 63,
           "op_name": "to.dtype",
-          "output": "shape=[1, 1, 4096], dtype=float32"
+          "output": "shape=[1, 1, 4096], dtype=float32",
+          "input_tensor_ids": [
+            "t00002590"
+          ],
+          "output_tensor_ids": [
+            "t00002591"
+          ]
         },
         {
           "event_op_index": 64,
           "op_name": "pow.Tensor_Scalar",
-          "output": "shape=[1, 1, 4096], dtype=float32"
+          "output": "shape=[1, 1, 4096], dtype=float32",
+          "input_tensor_ids": [
+            "t00002591"
+          ],
+          "output_tensor_ids": [
+            "t00002592"
+          ]
         },
         {
           "event_op_index": 65,
           "op_name": "mean.dim",
-          "output": "shape=[1, 1, 1], dtype=float32"
+          "output": "shape=[1, 1, 1], dtype=float32",
+          "input_tensor_ids": [
+            "t00002592"
+          ],
+          "output_tensor_ids": [
+            "t00002593"
+          ]
         },
         {
           "event_op_index": 66,
           "op_name": "add.Tensor",
-          "output": "shape=[1, 1, 1], dtype=float32"
+          "output": "shape=[1, 1, 1], dtype=float32",
+          "input_tensor_ids": [
+            "t00002593"
+          ],
+          "output_tensor_ids": [
+            "t00002594"
+          ]
         },
         {
           "event_op_index": 67,
           "op_name": "rsqrt.default",
-          "output": "shape=[1, 1, 1], dtype=float32"
+          "output": "shape=[1, 1, 1], dtype=float32",
+          "input_tensor_ids": [
+            "t00002594"
+          ],
+          "output_tensor_ids": [
+            "t00002595"
+          ]
         },
         {
           "event_op_index": 68,
           "op_name": "mul.Tensor",
-          "output": "shape=[1, 1, 4096], dtype=float32"
+          "output": "shape=[1, 1, 4096], dtype=float32",
+          "input_tensor_ids": [
+            "t00002591",
+            "t00002595"
+          ],
+          "output_tensor_ids": [
+            "t00002596"
+          ]
         },
         {
           "event_op_index": 69,
           "op_name": "to.dtype",
-          "output": "shape=[1, 1, 4096], dtype=float16"
+          "output": "shape=[1, 1, 4096], dtype=float16",
+          "input_tensor_ids": [
+            "t00002596"
+          ],
+          "output_tensor_ids": [
+            "t00002597"
+          ]
         },
         {
           "event_op_index": 70,
           "op_name": "mul.Tensor",
-          "output": "shape=[1, 1, 4096], dtype=float16"
+          "output": "shape=[1, 1, 4096], dtype=float16",
+          "input_tensor_ids": [
+            "t00001547",
+            "t00002597"
+          ],
+          "output_tensor_ids": [
+            "t00002598"
+          ]
         },
         {
           "event_op_index": 71,
           "op_name": "linear.default",
-          "output": "shape=[1, 1, 11008], dtype=float16"
+          "output": "shape=[1, 1, 11008], dtype=float16",
+          "input_tensor_ids": [
+            "t00002598",
+            "t00001549"
+          ],
+          "output_tensor_ids": [
+            "t00002599"
+          ]
         },
         {
           "event_op_index": 72,
           "op_name": "silu.default",
-          "output": "shape=[1, 1, 11008], dtype=float16"
+          "output": "shape=[1, 1, 11008], dtype=float16",
+          "input_tensor_ids": [
+            "t00002599"
+          ],
+          "output_tensor_ids": [
+            "t00002600"
+          ]
         },
         {
           "event_op_index": 73,
           "op_name": "linear.default",
-          "output": "shape=[1, 1, 11008], dtype=float16"
+          "output": "shape=[1, 1, 11008], dtype=float16",
+          "input_tensor_ids": [
+            "t00002598",
+            "t00001552"
+          ],
+          "output_tensor_ids": [
+            "t00002601"
+          ]
         }
       ],
       "dispatch_supported": true

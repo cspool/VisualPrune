@@ -15,6 +15,7 @@ import json
 import os
 import sys
 import time
+import weakref
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -76,6 +77,23 @@ from visipruner_algorithmic_trace import (  # noqa: E402
 
 PRIORITY_ORDER = {"P0": 0, "P1": 1, "P2": 2, "P3": 3}
 
+DISPATCH_OP_FIELD_ORDER = [
+    "args",
+    "event_id",
+    "kv_len",
+    "kwargs",
+    "module_class",
+    "op_schema",
+    "outputs",
+    "past_len",
+    "phase",
+    "q_len",
+    "token_state",
+    "visipruner_role",
+    "input_tensor_ids",
+    "output_tensor_ids",
+]
+
 
 @dataclass
 class DispatchState:
@@ -83,21 +101,31 @@ class DispatchState:
     current_forward_id: int | None = None
     current_phase: str | None = None
     current_event: dict[str, Any] | None = None
+    module_stack: list[dict[str, Any]] = field(default_factory=list)
     forward_events: list[dict[str, Any]] = field(default_factory=list)
     layer_events: list[dict[str, Any]] = field(default_factory=list)
     op_events: list[dict[str, Any]] = field(default_factory=list)
     event_op_counters: Counter[str] = field(default_factory=Counter)
+    module_op_counters: Counter[str] = field(default_factory=Counter)
+    module_call_counter: int = 0
     global_op_index: int = 0
+    tensor_id_counter: int = 0
+    tensor_refs: dict[int, tuple[Any, str]] = field(default_factory=dict)
+    tensor_producers: dict[str, dict[str, Any]] = field(default_factory=dict)
 
 
-def write_csv(path: Path, rows: list[dict[str, Any]]) -> None:
+def write_csv(path: Path, rows: list[dict[str, Any]], field_order: list[str] | None = None) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     if not rows:
         path.write_text("", encoding="utf-8")
         return
-    fields = sorted({key for row in rows for key in row})
+    keys = {key for row in rows for key in row}
+    if field_order is None:
+        fields = sorted(keys)
+    else:
+        fields = [field for field in field_order if field in keys]
     with path.open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=fields)
+        writer = csv.DictWriter(handle, fieldnames=fields, extrasaction="ignore")
         writer.writeheader()
         writer.writerows(rows)
 
@@ -126,6 +154,160 @@ def describe_value(value: Any, depth: int = 0) -> Any:
     return type(value).__name__
 
 
+def safe_int_attr(value: Any, name: str) -> int | None:
+    try:
+        result = getattr(value, name)()
+    except Exception:
+        return None
+    try:
+        return int(result)
+    except Exception:
+        return None
+
+
+def safe_stride(value: torch.Tensor) -> list[int] | None:
+    try:
+        return [int(item) for item in value.stride()]
+    except Exception:
+        return None
+
+
+def safe_storage_data_ptr(value: torch.Tensor) -> int | None:
+    try:
+        storage = value.untyped_storage()
+        return int(storage.data_ptr())
+    except Exception:
+        return None
+
+
+def tensor_runtime_id(state: DispatchState, value: torch.Tensor) -> str:
+    object_id = id(value)
+    entry = state.tensor_refs.get(object_id)
+    if entry is not None:
+        ref, runtime_id = entry
+        if ref is None:
+            return runtime_id
+        try:
+            if ref() is value:
+                return runtime_id
+        except Exception:
+            pass
+
+    state.tensor_id_counter += 1
+    runtime_id = f"t{state.tensor_id_counter:08d}"
+    try:
+        ref = weakref.ref(value)
+    except TypeError:
+        ref = None
+    state.tensor_refs[object_id] = (ref, runtime_id)
+    return runtime_id
+
+
+def describe_tensor_ref(state: DispatchState, value: torch.Tensor, path: str) -> dict[str, Any]:
+    return {
+        "path": path,
+        "tensor_id": tensor_runtime_id(state, value),
+        "python_object_id": id(value),
+        "tensor_impl_id": int(getattr(value, "_cdata", 0) or 0),
+        "shape": [int(x) for x in value.shape],
+        "stride": safe_stride(value),
+        "dtype": str(value.dtype).replace("torch.", ""),
+        "device": str(value.device),
+        "layout": str(value.layout).replace("torch.", ""),
+        "requires_grad": bool(value.requires_grad),
+        "data_ptr": safe_int_attr(value, "data_ptr"),
+        "storage_data_ptr": safe_storage_data_ptr(value),
+        "storage_offset": safe_int_attr(value, "storage_offset"),
+    }
+
+
+def collect_tensor_refs(state: DispatchState, value: Any, path: str, depth: int = 0) -> list[dict[str, Any]]:
+    if torch.is_tensor(value):
+        return [describe_tensor_ref(state, value, path)]
+    if value is None or isinstance(value, (bool, int, float, str)):
+        return []
+    if depth >= 8:
+        return []
+    if isinstance(value, tuple):
+        refs: list[dict[str, Any]] = []
+        for index, item in enumerate(value):
+            refs.extend(collect_tensor_refs(state, item, f"{path}[{index}]", depth + 1))
+        return refs
+    if isinstance(value, list):
+        refs = []
+        for index, item in enumerate(value):
+            refs.extend(collect_tensor_refs(state, item, f"{path}[{index}]", depth + 1))
+        return refs
+    if isinstance(value, dict):
+        refs = []
+        for key, item in value.items():
+            refs.extend(collect_tensor_refs(state, item, f"{path}[{json.dumps(str(key), ensure_ascii=False)}]", depth + 1))
+        return refs
+    return []
+
+
+def input_tensor_producers(state: DispatchState, input_tensors: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    producers: list[dict[str, Any]] = []
+    edges: list[dict[str, Any]] = []
+    for tensor in input_tensors:
+        tensor_id = str(tensor["tensor_id"])
+        producer = state.tensor_producers.get(tensor_id)
+        if producer is None:
+            producers.append({
+                "input_path": tensor["path"],
+                "tensor_id": tensor_id,
+                "producer": None,
+                "source": "external_or_before_captured_scope",
+            })
+            continue
+        item = {
+            "input_path": tensor["path"],
+            "tensor_id": tensor_id,
+            "producer": producer,
+            "source": "observed_in_captured_scope",
+        }
+        producers.append(item)
+        edges.append({
+            "tensor_id": tensor_id,
+            "producer_event_detail_id": producer["event_detail_id"],
+            "producer_event_id": producer["event_id"],
+            "producer_event_op_index": producer["event_op_index"],
+            "producer_global_op_index": producer["global_op_index"],
+            "producer_op_name": producer["op_name"],
+            "producer_output_path": producer["output_path"],
+            "consumer_input_path": tensor["path"],
+        })
+    return producers, edges
+
+
+def input_output_aliases(
+    input_tensors: list[dict[str, Any]],
+    output_tensors: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    aliases: list[dict[str, Any]] = []
+    for input_tensor in input_tensors:
+        for output_tensor in output_tensors:
+            alias_types = []
+            if input_tensor.get("tensor_id") == output_tensor.get("tensor_id"):
+                alias_types.append("same_runtime_tensor_id")
+            if (
+                input_tensor.get("storage_data_ptr") is not None
+                and input_tensor.get("storage_data_ptr") == output_tensor.get("storage_data_ptr")
+                and input_tensor.get("device") == output_tensor.get("device")
+            ):
+                alias_types.append("same_storage_data_ptr")
+            if not alias_types:
+                continue
+            aliases.append({
+                "input_path": input_tensor["path"],
+                "output_path": output_tensor["path"],
+                "input_tensor_id": input_tensor["tensor_id"],
+                "output_tensor_id": output_tensor["tensor_id"],
+                "alias_types": alias_types,
+            })
+    return aliases
+
+
 def op_name(func: Any) -> str:
     name = getattr(func, "__name__", None)
     if name:
@@ -142,6 +324,72 @@ def op_schema(func: Any) -> str:
 
 def event_id(forward_id: int, layer_id: int) -> str:
     return f"input{forward_id}_layer{layer_id}"
+
+
+def module_scope(module_relative_path: str, module_path: str) -> str:
+    return module_relative_path or module_path
+
+
+def relative_module_path(module_path: str, layer_module_path: str) -> str:
+    if not layer_module_path:
+        return module_path
+    if module_path == layer_module_path:
+        return ""
+    prefix = f"{layer_module_path}."
+    if module_path.startswith(prefix):
+        return module_path[len(prefix):]
+    return module_path
+
+
+def module_forward_source(module: Any) -> dict[str, Any]:
+    forward = getattr(module, "forward", None)
+    code = getattr(forward, "__code__", None)
+    if code is None:
+        code = getattr(getattr(forward, "__func__", None), "__code__", None)
+    if code is None:
+        return {"module_forward_file": "", "module_forward_lineno": ""}
+    return {
+        "module_forward_file": str(code.co_filename),
+        "module_forward_lineno": int(code.co_firstlineno),
+    }
+
+
+def push_module_context(
+    state: DispatchState,
+    module_path: str,
+    module_type: str,
+    module_class: str,
+    forward_source: dict[str, Any],
+) -> None:
+    current = state.current_event or {}
+    module_relative_path = relative_module_path(
+        module_path,
+        str(current.get("layer_module_path") or ""),
+    )
+    parent = state.module_stack[-1] if state.module_stack else {}
+    state.module_call_counter += 1
+    state.module_stack.append({
+        "module_call_id": state.module_call_counter,
+        "module_parent_call_id": parent.get("module_call_id", ""),
+        "module_path": module_path,
+        "module_relative_path": module_relative_path,
+        "module_type": module_type,
+        "module_class": module_class,
+        "module_forward_file": forward_source.get("module_forward_file", ""),
+        "module_forward_lineno": forward_source.get("module_forward_lineno", ""),
+    })
+
+
+def make_event_detail_id(
+    event_key: str,
+    module_relative_path: str,
+    module_path: str,
+    module_call_id: int,
+    module_op_index: int,
+) -> str:
+    component = module_relative_path or module_path or "layer"
+    safe_component = component.replace(".", "/")
+    return f"{event_key}/{safe_component}/call{module_call_id:04d}/op{module_op_index:04d}"
 
 
 def add_manifest_row(
@@ -365,19 +613,63 @@ class RecordingDispatchMode(TorchDispatchMode):
         if current is None:
             return func(*args, **kwargs)
 
+        input_tensors = (
+            collect_tensor_refs(self.state, args, "args")
+            + collect_tensor_refs(self.state, kwargs, "kwargs")
+        )
         start = time.perf_counter() if self.record_elapsed_us else None
         result = func(*args, **kwargs)
         elapsed_us = None
         if start is not None:
             elapsed_us = int((time.perf_counter() - start) * 1_000_000)
 
+        name = op_name(func)
+        schema = op_schema(func)
+        args_desc = describe_value(args)
+        kwargs_desc = describe_value(kwargs)
+        outputs_desc = describe_value(result)
+        output_tensors = collect_tensor_refs(self.state, result, "outputs")
+        producer_records, observed_edges = input_tensor_producers(self.state, input_tensors)
+        aliases = input_output_aliases(input_tensors, output_tensors)
+        module_context = self.state.module_stack[-1] if self.state.module_stack else {}
+        module_path = str(module_context.get("module_path") or "")
+        module_relative_path = str(module_context.get("module_relative_path") or "")
+        module_type = str(module_context.get("module_type") or "")
+        module_class = str(module_context.get("module_class") or "")
+        module_forward_file = str(module_context.get("module_forward_file") or "")
+        module_forward_lineno = module_context.get("module_forward_lineno", "")
+        module_call_id = int(module_context.get("module_call_id") or 0)
+        module_parent_call_id = module_context.get("module_parent_call_id", "")
+        runtime_module_scope = module_scope(module_relative_path, module_path)
+
         self.state.global_op_index += 1
         event_key = str(current["event_id"])
         self.state.event_op_counters[event_key] += 1
+        module_key = "|".join([event_key, str(module_call_id), runtime_module_scope])
+        self.state.module_op_counters[module_key] += 1
+        module_op_index = self.state.module_op_counters[module_key]
+        event_detail = make_event_detail_id(
+            event_key,
+            module_relative_path,
+            module_path,
+            module_call_id,
+            module_op_index,
+        )
+        for edge in observed_edges:
+            edge.update({
+                "consumer_event_detail_id": event_detail,
+                "consumer_event_id": event_key,
+                "consumer_event_op_index": self.state.event_op_counters[event_key],
+                "consumer_global_op_index": self.state.global_op_index,
+                "consumer_op_name": name,
+            })
         row = {
             "event_id": event_key,
+            "layer_event_id": event_key,
+            "event_detail_id": event_detail,
             "input_id": current["input_id"],
             "layer_id": current["layer_id"],
+            "layer_module_path": current.get("layer_module_path", ""),
             "phase": current["phase"],
             "priority": current["priority"],
             "visipruner_role": current["visipruner_role"],
@@ -387,16 +679,121 @@ class RecordingDispatchMode(TorchDispatchMode):
             "kv_len": current["kv_len"],
             "global_op_index": self.state.global_op_index,
             "event_op_index": self.state.event_op_counters[event_key],
-            "op_name": op_name(func),
-            "op_schema": op_schema(func),
-            "args": compact_json(describe_value(args)),
-            "kwargs": compact_json(describe_value(kwargs)),
-            "outputs": compact_json(describe_value(result)),
+            "module_op_index": module_op_index,
+            "module_path": module_path,
+            "module_relative_path": module_relative_path,
+            "module_type": module_type,
+            "module_class": module_class,
+            "module_forward_file": module_forward_file,
+            "module_forward_lineno": module_forward_lineno,
+            "module_call_id": module_call_id,
+            "module_parent_call_id": module_parent_call_id,
+            "module_depth": len(self.state.module_stack),
+            "module_stack": compact_json([
+                {
+                    "module_call_id": item.get("module_call_id"),
+                    "module_relative_path": item.get("module_relative_path"),
+                    "module_path": item.get("module_path"),
+                    "module_type": item.get("module_type"),
+                    "module_class": item.get("module_class"),
+                    "module_forward_file": item.get("module_forward_file"),
+                    "module_forward_lineno": item.get("module_forward_lineno"),
+                }
+                for item in self.state.module_stack
+            ]),
+            "runtime_module_scope": runtime_module_scope,
+            "op_name": name,
+            "op_schema": schema,
+            "args": compact_json(args_desc),
+            "kwargs": compact_json(kwargs_desc),
+            "outputs": compact_json(outputs_desc),
+            "input_tensors": compact_json(input_tensors),
+            "output_tensors": compact_json(output_tensors),
+            "input_tensor_ids": compact_json([item["tensor_id"] for item in input_tensors]),
+            "output_tensor_ids": compact_json([item["tensor_id"] for item in output_tensors]),
+            "input_tensor_producers": compact_json(producer_records),
+            "observed_tensor_edges": compact_json(observed_edges),
+            "input_output_tensor_aliases": compact_json(aliases),
         }
         if elapsed_us is not None:
             row["python_dispatch_elapsed_us"] = elapsed_us
         self.state.op_events.append(row)
+        for output_tensor in output_tensors:
+            self.state.tensor_producers[str(output_tensor["tensor_id"])] = {
+                "event_detail_id": event_detail,
+                "event_id": event_key,
+                "event_op_index": self.state.event_op_counters[event_key],
+                "global_op_index": self.state.global_op_index,
+                "op_name": name,
+                "op_schema": schema,
+                "output_path": output_tensor["path"],
+                "module_path": module_path,
+                "module_relative_path": module_relative_path,
+                "module_call_id": module_call_id,
+                "module_op_index": module_op_index,
+            }
         return result
+
+
+def pop_module_context(state: DispatchState, module_path: str) -> None:
+    if not state.module_stack:
+        return
+    if state.module_stack[-1].get("module_path") == module_path:
+        state.module_stack.pop()
+        return
+    for idx in range(len(state.module_stack) - 1, -1, -1):
+        if state.module_stack[idx].get("module_path") == module_path:
+            del state.module_stack[idx:]
+            return
+
+
+def register_module_context_hooks(model: Any, state: DispatchState) -> dict[int, str]:
+    module_paths: dict[int, str] = {}
+    for module_path, module in model.named_modules():
+        if not module_path:
+            continue
+        module_paths[id(module)] = module_path
+        module_type = type(module).__name__
+        module_class = f"{type(module).__module__}.{type(module).__qualname__}"
+        forward_source = module_forward_source(module)
+
+        def make_pre_hook(
+            path: str,
+            typ: str,
+            cls: str,
+            source: dict[str, Any],
+        ):
+            def pre_hook(_module: Any, _inputs: tuple[Any, ...]) -> None:
+                if state.current_event is None:
+                    return
+                push_module_context(
+                    state,
+                    path,
+                    typ,
+                    cls,
+                    source,
+                )
+
+            return pre_hook
+
+        def make_post_hook(path: str):
+            def post_hook(_module: Any, _inputs: tuple[Any, ...], _output: Any) -> None:
+                if state.current_event is None:
+                    return
+                pop_module_context(state, path)
+
+            return post_hook
+
+        module.register_forward_pre_hook(
+            make_pre_hook(
+                module_path,
+                module_type,
+                module_class,
+                forward_source,
+            )
+        )
+        module.register_forward_hook(make_post_hook(module_path))
+    return module_paths
 
 
 def wrap_for_filtered_dispatch(
@@ -447,10 +844,14 @@ def wrap_for_filtered_dispatch(
     model.forward = wrapped_model_forward
 
     base_model = model.get_model()
+    module_paths = register_module_context_hooks(model, state)
     for layer_idx, layer in enumerate(base_model.layers):
         original_layer_forward = layer.forward
+        if id(layer) not in module_paths:
+            raise RuntimeError(f"Layer {layer_idx} was not found in model.named_modules(); refusing to synthesize a module path.")
+        layer_module_path = module_paths[id(layer)]
 
-        def make_wrapped_layer(orig: Any, idx: int):
+        def make_wrapped_layer(orig: Any, idx: int, layer_path: str, layer_module: Any):
             def wrapped_layer(*args: Any, **kwargs: Any) -> Any:
                 hidden_states = kwargs.get("hidden_states")
                 if hidden_states is None and args:
@@ -470,6 +871,7 @@ def wrap_for_filtered_dispatch(
                     "phase": state.current_phase or ("prefill" if q_len > 1 else "decode"),
                     "layer_idx": idx,
                     "batch_size": batch_size,
+                    "layer_module_path": layer_module_path,
                     "q_len": q_len,
                     "past_len": past_len,
                     "kv_len": past_len + q_len,
@@ -487,13 +889,24 @@ def wrap_for_filtered_dispatch(
                         "actual_q_len": q_len,
                         "actual_past_len": past_len,
                         "actual_kv_len": past_len + q_len,
+                        "layer_module_path": layer_path,
                     })
                     previous_event = state.current_event
+                    previous_module_stack = list(state.module_stack)
                     state.current_event = current
+                    state.module_stack = []
                     try:
+                        push_module_context(
+                            state,
+                            layer_path,
+                            type(layer_module).__name__,
+                            f"{type(layer_module).__module__}.{type(layer_module).__qualname__}",
+                            module_forward_source(layer_module),
+                        )
                         with RecordingDispatchMode(state, record_elapsed_us=record_elapsed_us):
                             output = orig(*args, **kwargs)
                     finally:
+                        state.module_stack = previous_module_stack
                         state.current_event = previous_event
 
                 if isinstance(output, tuple) and output:
@@ -503,21 +916,40 @@ def wrap_for_filtered_dispatch(
 
             return wrapped_layer
 
-        layer.forward = make_wrapped_layer(original_layer_forward, layer_idx)
+        layer.forward = make_wrapped_layer(original_layer_forward, layer_idx, layer_module_path, layer)
 
 
 def summarize_ops(op_rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    grouped: Counter[tuple[str, str, str]] = Counter()
+    grouped: Counter[tuple[str, str, str, str, str, str]] = Counter()
     for row in op_rows:
-        grouped[(str(row["event_id"]), str(row["op_name"]), str(row["op_schema"]))] += 1
+        grouped[(
+            str(row["event_id"]),
+            str(row.get("runtime_module_scope") or ""),
+            str(row.get("module_path") or ""),
+            str(row.get("module_relative_path") or ""),
+            str(row["op_name"]),
+            str(row["op_schema"]),
+        )] += 1
     return [
         {
             "event_id": key[0],
-            "op_name": key[1],
-            "op_schema": key[2],
+            "runtime_module_scope": key[1],
+            "module_path": key[2],
+            "module_relative_path": key[3],
+            "op_name": key[4],
+            "op_schema": key[5],
             "count": count,
         }
-        for key, count in sorted(grouped.items(), key=lambda item: (item[0][0], item[0][1], item[0][2]))
+        for key, count in sorted(
+            grouped.items(),
+            key=lambda item: (
+                item[0][0],
+                item[0][1],
+                item[0][3],
+                item[0][4],
+                item[0][5],
+            ),
+        )
     ]
 
 
@@ -616,32 +1048,36 @@ def main() -> None:
         record_elapsed_us=args.record_elapsed_us,
     )
 
-    prompt_text = build_prompt(prompt, conv_mode)
-    input_ids = tokenizer_image_token(
-        prompt_text, tokenizer, IMAGE_TOKEN_INDEX, return_tensors="pt"
-    ).unsqueeze(0)
-    attention_mask = torch.ones_like(input_ids, dtype=torch.long)
-    image = Image.open(image_path).convert("RGB")
-    image_size = image.size
-    image_tensor = process_images([image], image_processor, model.config)
-    if isinstance(image_tensor, list):
-        image_tensor = image_tensor[0]
-    input_ids = input_ids.to(device="cuda", non_blocking=True)
-    attention_mask = attention_mask.to(device="cuda", non_blocking=True)
-    image_tensor = image_tensor.to(dtype=torch.float16, device="cuda", non_blocking=True)
+    def run_generate_request() -> tuple[Any, Any]:
+        prompt_text = build_prompt(prompt, conv_mode)
+        request_input_ids = tokenizer_image_token(
+            prompt_text, tokenizer, IMAGE_TOKEN_INDEX, return_tensors="pt"
+        ).unsqueeze(0)
+        request_attention_mask = torch.ones_like(request_input_ids, dtype=torch.long)
+        image = Image.open(image_path).convert("RGB")
+        image_size = image.size
+        request_image_tensor = process_images([image], image_processor, model.config)
+        if isinstance(request_image_tensor, list):
+            request_image_tensor = request_image_tensor[0]
+        request_input_ids = request_input_ids.to(device="cuda", non_blocking=True)
+        request_attention_mask = request_attention_mask.to(device="cuda", non_blocking=True)
+        request_image_tensor = request_image_tensor.to(dtype=torch.float16, device="cuda", non_blocking=True)
 
-    with torch.inference_mode():
-        output_ids = model.generate(
-            input_ids,
-            attention_mask=attention_mask,
-            images=image_tensor,
-            image_sizes=[image_size],
-            do_sample=args.temperature > 0,
-            temperature=args.temperature,
-            max_new_tokens=max_new_tokens,
-            pruning_config=cfg["pruning_config"],
-            use_cache=True,
-        )
+        with torch.inference_mode():
+            request_output_ids = model.generate(
+                request_input_ids,
+                attention_mask=request_attention_mask,
+                images=request_image_tensor,
+                image_sizes=[image_size],
+                do_sample=args.temperature > 0,
+                temperature=args.temperature,
+                max_new_tokens=max_new_tokens,
+                pruning_config=cfg["pruning_config"],
+                use_cache=True,
+            )
+        return request_input_ids, request_output_ids
+
+    input_ids, output_ids = run_generate_request()
     if torch.cuda.is_available():
         torch.cuda.synchronize()
 
@@ -651,7 +1087,7 @@ def main() -> None:
         output_token_ids = output_ids[0]
     output_text = tokenizer.decode(output_token_ids, skip_special_tokens=True).strip()
 
-    write_csv(out_dir / "dispatch_ops.csv", state.op_events)
+    write_csv(out_dir / "dispatch_ops.csv", state.op_events, field_order=DISPATCH_OP_FIELD_ORDER)
     write_csv(out_dir / "dispatch_op_summary.csv", summarize_ops(state.op_events))
     write_csv(out_dir / "observed_layer_events.csv", state.layer_events)
 
@@ -660,6 +1096,8 @@ def main() -> None:
         "analysis_type": "visipruner_filtered_torch_dispatch_profile",
         "full_profile_forbidden": True,
         "dispatch_scope": "TorchDispatchMode is entered only inside manifest-selected layer.forward calls.",
+        "dispatch_detail_scope": "dispatch_ops.csv emits only the selected compact columns: args,event_id,kv_len,kwargs,module_class,op_schema,outputs,past_len,phase,q_len,token_state,visipruner_role,input_tensor_ids,output_tensor_ids.",
+        "tensor_provenance_scope": "dispatch_ops.csv keeps only input_tensor_ids and output_tensor_ids for Tensor provenance. Detailed input/output tensor metadata, producer records, observed tensor edges, and alias records are not emitted in the CSV.",
         "source_trace": str(trace_path),
         "tag": tag,
         "config": config_name,

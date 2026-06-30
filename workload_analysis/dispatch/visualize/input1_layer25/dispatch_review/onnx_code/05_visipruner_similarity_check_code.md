@@ -17,11 +17,17 @@
 - `similarity`: `[15]`
 - `any_close`: `[]`
 
+### Dispatch Tensor ID Inputs/Outputs
+
+- Dispatch input tensor ids: `['t00002091', 't00000057', 't00002128', 't00002129', 't00002132', 't00002142', 't00002141', 't00002144', 't00002147']`
+- Dispatch output tensor ids: `['t00002130', 't00002140', 't00002145', 't00002148']`
+- Dispatch tensor-id dependencies inside evidence rows: `[{'tensor_id': 't00002092', 'consumer_event_op_index': 22, 'consumer_op_name': 'is_nonzero.default'}, {'tensor_id': 't00002125', 'consumer_event_op_index': 59, 'consumer_op_name': 'is_nonzero.default'}, {'tensor_id': 't00002143', 'consumer_event_op_index': 80, 'consumer_op_name': 'cosine_similarity.default'}]`
+
 ## Corresponding `torch_flow` Code
 
-- Export wrapper: `/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer25/torch_flow/export_stage_onnx.py::VisiPrunerSimilarityCheckStage`
-- Primary implementation: `/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer25/torch_flow/visipruner_similarity.py`
-- Support files: `/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer25/torch_flow/config.py`, `/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer25/torch_flow/init_data.py`, `/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer25/torch_flow/export_stage_onnx.py`
+- Export wrapper: `workload_analysis/dispatch/visualize/input1_layer25/torch_flow/export_stage_onnx.py::VisiPrunerSimilarityCheckStage`
+- Primary implementation: `workload_analysis/dispatch/visualize/input1_layer25/torch_flow/visipruner_similarity.py`
+- Support files: `workload_analysis/dispatch/visualize/input1_layer25/torch_flow/config.py`, `workload_analysis/dispatch/visualize/input1_layer25/torch_flow/init_data.py`, `workload_analysis/dispatch/visualize/input1_layer25/torch_flow/export_stage_onnx.py`
 
 ## Code Explanation
 
@@ -36,16 +42,16 @@ Computes cosine-similarity based VisiPrune probe/check signals when dispatch con
 
 ## Dispatch Evidence Notes
 
-- `#21 gt.Scalar` -> shape=[], dtype=bool
-- `#22 is_nonzero.default` -> False
-- `#58 gt.Scalar` -> shape=[], dtype=bool
-- `#59 is_nonzero.default` -> True
-- `#64 sub.Tensor` -> shape=[], dtype=int64
-- `#67 is_nonzero.default` -> True
-- `#75 arange.start` -> shape=[10], dtype=int64
-- `#78 sub.Tensor` -> shape=[1, 10, 4096], dtype=float16
-- `#80 cosine_similarity.default` -> shape=[1, 10], dtype=float16
-- `#83 any.default` -> shape=[], dtype=bool
+- `#21 gt.Scalar` inputs=`['t00002091']` outputs=`['t00002092']` -> shape=[], dtype=bool
+- `#22 is_nonzero.default` inputs=`['t00002092']` outputs=`[]` -> False
+- `#58 gt.Scalar` inputs=`['t00000057']` outputs=`['t00002125']` -> shape=[], dtype=bool
+- `#59 is_nonzero.default` inputs=`['t00002125']` outputs=`[]` -> True
+- `#64 sub.Tensor` inputs=`['t00002128', 't00002129']` outputs=`['t00002130']` -> shape=[], dtype=int64
+- `#67 is_nonzero.default` inputs=`['t00002132']` outputs=`[]` -> True
+- `#75 arange.start` inputs=`[]` outputs=`['t00002140']` -> shape=[10], dtype=int64
+- `#78 sub.Tensor` inputs=`['t00002142', 't00002141']` outputs=`['t00002143']` -> shape=[1, 10, 4096], dtype=float16
+- `#80 cosine_similarity.default` inputs=`['t00002143', 't00002144']` outputs=`['t00002145']` -> shape=[1, 10], dtype=float16
+- `#83 any.default` inputs=`['t00002147']` outputs=`['t00002148']` -> shape=[], dtype=bool
 
 ## Export Wrapper Source
 

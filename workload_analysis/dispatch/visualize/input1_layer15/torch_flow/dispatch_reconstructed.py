@@ -84,63 +84,140 @@ CORE_EVIDENCE = json.loads(r"""{
     "evidence_ops": [
       {
 "event_op_index": 13,
+"input_tensor_ids": [
+  "t00001065"
+],
 "op_name": "transpose.int",
-"output": "shape=[1, 32, 624, 128], dtype=float16"
+"output": "shape=[1, 32, 624, 128], dtype=float16",
+"output_tensor_ids": [
+  "t00001066"
+]
       },
       {
 "event_op_index": 15,
+"input_tensor_ids": [
+  "t00001067"
+],
 "op_name": "transpose.int",
-"output": "shape=[1, 32, 624, 128], dtype=float16"
+"output": "shape=[1, 32, 624, 128], dtype=float16",
+"output_tensor_ids": [
+  "t00001068"
+]
       },
       {
 "event_op_index": 17,
+"input_tensor_ids": [
+  "t00001069"
+],
 "op_name": "transpose.int",
-"output": "shape=[1, 32, 624, 128], dtype=float16"
+"output": "shape=[1, 32, 624, 128], dtype=float16",
+"output_tensor_ids": [
+  "t00001070"
+]
       },
       {
 "event_op_index": 39,
+"input_tensor_ids": [
+  "t00001083",
+  "t00001088"
+],
 "op_name": "add.Tensor",
-"output": "shape=[1, 32, 624, 128], dtype=float16"
+"output": "shape=[1, 32, 624, 128], dtype=float16",
+"output_tensor_ids": [
+  "t00001089"
+]
       },
       {
 "event_op_index": 46,
+"input_tensor_ids": [
+  "t00001090",
+  "t00001095"
+],
 "op_name": "add.Tensor",
-"output": "shape=[1, 32, 624, 128], dtype=float16"
+"output": "shape=[1, 32, 624, 128], dtype=float16",
+"output_tensor_ids": [
+  "t00001096"
+]
       },
       {
 "event_op_index": 47,
+"input_tensor_ids": [
+  "t00001096"
+],
 "op_name": "transpose.int",
-"output": "shape=[1, 32, 128, 624], dtype=float16"
+"output": "shape=[1, 32, 128, 624], dtype=float16",
+"output_tensor_ids": [
+  "t00001097"
+]
       },
       {
 "event_op_index": 48,
+"input_tensor_ids": [
+  "t00001089",
+  "t00001097"
+],
 "op_name": "matmul.default",
-"output": "shape=[1, 32, 624, 624], dtype=float16"
+"output": "shape=[1, 32, 624, 624], dtype=float16",
+"output_tensor_ids": [
+  "t00001098"
+]
       },
       {
 "event_op_index": 49,
+"input_tensor_ids": [
+  "t00001098"
+],
 "op_name": "div.Tensor",
-"output": "shape=[1, 32, 624, 624], dtype=float16"
+"output": "shape=[1, 32, 624, 624], dtype=float16",
+"output_tensor_ids": [
+  "t00001099"
+]
       },
       {
 "event_op_index": 50,
+"input_tensor_ids": [
+  "t00001099",
+  "t00000053"
+],
 "op_name": "add.Tensor",
-"output": "shape=[1, 32, 624, 624], dtype=float16"
+"output": "shape=[1, 32, 624, 624], dtype=float16",
+"output_tensor_ids": [
+  "t00001100"
+]
       },
       {
 "event_op_index": 51,
+"input_tensor_ids": [
+  "t00001100"
+],
 "op_name": "softmax.int",
-"output": "shape=[1, 32, 624, 624], dtype=float32"
+"output": "shape=[1, 32, 624, 624], dtype=float32",
+"output_tensor_ids": [
+  "t00001101"
+]
       },
       {
 "event_op_index": 53,
+"input_tensor_ids": [
+  "t00001102"
+],
 "op_name": "dropout.default",
-"output": "shape=[1, 32, 624, 624], dtype=float16"
+"output": "shape=[1, 32, 624, 624], dtype=float16",
+"output_tensor_ids": [
+  "t00001102"
+]
       },
       {
 "event_op_index": 54,
+"input_tensor_ids": [
+  "t00001102",
+  "t00001070"
+],
 "op_name": "matmul.default",
-"output": "shape=[1, 32, 624, 128], dtype=float16"
+"output": "shape=[1, 32, 624, 128], dtype=float16",
+"output_tensor_ids": [
+  "t00001103"
+]
       }
     ],
     "stage": "attention",
@@ -151,43 +228,96 @@ CORE_EVIDENCE = json.loads(r"""{
     "evidence_ops": [
       {
 "event_op_index": 54,
+"input_tensor_ids": [
+  "t00001102",
+  "t00001070"
+],
 "op_name": "matmul.default",
-"output": "shape=[1, 32, 624, 128], dtype=float16"
+"output": "shape=[1, 32, 624, 128], dtype=float16",
+"output_tensor_ids": [
+  "t00001103"
+]
       },
       {
 "event_op_index": 56,
+"input_tensor_ids": [
+  "t00001104"
+],
 "op_name": "contiguous.default",
-"output": "shape=[1, 624, 32, 128], dtype=float16"
+"output": "shape=[1, 624, 32, 128], dtype=float16",
+"output_tensor_ids": [
+  "t00001105"
+]
       },
       {
 "event_op_index": 57,
+"input_tensor_ids": [
+  "t00001105"
+],
 "op_name": "reshape.default",
-"output": "shape=[1, 624, 4096], dtype=float16"
+"output": "shape=[1, 624, 4096], dtype=float16",
+"output_tensor_ids": [
+  "t00001106"
+]
       },
       {
 "event_op_index": 70,
+"input_tensor_ids": [
+  "t00001116"
+],
 "op_name": "contiguous.default",
-"output": "shape=[1, 624, 32, 128], dtype=float16"
+"output": "shape=[1, 624, 32, 128], dtype=float16",
+"output_tensor_ids": [
+  "t00001117"
+]
       },
       {
 "event_op_index": 82,
+"input_tensor_ids": [
+  "t00001106",
+  "t00001128"
+],
 "op_name": "linear.default",
-"output": "shape=[1, 624, 4096], dtype=float16"
+"output": "shape=[1, 624, 4096], dtype=float16",
+"output_tensor_ids": [
+  "t00001129"
+]
       },
       {
 "event_op_index": 83,
+"input_tensor_ids": [
+  "t00001049",
+  "t00001129"
+],
 "op_name": "add.Tensor",
-"output": "shape=[1, 624, 4096], dtype=float16"
+"output": "shape=[1, 624, 4096], dtype=float16",
+"output_tensor_ids": [
+  "t00001130"
+]
       },
       {
 "event_op_index": 96,
+"input_tensor_ids": [
+  "t00001145",
+  "t00001146"
+],
 "op_name": "linear.default",
-"output": "shape=[1, 624, 4096], dtype=float16"
+"output": "shape=[1, 624, 4096], dtype=float16",
+"output_tensor_ids": [
+  "t00001147"
+]
       },
       {
 "event_op_index": 97,
+"input_tensor_ids": [
+  "t00001130",
+  "t00001147"
+],
 "op_name": "add.Tensor",
-"output": "shape=[1, 624, 4096], dtype=float16"
+"output": "shape=[1, 624, 4096], dtype=float16",
+"output_tensor_ids": [
+  "t00001148"
+]
       }
     ],
     "stage": "attention_output",
@@ -198,43 +328,93 @@ CORE_EVIDENCE = json.loads(r"""{
     "evidence_ops": [
       {
 "event_op_index": 1,
+"input_tensor_ids": [
+  "t00001049"
+],
 "op_name": "to.dtype",
-"output": "shape=[1, 624, 4096], dtype=float32"
+"output": "shape=[1, 624, 4096], dtype=float32",
+"output_tensor_ids": [
+  "t00001050"
+]
       },
       {
 "event_op_index": 2,
+"input_tensor_ids": [
+  "t00001050"
+],
 "op_name": "pow.Tensor_Scalar",
-"output": "shape=[1, 624, 4096], dtype=float32"
+"output": "shape=[1, 624, 4096], dtype=float32",
+"output_tensor_ids": [
+  "t00001051"
+]
       },
       {
 "event_op_index": 3,
+"input_tensor_ids": [
+  "t00001051"
+],
 "op_name": "mean.dim",
-"output": "shape=[1, 624, 1], dtype=float32"
+"output": "shape=[1, 624, 1], dtype=float32",
+"output_tensor_ids": [
+  "t00001052"
+]
       },
       {
 "event_op_index": 4,
+"input_tensor_ids": [
+  "t00001052"
+],
 "op_name": "add.Tensor",
-"output": "shape=[1, 624, 1], dtype=float32"
+"output": "shape=[1, 624, 1], dtype=float32",
+"output_tensor_ids": [
+  "t00001053"
+]
       },
       {
 "event_op_index": 5,
+"input_tensor_ids": [
+  "t00001053"
+],
 "op_name": "rsqrt.default",
-"output": "shape=[1, 624, 1], dtype=float32"
+"output": "shape=[1, 624, 1], dtype=float32",
+"output_tensor_ids": [
+  "t00001054"
+]
       },
       {
 "event_op_index": 6,
+"input_tensor_ids": [
+  "t00001050",
+  "t00001054"
+],
 "op_name": "mul.Tensor",
-"output": "shape=[1, 624, 4096], dtype=float32"
+"output": "shape=[1, 624, 4096], dtype=float32",
+"output_tensor_ids": [
+  "t00001055"
+]
       },
       {
 "event_op_index": 7,
+"input_tensor_ids": [
+  "t00001055"
+],
 "op_name": "to.dtype",
-"output": "shape=[1, 624, 4096], dtype=float16"
+"output": "shape=[1, 624, 4096], dtype=float16",
+"output_tensor_ids": [
+  "t00001056"
+]
       },
       {
 "event_op_index": 8,
+"input_tensor_ids": [
+  "t00001057",
+  "t00001056"
+],
 "op_name": "mul.Tensor",
-"output": "shape=[1, 624, 4096], dtype=float16"
+"output": "shape=[1, 624, 4096], dtype=float16",
+"output_tensor_ids": [
+  "t00001058"
+]
       }
     ],
     "stage": "input_rmsnorm",
@@ -245,73 +425,164 @@ CORE_EVIDENCE = json.loads(r"""{
     "evidence_ops": [
       {
 "event_op_index": 82,
+"input_tensor_ids": [
+  "t00001106",
+  "t00001128"
+],
 "op_name": "linear.default",
-"output": "shape=[1, 624, 4096], dtype=float16"
+"output": "shape=[1, 624, 4096], dtype=float16",
+"output_tensor_ids": [
+  "t00001129"
+]
       },
       {
 "event_op_index": 83,
+"input_tensor_ids": [
+  "t00001049",
+  "t00001129"
+],
 "op_name": "add.Tensor",
-"output": "shape=[1, 624, 4096], dtype=float16"
+"output": "shape=[1, 624, 4096], dtype=float16",
+"output_tensor_ids": [
+  "t00001130"
+]
       },
       {
 "event_op_index": 84,
+"input_tensor_ids": [
+  "t00001130"
+],
 "op_name": "to.dtype",
-"output": "shape=[1, 624, 4096], dtype=float32"
+"output": "shape=[1, 624, 4096], dtype=float32",
+"output_tensor_ids": [
+  "t00001131"
+]
       },
       {
 "event_op_index": 85,
+"input_tensor_ids": [
+  "t00001131"
+],
 "op_name": "pow.Tensor_Scalar",
-"output": "shape=[1, 624, 4096], dtype=float32"
+"output": "shape=[1, 624, 4096], dtype=float32",
+"output_tensor_ids": [
+  "t00001132"
+]
       },
       {
 "event_op_index": 86,
+"input_tensor_ids": [
+  "t00001132"
+],
 "op_name": "mean.dim",
-"output": "shape=[1, 624, 1], dtype=float32"
+"output": "shape=[1, 624, 1], dtype=float32",
+"output_tensor_ids": [
+  "t00001133"
+]
       },
       {
 "event_op_index": 87,
+"input_tensor_ids": [
+  "t00001133"
+],
 "op_name": "add.Tensor",
-"output": "shape=[1, 624, 1], dtype=float32"
+"output": "shape=[1, 624, 1], dtype=float32",
+"output_tensor_ids": [
+  "t00001134"
+]
       },
       {
 "event_op_index": 88,
+"input_tensor_ids": [
+  "t00001134"
+],
 "op_name": "rsqrt.default",
-"output": "shape=[1, 624, 1], dtype=float32"
+"output": "shape=[1, 624, 1], dtype=float32",
+"output_tensor_ids": [
+  "t00001135"
+]
       },
       {
 "event_op_index": 89,
+"input_tensor_ids": [
+  "t00001131",
+  "t00001135"
+],
 "op_name": "mul.Tensor",
-"output": "shape=[1, 624, 4096], dtype=float32"
+"output": "shape=[1, 624, 4096], dtype=float32",
+"output_tensor_ids": [
+  "t00001136"
+]
       },
       {
 "event_op_index": 90,
+"input_tensor_ids": [
+  "t00001136"
+],
 "op_name": "to.dtype",
-"output": "shape=[1, 624, 4096], dtype=float16"
+"output": "shape=[1, 624, 4096], dtype=float16",
+"output_tensor_ids": [
+  "t00001137"
+]
       },
       {
 "event_op_index": 91,
+"input_tensor_ids": [
+  "t00001138",
+  "t00001137"
+],
 "op_name": "mul.Tensor",
-"output": "shape=[1, 624, 4096], dtype=float16"
+"output": "shape=[1, 624, 4096], dtype=float16",
+"output_tensor_ids": [
+  "t00001139"
+]
       },
       {
 "event_op_index": 92,
+"input_tensor_ids": [
+  "t00001139",
+  "t00001140"
+],
 "op_name": "linear.default",
-"output": "shape=[1, 624, 11008], dtype=float16"
+"output": "shape=[1, 624, 11008], dtype=float16",
+"output_tensor_ids": [
+  "t00001141"
+]
       },
       {
 "event_op_index": 93,
+"input_tensor_ids": [
+  "t00001141"
+],
 "op_name": "silu.default",
-"output": "shape=[1, 624, 11008], dtype=float16"
+"output": "shape=[1, 624, 11008], dtype=float16",
+"output_tensor_ids": [
+  "t00001142"
+]
       },
       {
 "event_op_index": 94,
+"input_tensor_ids": [
+  "t00001139",
+  "t00001143"
+],
 "op_name": "linear.default",
-"output": "shape=[1, 624, 11008], dtype=float16"
+"output": "shape=[1, 624, 11008], dtype=float16",
+"output_tensor_ids": [
+  "t00001144"
+]
       },
       {
 "event_op_index": 95,
+"input_tensor_ids": [
+  "t00001142",
+  "t00001144"
+],
 "op_name": "mul.Tensor",
-"output": "shape=[1, 624, 11008], dtype=float16"
+"output": "shape=[1, 624, 11008], dtype=float16",
+"output_tensor_ids": [
+  "t00001145"
+]
       }
     ],
     "stage": "mlp",
@@ -322,48 +593,105 @@ CORE_EVIDENCE = json.loads(r"""{
     "evidence_ops": [
       {
 "event_op_index": 9,
+"input_tensor_ids": [
+  "t00001058",
+  "t00001059"
+],
 "op_name": "linear.default",
-"output": "shape=[1, 624, 4096], dtype=float16"
+"output": "shape=[1, 624, 4096], dtype=float16",
+"output_tensor_ids": [
+  "t00001060"
+]
       },
       {
 "event_op_index": 10,
+"input_tensor_ids": [
+  "t00001058",
+  "t00001061"
+],
 "op_name": "linear.default",
-"output": "shape=[1, 624, 4096], dtype=float16"
+"output": "shape=[1, 624, 4096], dtype=float16",
+"output_tensor_ids": [
+  "t00001062"
+]
       },
       {
 "event_op_index": 11,
+"input_tensor_ids": [
+  "t00001058",
+  "t00001063"
+],
 "op_name": "linear.default",
-"output": "shape=[1, 624, 4096], dtype=float16"
+"output": "shape=[1, 624, 4096], dtype=float16",
+"output_tensor_ids": [
+  "t00001064"
+]
       },
       {
 "event_op_index": 12,
+"input_tensor_ids": [
+  "t00001060"
+],
 "op_name": "view.default",
-"output": "shape=[1, 624, 32, 128], dtype=float16"
+"output": "shape=[1, 624, 32, 128], dtype=float16",
+"output_tensor_ids": [
+  "t00001065"
+]
       },
       {
 "event_op_index": 13,
+"input_tensor_ids": [
+  "t00001065"
+],
 "op_name": "transpose.int",
-"output": "shape=[1, 32, 624, 128], dtype=float16"
+"output": "shape=[1, 32, 624, 128], dtype=float16",
+"output_tensor_ids": [
+  "t00001066"
+]
       },
       {
 "event_op_index": 14,
+"input_tensor_ids": [
+  "t00001062"
+],
 "op_name": "view.default",
-"output": "shape=[1, 624, 32, 128], dtype=float16"
+"output": "shape=[1, 624, 32, 128], dtype=float16",
+"output_tensor_ids": [
+  "t00001067"
+]
       },
       {
 "event_op_index": 15,
+"input_tensor_ids": [
+  "t00001067"
+],
 "op_name": "transpose.int",
-"output": "shape=[1, 32, 624, 128], dtype=float16"
+"output": "shape=[1, 32, 624, 128], dtype=float16",
+"output_tensor_ids": [
+  "t00001068"
+]
       },
       {
 "event_op_index": 16,
+"input_tensor_ids": [
+  "t00001064"
+],
 "op_name": "view.default",
-"output": "shape=[1, 624, 32, 128], dtype=float16"
+"output": "shape=[1, 624, 32, 128], dtype=float16",
+"output_tensor_ids": [
+  "t00001069"
+]
       },
       {
 "event_op_index": 17,
+"input_tensor_ids": [
+  "t00001069"
+],
 "op_name": "transpose.int",
-"output": "shape=[1, 32, 624, 128], dtype=float16"
+"output": "shape=[1, 32, 624, 128], dtype=float16",
+"output_tensor_ids": [
+  "t00001070"
+]
       }
     ],
     "stage": "qkv_projection",
@@ -374,73 +702,163 @@ CORE_EVIDENCE = json.loads(r"""{
     "evidence_ops": [
       {
 "event_op_index": 20,
+"input_tensor_ids": [
+  "t00001072"
+],
 "op_name": "add.Tensor",
-"output": "shape=[], dtype=int64"
+"output": "shape=[], dtype=int64",
+"output_tensor_ids": [
+  "t00001073"
+]
       },
       {
 "event_op_index": 24,
+"input_tensor_ids": [
+  "t00001075"
+],
 "op_name": "slice.Tensor",
-"output": "shape=[624, 128], dtype=float16"
+"output": "shape=[624, 128], dtype=float16",
+"output_tensor_ids": [
+  "t00001076"
+]
       },
       {
 "event_op_index": 27,
+"input_tensor_ids": [
+  "t00001077"
+],
 "op_name": "slice.Tensor",
-"output": "shape=[624, 128], dtype=float16"
+"output": "shape=[624, 128], dtype=float16",
+"output_tensor_ids": [
+  "t00001078"
+]
       },
       {
 "event_op_index": 29,
+"input_tensor_ids": [
+  "t00001076",
+  "t00000023"
+],
 "op_name": "index.Tensor",
-"output": "shape=[1, 624, 128], dtype=float16"
+"output": "shape=[1, 624, 128], dtype=float16",
+"output_tensor_ids": [
+  "t00001079"
+]
       },
       {
 "event_op_index": 30,
+"input_tensor_ids": [
+  "t00001079"
+],
 "op_name": "unsqueeze.default",
-"output": "shape=[1, 1, 624, 128], dtype=float16"
+"output": "shape=[1, 1, 624, 128], dtype=float16",
+"output_tensor_ids": [
+  "t00001080"
+]
       },
       {
 "event_op_index": 31,
+"input_tensor_ids": [
+  "t00001078",
+  "t00000023"
+],
 "op_name": "index.Tensor",
-"output": "shape=[1, 624, 128], dtype=float16"
+"output": "shape=[1, 624, 128], dtype=float16",
+"output_tensor_ids": [
+  "t00001081"
+]
       },
       {
 "event_op_index": 32,
+"input_tensor_ids": [
+  "t00001081"
+],
 "op_name": "unsqueeze.default",
-"output": "shape=[1, 1, 624, 128], dtype=float16"
+"output": "shape=[1, 1, 624, 128], dtype=float16",
+"output_tensor_ids": [
+  "t00001082"
+]
       },
       {
 "event_op_index": 33,
+"input_tensor_ids": [
+  "t00001066",
+  "t00001080"
+],
 "op_name": "mul.Tensor",
-"output": "shape=[1, 32, 624, 128], dtype=float16"
+"output": "shape=[1, 32, 624, 128], dtype=float16",
+"output_tensor_ids": [
+  "t00001083"
+]
       },
       {
 "event_op_index": 34,
+"input_tensor_ids": [
+  "t00001066"
+],
 "op_name": "slice.Tensor",
-"output": "shape=[1, 32, 624, 64], dtype=float16"
+"output": "shape=[1, 32, 624, 64], dtype=float16",
+"output_tensor_ids": [
+  "t00001084"
+]
       },
       {
 "event_op_index": 35,
+"input_tensor_ids": [
+  "t00001066"
+],
 "op_name": "slice.Tensor",
-"output": "shape=[1, 32, 624, 64], dtype=float16"
+"output": "shape=[1, 32, 624, 64], dtype=float16",
+"output_tensor_ids": [
+  "t00001085"
+]
       },
       {
 "event_op_index": 36,
+"input_tensor_ids": [
+  "t00001085"
+],
 "op_name": "neg.default",
-"output": "shape=[1, 32, 624, 64], dtype=float16"
+"output": "shape=[1, 32, 624, 64], dtype=float16",
+"output_tensor_ids": [
+  "t00001086"
+]
       },
       {
 "event_op_index": 37,
+"input_tensor_ids": [
+  "t00001086",
+  "t00001084"
+],
 "op_name": "cat.default",
-"output": "shape=[1, 32, 624, 128], dtype=float16"
+"output": "shape=[1, 32, 624, 128], dtype=float16",
+"output_tensor_ids": [
+  "t00001087"
+]
       },
       {
 "event_op_index": 38,
+"input_tensor_ids": [
+  "t00001087",
+  "t00001082"
+],
 "op_name": "mul.Tensor",
-"output": "shape=[1, 32, 624, 128], dtype=float16"
+"output": "shape=[1, 32, 624, 128], dtype=float16",
+"output_tensor_ids": [
+  "t00001088"
+]
       },
       {
 "event_op_index": 39,
+"input_tensor_ids": [
+  "t00001083",
+  "t00001088"
+],
 "op_name": "add.Tensor",
-"output": "shape=[1, 32, 624, 128], dtype=float16"
+"output": "shape=[1, 32, 624, 128], dtype=float16",
+"output_tensor_ids": [
+  "t00001089"
+]
       }
     ],
     "stage": "rope",
@@ -451,43 +869,87 @@ CORE_EVIDENCE = json.loads(r"""{
     "evidence_ops": [
       {
 "event_op_index": 21,
+"input_tensor_ids": [
+  "t00001073"
+],
 "op_name": "gt.Scalar",
-"output": "shape=[], dtype=bool"
+"output": "shape=[], dtype=bool",
+"output_tensor_ids": [
+  "t00001074"
+]
       },
       {
 "event_op_index": 22,
+"input_tensor_ids": [
+  "t00001074"
+],
 "op_name": "is_nonzero.default",
-"output": "False"
+"output": "False",
+"output_tensor_ids": []
       },
       {
 "event_op_index": 58,
+"input_tensor_ids": [
+  "t00000057"
+],
 "op_name": "gt.Scalar",
-"output": "shape=[], dtype=bool"
+"output": "shape=[], dtype=bool",
+"output_tensor_ids": [
+  "t00001107"
+]
       },
       {
 "event_op_index": 59,
+"input_tensor_ids": [
+  "t00001107"
+],
 "op_name": "is_nonzero.default",
-"output": "True"
+"output": "True",
+"output_tensor_ids": []
       },
       {
 "event_op_index": 64,
+"input_tensor_ids": [
+  "t00001111"
+],
 "op_name": "is_nonzero.default",
-"output": "True"
+"output": "True",
+"output_tensor_ids": []
       },
       {
 "event_op_index": 75,
+"input_tensor_ids": [
+  "t00001121",
+  "t00001120"
+],
 "op_name": "sub.Tensor",
-"output": "shape=[1, 576, 4096], dtype=float16"
+"output": "shape=[1, 576, 4096], dtype=float16",
+"output_tensor_ids": [
+  "t00001122"
+]
       },
       {
 "event_op_index": 77,
+"input_tensor_ids": [
+  "t00001122",
+  "t00001123"
+],
 "op_name": "cosine_similarity.default",
-"output": "shape=[1, 576], dtype=float16"
+"output": "shape=[1, 576], dtype=float16",
+"output_tensor_ids": [
+  "t00001124"
+]
       },
       {
 "event_op_index": 80,
+"input_tensor_ids": [
+  "t00001126"
+],
 "op_name": "any.default",
-"output": "shape=[], dtype=bool"
+"output": "shape=[], dtype=bool",
+"output_tensor_ids": [
+  "t00001127"
+]
       }
     ],
     "stage": "visipruner_similarity_check",
@@ -551,10 +1013,737 @@ SUMMARY = json.loads(r"""{
     "token_state": "full_visual",
     "visual_adjust_kind": null
   },
+  "dispatch_op_coverage": {
+    "covered_op_count": 97,
+    "missing_event_op_indices": [],
+    "missing_from_module_split": [],
+    "missing_from_tensor_dataflow": [],
+    "op_count": 97
+  },
   "event_id": "input1_layer15",
   "input_id": 1,
   "kv_len": 624,
   "layer_id": 15,
+  "module_split": [
+    {
+      "event_op_indices": [
+1,
+2,
+3,
+4,
+5,
+6,
+7,
+8
+      ],
+      "external_input_tensor_ids": [
+"t00001049",
+"t00001057"
+      ],
+      "first_event_op_index": 1,
+      "input_tensor_ids": [
+"t00001049",
+"t00001050",
+"t00001051",
+"t00001052",
+"t00001053",
+"t00001054",
+"t00001055",
+"t00001057",
+"t00001056"
+      ],
+      "last_event_op_index": 8,
+      "module_class": "llava.model.language_model.custom_modeling_llama.LlamaRMSNorm",
+      "module_forward_file": "/workspace/VisiPrune/repo/llava/model/language_model/custom_modeling_llama.py",
+      "module_forward_lineno": "139",
+      "module_output_tensor_ids": [
+"t00001058"
+      ],
+      "module_path": "model.layers.15.input_layernorm",
+      "module_relative_path": "input_layernorm",
+      "module_type": "LlamaRMSNorm",
+      "op_count": 8,
+      "op_counts": {
+"add.Tensor": 1,
+"mean.dim": 1,
+"mul.Tensor": 2,
+"pow.Tensor_Scalar": 1,
+"rsqrt.default": 1,
+"to.dtype": 2
+      },
+      "output_tensor_ids": [
+"t00001050",
+"t00001051",
+"t00001052",
+"t00001053",
+"t00001054",
+"t00001055",
+"t00001056",
+"t00001058"
+      ]
+    },
+    {
+      "event_op_indices": [
+9
+      ],
+      "external_input_tensor_ids": [
+"t00001058",
+"t00001059"
+      ],
+      "first_event_op_index": 9,
+      "input_tensor_ids": [
+"t00001058",
+"t00001059"
+      ],
+      "last_event_op_index": 9,
+      "module_class": "torch.nn.modules.linear.Linear",
+      "module_forward_file": "/opt/conda/envs/cu132/lib/python3.12/site-packages/torch/nn/modules/linear.py",
+      "module_forward_lineno": "130",
+      "module_output_tensor_ids": [
+"t00001060"
+      ],
+      "module_path": "model.layers.15.self_attn.q_proj",
+      "module_relative_path": "self_attn.q_proj",
+      "module_type": "Linear",
+      "op_count": 1,
+      "op_counts": {
+"linear.default": 1
+      },
+      "output_tensor_ids": [
+"t00001060"
+      ]
+    },
+    {
+      "event_op_indices": [
+10
+      ],
+      "external_input_tensor_ids": [
+"t00001058",
+"t00001061"
+      ],
+      "first_event_op_index": 10,
+      "input_tensor_ids": [
+"t00001058",
+"t00001061"
+      ],
+      "last_event_op_index": 10,
+      "module_class": "torch.nn.modules.linear.Linear",
+      "module_forward_file": "/opt/conda/envs/cu132/lib/python3.12/site-packages/torch/nn/modules/linear.py",
+      "module_forward_lineno": "130",
+      "module_output_tensor_ids": [
+"t00001062"
+      ],
+      "module_path": "model.layers.15.self_attn.k_proj",
+      "module_relative_path": "self_attn.k_proj",
+      "module_type": "Linear",
+      "op_count": 1,
+      "op_counts": {
+"linear.default": 1
+      },
+      "output_tensor_ids": [
+"t00001062"
+      ]
+    },
+    {
+      "event_op_indices": [
+11
+      ],
+      "external_input_tensor_ids": [
+"t00001058",
+"t00001063"
+      ],
+      "first_event_op_index": 11,
+      "input_tensor_ids": [
+"t00001058",
+"t00001063"
+      ],
+      "last_event_op_index": 11,
+      "module_class": "torch.nn.modules.linear.Linear",
+      "module_forward_file": "/opt/conda/envs/cu132/lib/python3.12/site-packages/torch/nn/modules/linear.py",
+      "module_forward_lineno": "130",
+      "module_output_tensor_ids": [
+"t00001064"
+      ],
+      "module_path": "model.layers.15.self_attn.v_proj",
+      "module_relative_path": "self_attn.v_proj",
+      "module_type": "Linear",
+      "op_count": 1,
+      "op_counts": {
+"linear.default": 1
+      },
+      "output_tensor_ids": [
+"t00001064"
+      ]
+    },
+    {
+      "event_op_indices": [
+12,
+13,
+14,
+15,
+16,
+17,
+18,
+19,
+20,
+29,
+30,
+31,
+32,
+33,
+34,
+35,
+36,
+37,
+38,
+39,
+40,
+41,
+42,
+43,
+44,
+45,
+46,
+47,
+48,
+49,
+50,
+51,
+52,
+53,
+54,
+55,
+56,
+57,
+58,
+59,
+60,
+61,
+62,
+63,
+64,
+65,
+66,
+67,
+68,
+69,
+70,
+71,
+72,
+73,
+74,
+75,
+76,
+77,
+78,
+79,
+80,
+81
+      ],
+      "external_input_tensor_ids": [
+"t00001060",
+"t00001062",
+"t00001064",
+"t00000023",
+"t00001076",
+"t00001078",
+"t00000053",
+"t00000057",
+"t00001119"
+      ],
+      "first_event_op_index": 12,
+      "input_tensor_ids": [
+"t00001060",
+"t00001065",
+"t00001062",
+"t00001067",
+"t00001064",
+"t00001069",
+"t00000023",
+"t00001071",
+"t00001072",
+"t00001076",
+"t00001079",
+"t00001078",
+"t00001081",
+"t00001066",
+"t00001080",
+"t00001085",
+"t00001086",
+"t00001084",
+"t00001087",
+"t00001082",
+"t00001083",
+"t00001088",
+"t00001068",
+"t00001092",
+"t00001093",
+"t00001091",
+"t00001094",
+"t00001090",
+"t00001095",
+"t00001096",
+"t00001089",
+"t00001097",
+"t00001098",
+"t00001099",
+"t00000053",
+"t00001100",
+"t00001101",
+"t00001102",
+"t00001070",
+"t00001103",
+"t00001104",
+"t00001105",
+"t00000057",
+"t00001107",
+"t00001108",
+"t00001109",
+"t00001110",
+"t00001111",
+"t00001106",
+"t00001113",
+"t00001114",
+"t00001115",
+"t00001116",
+"t00001117",
+"t00001119",
+"t00001118",
+"t00001112",
+"t00001121",
+"t00001120",
+"t00001122",
+"t00001123",
+"t00001124",
+"t00001125",
+"t00001126",
+"t00001127"
+      ],
+      "last_event_op_index": 81,
+      "module_class": "llava.model.language_model.custom_modeling_llama.VisiPrunerLlamaAttention",
+      "module_forward_file": "/workspace/VisiPrune/repo/llava/model/language_model/custom_modeling_llama.py",
+      "module_forward_lineno": "614",
+      "module_output_tensor_ids": [
+"t00001073"
+      ],
+      "module_path": "model.layers.15.self_attn",
+      "module_relative_path": "self_attn",
+      "module_type": "VisiPrunerLlamaAttention",
+      "op_count": 62,
+      "op_counts": {
+"add.Tensor": 5,
+"any.default": 1,
+"cat.default": 2,
+"contiguous.default": 2,
+"cosine_similarity.default": 1,
+"div.Tensor": 1,
+"dropout.default": 1,
+"eq.Scalar": 1,
+"gt.Scalar": 1,
+"index.Tensor": 2,
+"is_nonzero.default": 2,
+"item.default": 2,
+"lt.Scalar": 1,
+"matmul.default": 2,
+"mul.Tensor": 5,
+"neg.default": 2,
+"permute.default": 1,
+"reshape.default": 1,
+"select.int": 6,
+"slice.Tensor": 5,
+"softmax.int": 1,
+"squeeze.dim": 1,
+"sub.Tensor": 1,
+"to.dtype": 1,
+"transpose.int": 5,
+"unsqueeze.default": 5,
+"view.default": 4
+      },
+      "output_tensor_ids": [
+"t00001065",
+"t00001066",
+"t00001067",
+"t00001068",
+"t00001069",
+"t00001070",
+"t00001071",
+"t00001072",
+"t00001073",
+"t00001079",
+"t00001080",
+"t00001081",
+"t00001082",
+"t00001083",
+"t00001084",
+"t00001085",
+"t00001086",
+"t00001087",
+"t00001088",
+"t00001089",
+"t00001090",
+"t00001091",
+"t00001092",
+"t00001093",
+"t00001094",
+"t00001095",
+"t00001096",
+"t00001097",
+"t00001098",
+"t00001099",
+"t00001100",
+"t00001101",
+"t00001102",
+"t00001103",
+"t00001104",
+"t00001105",
+"t00001106",
+"t00001107",
+"t00001108",
+"t00001109",
+"t00001110",
+"t00001111",
+"t00001112",
+"t00001113",
+"t00001114",
+"t00001115",
+"t00001116",
+"t00001117",
+"t00001118",
+"t00001120",
+"t00001121",
+"t00001122",
+"t00001123",
+"t00001124",
+"t00001125",
+"t00001126",
+"t00001127"
+      ]
+    },
+    {
+      "event_op_indices": [
+21,
+22,
+23,
+24,
+25,
+26,
+27,
+28
+      ],
+      "external_input_tensor_ids": [
+"t00001073",
+"t00001075",
+"t00001077"
+      ],
+      "first_event_op_index": 21,
+      "input_tensor_ids": [
+"t00001073",
+"t00001074",
+"t00001075",
+"t00001076",
+"t00001077",
+"t00001078"
+      ],
+      "last_event_op_index": 28,
+      "module_class": "llava.model.language_model.custom_modeling_llama.LlamaRotaryEmbedding",
+      "module_forward_file": "/workspace/VisiPrune/repo/llava/model/language_model/custom_modeling_llama.py",
+      "module_forward_lineno": "175",
+      "module_output_tensor_ids": [],
+      "module_path": "model.layers.15.self_attn.rotary_emb",
+      "module_relative_path": "self_attn.rotary_emb",
+      "module_type": "LlamaRotaryEmbedding",
+      "op_count": 8,
+      "op_counts": {
+"gt.Scalar": 1,
+"is_nonzero.default": 1,
+"item.default": 2,
+"slice.Tensor": 2,
+"to.dtype": 2
+      },
+      "output_tensor_ids": [
+"t00001074",
+"t00001076",
+"t00001078"
+      ]
+    },
+    {
+      "event_op_indices": [
+82
+      ],
+      "external_input_tensor_ids": [
+"t00001106",
+"t00001128"
+      ],
+      "first_event_op_index": 82,
+      "input_tensor_ids": [
+"t00001106",
+"t00001128"
+      ],
+      "last_event_op_index": 82,
+      "module_class": "torch.nn.modules.linear.Linear",
+      "module_forward_file": "/opt/conda/envs/cu132/lib/python3.12/site-packages/torch/nn/modules/linear.py",
+      "module_forward_lineno": "130",
+      "module_output_tensor_ids": [
+"t00001129"
+      ],
+      "module_path": "model.layers.15.self_attn.o_proj",
+      "module_relative_path": "self_attn.o_proj",
+      "module_type": "Linear",
+      "op_count": 1,
+      "op_counts": {
+"linear.default": 1
+      },
+      "output_tensor_ids": [
+"t00001129"
+      ]
+    },
+    {
+      "event_op_indices": [
+83,
+97
+      ],
+      "external_input_tensor_ids": [
+"t00001049",
+"t00001129",
+"t00001147"
+      ],
+      "first_event_op_index": 83,
+      "input_tensor_ids": [
+"t00001049",
+"t00001129",
+"t00001130",
+"t00001147"
+      ],
+      "last_event_op_index": 97,
+      "module_class": "llava.model.language_model.custom_modeling_llama.LlamaDecoderLayer",
+      "module_forward_file": "/workspace/VisiPrune/workload_analysis/dispatch/tools/visipruner_filtered_dispatch_profile.py",
+      "module_forward_lineno": "881",
+      "module_output_tensor_ids": [
+"t00001148"
+      ],
+      "module_path": "model.layers.15",
+      "module_relative_path": "",
+      "module_type": "LlamaDecoderLayer",
+      "op_count": 2,
+      "op_counts": {
+"add.Tensor": 2
+      },
+      "output_tensor_ids": [
+"t00001130",
+"t00001148"
+      ]
+    },
+    {
+      "event_op_indices": [
+84,
+85,
+86,
+87,
+88,
+89,
+90,
+91
+      ],
+      "external_input_tensor_ids": [
+"t00001130",
+"t00001138"
+      ],
+      "first_event_op_index": 84,
+      "input_tensor_ids": [
+"t00001130",
+"t00001131",
+"t00001132",
+"t00001133",
+"t00001134",
+"t00001135",
+"t00001136",
+"t00001138",
+"t00001137"
+      ],
+      "last_event_op_index": 91,
+      "module_class": "llava.model.language_model.custom_modeling_llama.LlamaRMSNorm",
+      "module_forward_file": "/workspace/VisiPrune/repo/llava/model/language_model/custom_modeling_llama.py",
+      "module_forward_lineno": "139",
+      "module_output_tensor_ids": [
+"t00001139"
+      ],
+      "module_path": "model.layers.15.post_attention_layernorm",
+      "module_relative_path": "post_attention_layernorm",
+      "module_type": "LlamaRMSNorm",
+      "op_count": 8,
+      "op_counts": {
+"add.Tensor": 1,
+"mean.dim": 1,
+"mul.Tensor": 2,
+"pow.Tensor_Scalar": 1,
+"rsqrt.default": 1,
+"to.dtype": 2
+      },
+      "output_tensor_ids": [
+"t00001131",
+"t00001132",
+"t00001133",
+"t00001134",
+"t00001135",
+"t00001136",
+"t00001137",
+"t00001139"
+      ]
+    },
+    {
+      "event_op_indices": [
+92
+      ],
+      "external_input_tensor_ids": [
+"t00001139",
+"t00001140"
+      ],
+      "first_event_op_index": 92,
+      "input_tensor_ids": [
+"t00001139",
+"t00001140"
+      ],
+      "last_event_op_index": 92,
+      "module_class": "torch.nn.modules.linear.Linear",
+      "module_forward_file": "/opt/conda/envs/cu132/lib/python3.12/site-packages/torch/nn/modules/linear.py",
+      "module_forward_lineno": "130",
+      "module_output_tensor_ids": [
+"t00001141"
+      ],
+      "module_path": "model.layers.15.mlp.gate_proj",
+      "module_relative_path": "mlp.gate_proj",
+      "module_type": "Linear",
+      "op_count": 1,
+      "op_counts": {
+"linear.default": 1
+      },
+      "output_tensor_ids": [
+"t00001141"
+      ]
+    },
+    {
+      "event_op_indices": [
+93
+      ],
+      "external_input_tensor_ids": [
+"t00001141"
+      ],
+      "first_event_op_index": 93,
+      "input_tensor_ids": [
+"t00001141"
+      ],
+      "last_event_op_index": 93,
+      "module_class": "torch.nn.modules.activation.SiLU",
+      "module_forward_file": "/opt/conda/envs/cu132/lib/python3.12/site-packages/torch/nn/modules/activation.py",
+      "module_forward_lineno": "471",
+      "module_output_tensor_ids": [
+"t00001142"
+      ],
+      "module_path": "model.layers.15.mlp.act_fn",
+      "module_relative_path": "mlp.act_fn",
+      "module_type": "SiLU",
+      "op_count": 1,
+      "op_counts": {
+"silu.default": 1
+      },
+      "output_tensor_ids": [
+"t00001142"
+      ]
+    },
+    {
+      "event_op_indices": [
+94
+      ],
+      "external_input_tensor_ids": [
+"t00001139",
+"t00001143"
+      ],
+      "first_event_op_index": 94,
+      "input_tensor_ids": [
+"t00001139",
+"t00001143"
+      ],
+      "last_event_op_index": 94,
+      "module_class": "torch.nn.modules.linear.Linear",
+      "module_forward_file": "/opt/conda/envs/cu132/lib/python3.12/site-packages/torch/nn/modules/linear.py",
+      "module_forward_lineno": "130",
+      "module_output_tensor_ids": [
+"t00001144"
+      ],
+      "module_path": "model.layers.15.mlp.up_proj",
+      "module_relative_path": "mlp.up_proj",
+      "module_type": "Linear",
+      "op_count": 1,
+      "op_counts": {
+"linear.default": 1
+      },
+      "output_tensor_ids": [
+"t00001144"
+      ]
+    },
+    {
+      "event_op_indices": [
+95
+      ],
+      "external_input_tensor_ids": [
+"t00001142",
+"t00001144"
+      ],
+      "first_event_op_index": 95,
+      "input_tensor_ids": [
+"t00001142",
+"t00001144"
+      ],
+      "last_event_op_index": 95,
+      "module_class": "llava.model.language_model.custom_modeling_llama.LlamaMLP",
+      "module_forward_file": "/workspace/VisiPrune/repo/llava/model/language_model/custom_modeling_llama.py",
+      "module_forward_lineno": "277",
+      "module_output_tensor_ids": [
+"t00001145"
+      ],
+      "module_path": "model.layers.15.mlp",
+      "module_relative_path": "mlp",
+      "module_type": "LlamaMLP",
+      "op_count": 1,
+      "op_counts": {
+"mul.Tensor": 1
+      },
+      "output_tensor_ids": [
+"t00001145"
+      ]
+    },
+    {
+      "event_op_indices": [
+96
+      ],
+      "external_input_tensor_ids": [
+"t00001145",
+"t00001146"
+      ],
+      "first_event_op_index": 96,
+      "input_tensor_ids": [
+"t00001145",
+"t00001146"
+      ],
+      "last_event_op_index": 96,
+      "module_class": "torch.nn.modules.linear.Linear",
+      "module_forward_file": "/opt/conda/envs/cu132/lib/python3.12/site-packages/torch/nn/modules/linear.py",
+      "module_forward_lineno": "130",
+      "module_output_tensor_ids": [
+"t00001147"
+      ],
+      "module_path": "model.layers.15.mlp.down_proj",
+      "module_relative_path": "mlp.down_proj",
+      "module_type": "Linear",
+      "op_count": 1,
+      "op_counts": {
+"linear.default": 1
+      },
+      "output_tensor_ids": [
+"t00001147"
+      ]
+    }
+  ],
   "op_counts": {
     "add.Tensor": 9,
     "any.default": 1,
@@ -616,6 +1805,31 @@ SUMMARY = json.loads(r"""{
     "tail_start": 13,
     "visual_end": 13,
     "visual_start": 3
+  },
+  "tensor_dataflow": {
+    "edge_count": 107,
+    "external_input_tensor_ids": [
+      "t00001049",
+      "t00001057",
+      "t00001059",
+      "t00001061",
+      "t00001063",
+      "t00000023",
+      "t00001075",
+      "t00001077",
+      "t00000053",
+      "t00000057",
+      "t00001119",
+      "t00001128",
+      "t00001138",
+      "t00001140",
+      "t00001143",
+      "t00001146"
+    ],
+    "final_output_tensor_ids": [
+      "t00001148"
+    ],
+    "op_count": 97
   },
   "token_state": "full_visual",
   "visipruner_role": "middle_probe"

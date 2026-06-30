@@ -18,11 +18,17 @@
 - `k_heads`: `[4, 16, 8]`
 - `v_heads`: `[4, 16, 8]`
 
+### Dispatch Tensor ID Inputs/Outputs
+
+- Dispatch input tensor ids: `['t00000959', 't00000960', 't00000962', 't00000964']`
+- Dispatch output tensor ids: `['t00000967', 't00000969', 't00000971']`
+- Dispatch tensor-id dependencies inside evidence rows: `[{'tensor_id': 't00000961', 'consumer_event_op_index': 12, 'consumer_op_name': 'view.default'}, {'tensor_id': 't00000966', 'consumer_event_op_index': 13, 'consumer_op_name': 'transpose.int'}, {'tensor_id': 't00000963', 'consumer_event_op_index': 14, 'consumer_op_name': 'view.default'}, {'tensor_id': 't00000968', 'consumer_event_op_index': 15, 'consumer_op_name': 'transpose.int'}, {'tensor_id': 't00000965', 'consumer_event_op_index': 16, 'consumer_op_name': 'view.default'}, {'tensor_id': 't00000970', 'consumer_event_op_index': 17, 'consumer_op_name': 'transpose.int'}]`
+
 ## Corresponding `torch_flow` Code
 
-- Export wrapper: `/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer14/torch_flow/export_stage_onnx.py::QKVProjectionStage`
-- Primary implementation: `/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer14/torch_flow/qkv_projection.py`
-- Support files: `/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer14/torch_flow/config.py`, `/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer14/torch_flow/init_data.py`, `/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer14/torch_flow/export_stage_onnx.py`
+- Export wrapper: `workload_analysis/dispatch/visualize/input1_layer14/torch_flow/export_stage_onnx.py::QKVProjectionStage`
+- Primary implementation: `workload_analysis/dispatch/visualize/input1_layer14/torch_flow/qkv_projection.py`
+- Support files: `workload_analysis/dispatch/visualize/input1_layer14/torch_flow/config.py`, `workload_analysis/dispatch/visualize/input1_layer14/torch_flow/init_data.py`, `workload_analysis/dispatch/visualize/input1_layer14/torch_flow/export_stage_onnx.py`
 
 ## Code Explanation
 
@@ -37,15 +43,15 @@ Applies the query/key/value linear projections and reshapes the projected hidden
 
 ## Dispatch Evidence Notes
 
-- `#9 linear.default` -> shape=[1, 624, 4096], dtype=float16
-- `#10 linear.default` -> shape=[1, 624, 4096], dtype=float16
-- `#11 linear.default` -> shape=[1, 624, 4096], dtype=float16
-- `#12 view.default` -> shape=[1, 624, 32, 128], dtype=float16
-- `#13 transpose.int` -> shape=[1, 32, 624, 128], dtype=float16
-- `#14 view.default` -> shape=[1, 624, 32, 128], dtype=float16
-- `#15 transpose.int` -> shape=[1, 32, 624, 128], dtype=float16
-- `#16 view.default` -> shape=[1, 624, 32, 128], dtype=float16
-- `#17 transpose.int` -> shape=[1, 32, 624, 128], dtype=float16
+- `#9 linear.default` inputs=`['t00000959', 't00000960']` outputs=`['t00000961']` -> shape=[1, 624, 4096], dtype=float16
+- `#10 linear.default` inputs=`['t00000959', 't00000962']` outputs=`['t00000963']` -> shape=[1, 624, 4096], dtype=float16
+- `#11 linear.default` inputs=`['t00000959', 't00000964']` outputs=`['t00000965']` -> shape=[1, 624, 4096], dtype=float16
+- `#12 view.default` inputs=`['t00000961']` outputs=`['t00000966']` -> shape=[1, 624, 32, 128], dtype=float16
+- `#13 transpose.int` inputs=`['t00000966']` outputs=`['t00000967']` -> shape=[1, 32, 624, 128], dtype=float16
+- `#14 view.default` inputs=`['t00000963']` outputs=`['t00000968']` -> shape=[1, 624, 32, 128], dtype=float16
+- `#15 transpose.int` inputs=`['t00000968']` outputs=`['t00000969']` -> shape=[1, 32, 624, 128], dtype=float16
+- `#16 view.default` inputs=`['t00000965']` outputs=`['t00000970']` -> shape=[1, 624, 32, 128], dtype=float16
+- `#17 transpose.int` inputs=`['t00000970']` outputs=`['t00000971']` -> shape=[1, 32, 624, 128], dtype=float16
 
 ## Export Wrapper Source
 

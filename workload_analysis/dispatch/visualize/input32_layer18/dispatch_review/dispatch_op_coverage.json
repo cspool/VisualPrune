@@ -1,0 +1,1833 @@
+{
+  "op_count": 76,
+  "covered_op_count": 76,
+  "expected_event_op_indices": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61,
+    62,
+    63,
+    64,
+    65,
+    66,
+    67,
+    68,
+    69,
+    70,
+    71,
+    72,
+    73,
+    74,
+    75,
+    76
+  ],
+  "covered_event_op_indices": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61,
+    62,
+    63,
+    64,
+    65,
+    66,
+    67,
+    68,
+    69,
+    70,
+    71,
+    72,
+    73,
+    74,
+    75,
+    76
+  ],
+  "covered_once_event_op_indices": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61,
+    62,
+    63,
+    64,
+    65,
+    66,
+    67,
+    68,
+    69,
+    70,
+    71,
+    72,
+    73,
+    74,
+    75,
+    76
+  ],
+  "missing_event_op_indices": [],
+  "duplicate_event_op_indices": [],
+  "missing_from_module_split": [],
+  "duplicate_module_split_indices": [],
+  "missing_from_tensor_dataflow": [],
+  "ops": [
+    {
+      "event_detail_id": "input32_layer18/input_layernorm/call0422/op0001",
+      "event_op_index": 1,
+      "global_op_index": 2784,
+      "op_name": "to.dtype",
+      "op_schema": "aten::to.dtype(Tensor(a) self, ScalarType dtype, bool non_blocking=False, bool copy=False, MemoryFormat? memory_format=None) -> Tensor(a)",
+      "module_path": "model.layers.18.input_layernorm",
+      "module_relative_path": "input_layernorm",
+      "runtime_subprocess": "model.layers.18.input_layernorm",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "input_rmsnorm"
+      ],
+      "input_tensor_ids": [
+        "t00002830"
+      ],
+      "output_tensor_ids": [
+        "t00002831"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/input_layernorm/call0422/op0002",
+      "event_op_index": 2,
+      "global_op_index": 2785,
+      "op_name": "pow.Tensor_Scalar",
+      "op_schema": "aten::pow.Tensor_Scalar(Tensor self, Scalar exponent) -> Tensor",
+      "module_path": "model.layers.18.input_layernorm",
+      "module_relative_path": "input_layernorm",
+      "runtime_subprocess": "model.layers.18.input_layernorm",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "input_rmsnorm"
+      ],
+      "input_tensor_ids": [
+        "t00002831"
+      ],
+      "output_tensor_ids": [
+        "t00002832"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/input_layernorm/call0422/op0003",
+      "event_op_index": 3,
+      "global_op_index": 2786,
+      "op_name": "mean.dim",
+      "op_schema": "aten::mean.dim(Tensor self, int[1]? dim, bool keepdim=False, *, ScalarType? dtype=None) -> Tensor",
+      "module_path": "model.layers.18.input_layernorm",
+      "module_relative_path": "input_layernorm",
+      "runtime_subprocess": "model.layers.18.input_layernorm",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "input_rmsnorm"
+      ],
+      "input_tensor_ids": [
+        "t00002832"
+      ],
+      "output_tensor_ids": [
+        "t00002833"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/input_layernorm/call0422/op0004",
+      "event_op_index": 4,
+      "global_op_index": 2787,
+      "op_name": "add.Tensor",
+      "op_schema": "aten::add.Tensor(Tensor self, Tensor other, *, Scalar alpha=1) -> Tensor",
+      "module_path": "model.layers.18.input_layernorm",
+      "module_relative_path": "input_layernorm",
+      "runtime_subprocess": "model.layers.18.input_layernorm",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "input_rmsnorm"
+      ],
+      "input_tensor_ids": [
+        "t00002833"
+      ],
+      "output_tensor_ids": [
+        "t00002834"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/input_layernorm/call0422/op0005",
+      "event_op_index": 5,
+      "global_op_index": 2788,
+      "op_name": "rsqrt.default",
+      "op_schema": "aten::rsqrt(Tensor self) -> Tensor",
+      "module_path": "model.layers.18.input_layernorm",
+      "module_relative_path": "input_layernorm",
+      "runtime_subprocess": "model.layers.18.input_layernorm",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "input_rmsnorm"
+      ],
+      "input_tensor_ids": [
+        "t00002834"
+      ],
+      "output_tensor_ids": [
+        "t00002835"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/input_layernorm/call0422/op0006",
+      "event_op_index": 6,
+      "global_op_index": 2789,
+      "op_name": "mul.Tensor",
+      "op_schema": "aten::mul.Tensor(Tensor self, Tensor other) -> Tensor",
+      "module_path": "model.layers.18.input_layernorm",
+      "module_relative_path": "input_layernorm",
+      "runtime_subprocess": "model.layers.18.input_layernorm",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "input_rmsnorm"
+      ],
+      "input_tensor_ids": [
+        "t00002831",
+        "t00002835"
+      ],
+      "output_tensor_ids": [
+        "t00002836"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/input_layernorm/call0422/op0007",
+      "event_op_index": 7,
+      "global_op_index": 2790,
+      "op_name": "to.dtype",
+      "op_schema": "aten::to.dtype(Tensor(a) self, ScalarType dtype, bool non_blocking=False, bool copy=False, MemoryFormat? memory_format=None) -> Tensor(a)",
+      "module_path": "model.layers.18.input_layernorm",
+      "module_relative_path": "input_layernorm",
+      "runtime_subprocess": "model.layers.18.input_layernorm",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "input_rmsnorm"
+      ],
+      "input_tensor_ids": [
+        "t00002836"
+      ],
+      "output_tensor_ids": [
+        "t00002837"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/input_layernorm/call0422/op0008",
+      "event_op_index": 8,
+      "global_op_index": 2791,
+      "op_name": "mul.Tensor",
+      "op_schema": "aten::mul.Tensor(Tensor self, Tensor other) -> Tensor",
+      "module_path": "model.layers.18.input_layernorm",
+      "module_relative_path": "input_layernorm",
+      "runtime_subprocess": "model.layers.18.input_layernorm",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "input_rmsnorm"
+      ],
+      "input_tensor_ids": [
+        "t00001354",
+        "t00002837"
+      ],
+      "output_tensor_ids": [
+        "t00002838"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/q_proj/call0424/op0001",
+      "event_op_index": 9,
+      "global_op_index": 2792,
+      "op_name": "linear.default",
+      "op_schema": "aten::linear(Tensor input, Tensor weight, Tensor? bias=None) -> Tensor",
+      "module_path": "model.layers.18.self_attn.q_proj",
+      "module_relative_path": "self_attn.q_proj",
+      "runtime_subprocess": "model.layers.18.self_attn.q_proj",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "qkv_projection"
+      ],
+      "input_tensor_ids": [
+        "t00002838",
+        "t00001356"
+      ],
+      "output_tensor_ids": [
+        "t00002839"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/k_proj/call0425/op0001",
+      "event_op_index": 10,
+      "global_op_index": 2793,
+      "op_name": "linear.default",
+      "op_schema": "aten::linear(Tensor input, Tensor weight, Tensor? bias=None) -> Tensor",
+      "module_path": "model.layers.18.self_attn.k_proj",
+      "module_relative_path": "self_attn.k_proj",
+      "runtime_subprocess": "model.layers.18.self_attn.k_proj",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "qkv_projection"
+      ],
+      "input_tensor_ids": [
+        "t00002838",
+        "t00001358"
+      ],
+      "output_tensor_ids": [
+        "t00002840"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/v_proj/call0426/op0001",
+      "event_op_index": 11,
+      "global_op_index": 2794,
+      "op_name": "linear.default",
+      "op_schema": "aten::linear(Tensor input, Tensor weight, Tensor? bias=None) -> Tensor",
+      "module_path": "model.layers.18.self_attn.v_proj",
+      "module_relative_path": "self_attn.v_proj",
+      "runtime_subprocess": "model.layers.18.self_attn.v_proj",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "qkv_projection"
+      ],
+      "input_tensor_ids": [
+        "t00002838",
+        "t00001360"
+      ],
+      "output_tensor_ids": [
+        "t00002841"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/call0423/op0001",
+      "event_op_index": 12,
+      "global_op_index": 2795,
+      "op_name": "view.default",
+      "op_schema": "aten::view(Tensor(a) self, SymInt[] size) -> Tensor(a)",
+      "module_path": "model.layers.18.self_attn",
+      "module_relative_path": "self_attn",
+      "runtime_subprocess": "model.layers.18.self_attn",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "qkv_projection"
+      ],
+      "input_tensor_ids": [
+        "t00002839"
+      ],
+      "output_tensor_ids": [
+        "t00002842"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/call0423/op0002",
+      "event_op_index": 13,
+      "global_op_index": 2796,
+      "op_name": "transpose.int",
+      "op_schema": "aten::transpose.int(Tensor(a) self, int dim0, int dim1) -> Tensor(a)",
+      "module_path": "model.layers.18.self_attn",
+      "module_relative_path": "self_attn",
+      "runtime_subprocess": "model.layers.18.self_attn",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "qkv_projection",
+        "attention"
+      ],
+      "input_tensor_ids": [
+        "t00002842"
+      ],
+      "output_tensor_ids": [
+        "t00002843"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/call0423/op0003",
+      "event_op_index": 14,
+      "global_op_index": 2797,
+      "op_name": "view.default",
+      "op_schema": "aten::view(Tensor(a) self, SymInt[] size) -> Tensor(a)",
+      "module_path": "model.layers.18.self_attn",
+      "module_relative_path": "self_attn",
+      "runtime_subprocess": "model.layers.18.self_attn",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "qkv_projection"
+      ],
+      "input_tensor_ids": [
+        "t00002840"
+      ],
+      "output_tensor_ids": [
+        "t00002844"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/call0423/op0004",
+      "event_op_index": 15,
+      "global_op_index": 2798,
+      "op_name": "transpose.int",
+      "op_schema": "aten::transpose.int(Tensor(a) self, int dim0, int dim1) -> Tensor(a)",
+      "module_path": "model.layers.18.self_attn",
+      "module_relative_path": "self_attn",
+      "runtime_subprocess": "model.layers.18.self_attn",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "qkv_projection",
+        "attention"
+      ],
+      "input_tensor_ids": [
+        "t00002844"
+      ],
+      "output_tensor_ids": [
+        "t00002845"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/call0423/op0005",
+      "event_op_index": 16,
+      "global_op_index": 2799,
+      "op_name": "view.default",
+      "op_schema": "aten::view(Tensor(a) self, SymInt[] size) -> Tensor(a)",
+      "module_path": "model.layers.18.self_attn",
+      "module_relative_path": "self_attn",
+      "runtime_subprocess": "model.layers.18.self_attn",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "qkv_projection"
+      ],
+      "input_tensor_ids": [
+        "t00002841"
+      ],
+      "output_tensor_ids": [
+        "t00002846"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/call0423/op0006",
+      "event_op_index": 17,
+      "global_op_index": 2800,
+      "op_name": "transpose.int",
+      "op_schema": "aten::transpose.int(Tensor(a) self, int dim0, int dim1) -> Tensor(a)",
+      "module_path": "model.layers.18.self_attn",
+      "module_relative_path": "self_attn",
+      "runtime_subprocess": "model.layers.18.self_attn",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "qkv_projection",
+        "attention"
+      ],
+      "input_tensor_ids": [
+        "t00002846"
+      ],
+      "output_tensor_ids": [
+        "t00002847"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/call0423/op0007",
+      "event_op_index": 18,
+      "global_op_index": 2801,
+      "op_name": "select.int",
+      "op_schema": "aten::select.int(Tensor(a) self, int dim, SymInt index) -> Tensor(a)",
+      "module_path": "model.layers.18.self_attn",
+      "module_relative_path": "self_attn",
+      "runtime_subprocess": "model.layers.18.self_attn",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [],
+      "input_tensor_ids": [
+        "t00002848"
+      ],
+      "output_tensor_ids": [
+        "t00002849"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/call0423/op0008",
+      "event_op_index": 19,
+      "global_op_index": 2802,
+      "op_name": "select.int",
+      "op_schema": "aten::select.int(Tensor(a) self, int dim, SymInt index) -> Tensor(a)",
+      "module_path": "model.layers.18.self_attn",
+      "module_relative_path": "self_attn",
+      "runtime_subprocess": "model.layers.18.self_attn",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [],
+      "input_tensor_ids": [
+        "t00002849"
+      ],
+      "output_tensor_ids": [
+        "t00002850"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/call0423/op0009",
+      "event_op_index": 20,
+      "global_op_index": 2803,
+      "op_name": "add.Tensor",
+      "op_schema": "aten::add.Tensor(Tensor self, Tensor other, *, Scalar alpha=1) -> Tensor",
+      "module_path": "model.layers.18.self_attn",
+      "module_relative_path": "self_attn",
+      "runtime_subprocess": "model.layers.18.self_attn",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "rope"
+      ],
+      "input_tensor_ids": [
+        "t00002850"
+      ],
+      "output_tensor_ids": [
+        "t00002851"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/rotary_emb/call0427/op0001",
+      "event_op_index": 21,
+      "global_op_index": 2804,
+      "op_name": "gt.Scalar",
+      "op_schema": "aten::gt.Scalar(Tensor self, Scalar other) -> Tensor",
+      "module_path": "model.layers.18.self_attn.rotary_emb",
+      "module_relative_path": "self_attn.rotary_emb",
+      "runtime_subprocess": "model.layers.18.self_attn.rotary_emb",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [],
+      "input_tensor_ids": [
+        "t00002851"
+      ],
+      "output_tensor_ids": [
+        "t00002852"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/rotary_emb/call0427/op0002",
+      "event_op_index": 22,
+      "global_op_index": 2805,
+      "op_name": "is_nonzero.default",
+      "op_schema": "aten::is_nonzero(Tensor self) -> bool",
+      "module_path": "model.layers.18.self_attn.rotary_emb",
+      "module_relative_path": "self_attn.rotary_emb",
+      "runtime_subprocess": "model.layers.18.self_attn.rotary_emb",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [],
+      "input_tensor_ids": [
+        "t00002852"
+      ],
+      "output_tensor_ids": []
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/rotary_emb/call0427/op0003",
+      "event_op_index": 23,
+      "global_op_index": 2806,
+      "op_name": "item.default",
+      "op_schema": "aten::item(Tensor self) -> Scalar",
+      "module_path": "model.layers.18.self_attn.rotary_emb",
+      "module_relative_path": "self_attn.rotary_emb",
+      "runtime_subprocess": "model.layers.18.self_attn.rotary_emb",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [],
+      "input_tensor_ids": [
+        "t00002851"
+      ],
+      "output_tensor_ids": []
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/rotary_emb/call0427/op0004",
+      "event_op_index": 24,
+      "global_op_index": 2807,
+      "op_name": "slice.Tensor",
+      "op_schema": "aten::slice.Tensor(Tensor(a) self, int dim=0, SymInt? start=None, SymInt? end=None, SymInt step=1) -> Tensor(a)",
+      "module_path": "model.layers.18.self_attn.rotary_emb",
+      "module_relative_path": "self_attn.rotary_emb",
+      "runtime_subprocess": "model.layers.18.self_attn.rotary_emb",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "rope"
+      ],
+      "input_tensor_ids": [
+        "t00001372"
+      ],
+      "output_tensor_ids": [
+        "t00002853"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/rotary_emb/call0427/op0005",
+      "event_op_index": 25,
+      "global_op_index": 2808,
+      "op_name": "to.dtype",
+      "op_schema": "aten::to.dtype(Tensor(a) self, ScalarType dtype, bool non_blocking=False, bool copy=False, MemoryFormat? memory_format=None) -> Tensor(a)",
+      "module_path": "model.layers.18.self_attn.rotary_emb",
+      "module_relative_path": "self_attn.rotary_emb",
+      "runtime_subprocess": "model.layers.18.self_attn.rotary_emb",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [],
+      "input_tensor_ids": [
+        "t00002853"
+      ],
+      "output_tensor_ids": [
+        "t00002853"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/rotary_emb/call0427/op0006",
+      "event_op_index": 26,
+      "global_op_index": 2809,
+      "op_name": "item.default",
+      "op_schema": "aten::item(Tensor self) -> Scalar",
+      "module_path": "model.layers.18.self_attn.rotary_emb",
+      "module_relative_path": "self_attn.rotary_emb",
+      "runtime_subprocess": "model.layers.18.self_attn.rotary_emb",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [],
+      "input_tensor_ids": [
+        "t00002851"
+      ],
+      "output_tensor_ids": []
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/rotary_emb/call0427/op0007",
+      "event_op_index": 27,
+      "global_op_index": 2810,
+      "op_name": "slice.Tensor",
+      "op_schema": "aten::slice.Tensor(Tensor(a) self, int dim=0, SymInt? start=None, SymInt? end=None, SymInt step=1) -> Tensor(a)",
+      "module_path": "model.layers.18.self_attn.rotary_emb",
+      "module_relative_path": "self_attn.rotary_emb",
+      "runtime_subprocess": "model.layers.18.self_attn.rotary_emb",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "rope"
+      ],
+      "input_tensor_ids": [
+        "t00001374"
+      ],
+      "output_tensor_ids": [
+        "t00002854"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/rotary_emb/call0427/op0008",
+      "event_op_index": 28,
+      "global_op_index": 2811,
+      "op_name": "to.dtype",
+      "op_schema": "aten::to.dtype(Tensor(a) self, ScalarType dtype, bool non_blocking=False, bool copy=False, MemoryFormat? memory_format=None) -> Tensor(a)",
+      "module_path": "model.layers.18.self_attn.rotary_emb",
+      "module_relative_path": "self_attn.rotary_emb",
+      "runtime_subprocess": "model.layers.18.self_attn.rotary_emb",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [],
+      "input_tensor_ids": [
+        "t00002854"
+      ],
+      "output_tensor_ids": [
+        "t00002854"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/call0423/op0010",
+      "event_op_index": 29,
+      "global_op_index": 2812,
+      "op_name": "index.Tensor",
+      "op_schema": "aten::index.Tensor(Tensor self, Tensor?[] indices) -> Tensor",
+      "module_path": "model.layers.18.self_attn",
+      "module_relative_path": "self_attn",
+      "runtime_subprocess": "model.layers.18.self_attn",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "rope"
+      ],
+      "input_tensor_ids": [
+        "t00002853",
+        "t00002848"
+      ],
+      "output_tensor_ids": [
+        "t00002855"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/call0423/op0011",
+      "event_op_index": 30,
+      "global_op_index": 2813,
+      "op_name": "unsqueeze.default",
+      "op_schema": "aten::unsqueeze(Tensor(a) self, int dim) -> Tensor(a)",
+      "module_path": "model.layers.18.self_attn",
+      "module_relative_path": "self_attn",
+      "runtime_subprocess": "model.layers.18.self_attn",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "rope"
+      ],
+      "input_tensor_ids": [
+        "t00002855"
+      ],
+      "output_tensor_ids": [
+        "t00002856"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/call0423/op0012",
+      "event_op_index": 31,
+      "global_op_index": 2814,
+      "op_name": "index.Tensor",
+      "op_schema": "aten::index.Tensor(Tensor self, Tensor?[] indices) -> Tensor",
+      "module_path": "model.layers.18.self_attn",
+      "module_relative_path": "self_attn",
+      "runtime_subprocess": "model.layers.18.self_attn",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "rope"
+      ],
+      "input_tensor_ids": [
+        "t00002854",
+        "t00002848"
+      ],
+      "output_tensor_ids": [
+        "t00002857"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/call0423/op0013",
+      "event_op_index": 32,
+      "global_op_index": 2815,
+      "op_name": "unsqueeze.default",
+      "op_schema": "aten::unsqueeze(Tensor(a) self, int dim) -> Tensor(a)",
+      "module_path": "model.layers.18.self_attn",
+      "module_relative_path": "self_attn",
+      "runtime_subprocess": "model.layers.18.self_attn",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "rope"
+      ],
+      "input_tensor_ids": [
+        "t00002857"
+      ],
+      "output_tensor_ids": [
+        "t00002858"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/call0423/op0014",
+      "event_op_index": 33,
+      "global_op_index": 2816,
+      "op_name": "mul.Tensor",
+      "op_schema": "aten::mul.Tensor(Tensor self, Tensor other) -> Tensor",
+      "module_path": "model.layers.18.self_attn",
+      "module_relative_path": "self_attn",
+      "runtime_subprocess": "model.layers.18.self_attn",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "rope"
+      ],
+      "input_tensor_ids": [
+        "t00002843",
+        "t00002856"
+      ],
+      "output_tensor_ids": [
+        "t00002859"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/call0423/op0015",
+      "event_op_index": 34,
+      "global_op_index": 2817,
+      "op_name": "slice.Tensor",
+      "op_schema": "aten::slice.Tensor(Tensor(a) self, int dim=0, SymInt? start=None, SymInt? end=None, SymInt step=1) -> Tensor(a)",
+      "module_path": "model.layers.18.self_attn",
+      "module_relative_path": "self_attn",
+      "runtime_subprocess": "model.layers.18.self_attn",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "rope"
+      ],
+      "input_tensor_ids": [
+        "t00002843"
+      ],
+      "output_tensor_ids": [
+        "t00002860"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/call0423/op0016",
+      "event_op_index": 35,
+      "global_op_index": 2818,
+      "op_name": "slice.Tensor",
+      "op_schema": "aten::slice.Tensor(Tensor(a) self, int dim=0, SymInt? start=None, SymInt? end=None, SymInt step=1) -> Tensor(a)",
+      "module_path": "model.layers.18.self_attn",
+      "module_relative_path": "self_attn",
+      "runtime_subprocess": "model.layers.18.self_attn",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "rope"
+      ],
+      "input_tensor_ids": [
+        "t00002843"
+      ],
+      "output_tensor_ids": [
+        "t00002861"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/call0423/op0017",
+      "event_op_index": 36,
+      "global_op_index": 2819,
+      "op_name": "neg.default",
+      "op_schema": "aten::neg(Tensor self) -> Tensor",
+      "module_path": "model.layers.18.self_attn",
+      "module_relative_path": "self_attn",
+      "runtime_subprocess": "model.layers.18.self_attn",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "rope"
+      ],
+      "input_tensor_ids": [
+        "t00002861"
+      ],
+      "output_tensor_ids": [
+        "t00002862"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/call0423/op0018",
+      "event_op_index": 37,
+      "global_op_index": 2820,
+      "op_name": "cat.default",
+      "op_schema": "aten::cat(Tensor[] tensors, int dim=0) -> Tensor",
+      "module_path": "model.layers.18.self_attn",
+      "module_relative_path": "self_attn",
+      "runtime_subprocess": "model.layers.18.self_attn",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "rope"
+      ],
+      "input_tensor_ids": [
+        "t00002862",
+        "t00002860"
+      ],
+      "output_tensor_ids": [
+        "t00002863"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/call0423/op0019",
+      "event_op_index": 38,
+      "global_op_index": 2821,
+      "op_name": "mul.Tensor",
+      "op_schema": "aten::mul.Tensor(Tensor self, Tensor other) -> Tensor",
+      "module_path": "model.layers.18.self_attn",
+      "module_relative_path": "self_attn",
+      "runtime_subprocess": "model.layers.18.self_attn",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "rope"
+      ],
+      "input_tensor_ids": [
+        "t00002863",
+        "t00002858"
+      ],
+      "output_tensor_ids": [
+        "t00002864"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/call0423/op0020",
+      "event_op_index": 39,
+      "global_op_index": 2822,
+      "op_name": "add.Tensor",
+      "op_schema": "aten::add.Tensor(Tensor self, Tensor other, *, Scalar alpha=1) -> Tensor",
+      "module_path": "model.layers.18.self_attn",
+      "module_relative_path": "self_attn",
+      "runtime_subprocess": "model.layers.18.self_attn",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "rope",
+        "attention"
+      ],
+      "input_tensor_ids": [
+        "t00002859",
+        "t00002864"
+      ],
+      "output_tensor_ids": [
+        "t00002865"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/call0423/op0021",
+      "event_op_index": 40,
+      "global_op_index": 2823,
+      "op_name": "mul.Tensor",
+      "op_schema": "aten::mul.Tensor(Tensor self, Tensor other) -> Tensor",
+      "module_path": "model.layers.18.self_attn",
+      "module_relative_path": "self_attn",
+      "runtime_subprocess": "model.layers.18.self_attn",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [],
+      "input_tensor_ids": [
+        "t00002845",
+        "t00002856"
+      ],
+      "output_tensor_ids": [
+        "t00002866"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/call0423/op0022",
+      "event_op_index": 41,
+      "global_op_index": 2824,
+      "op_name": "slice.Tensor",
+      "op_schema": "aten::slice.Tensor(Tensor(a) self, int dim=0, SymInt? start=None, SymInt? end=None, SymInt step=1) -> Tensor(a)",
+      "module_path": "model.layers.18.self_attn",
+      "module_relative_path": "self_attn",
+      "runtime_subprocess": "model.layers.18.self_attn",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [],
+      "input_tensor_ids": [
+        "t00002845"
+      ],
+      "output_tensor_ids": [
+        "t00002867"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/call0423/op0023",
+      "event_op_index": 42,
+      "global_op_index": 2825,
+      "op_name": "slice.Tensor",
+      "op_schema": "aten::slice.Tensor(Tensor(a) self, int dim=0, SymInt? start=None, SymInt? end=None, SymInt step=1) -> Tensor(a)",
+      "module_path": "model.layers.18.self_attn",
+      "module_relative_path": "self_attn",
+      "runtime_subprocess": "model.layers.18.self_attn",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [],
+      "input_tensor_ids": [
+        "t00002845"
+      ],
+      "output_tensor_ids": [
+        "t00002868"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/call0423/op0024",
+      "event_op_index": 43,
+      "global_op_index": 2826,
+      "op_name": "neg.default",
+      "op_schema": "aten::neg(Tensor self) -> Tensor",
+      "module_path": "model.layers.18.self_attn",
+      "module_relative_path": "self_attn",
+      "runtime_subprocess": "model.layers.18.self_attn",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [],
+      "input_tensor_ids": [
+        "t00002868"
+      ],
+      "output_tensor_ids": [
+        "t00002869"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/call0423/op0025",
+      "event_op_index": 44,
+      "global_op_index": 2827,
+      "op_name": "cat.default",
+      "op_schema": "aten::cat(Tensor[] tensors, int dim=0) -> Tensor",
+      "module_path": "model.layers.18.self_attn",
+      "module_relative_path": "self_attn",
+      "runtime_subprocess": "model.layers.18.self_attn",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [],
+      "input_tensor_ids": [
+        "t00002869",
+        "t00002867"
+      ],
+      "output_tensor_ids": [
+        "t00002870"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/call0423/op0026",
+      "event_op_index": 45,
+      "global_op_index": 2828,
+      "op_name": "mul.Tensor",
+      "op_schema": "aten::mul.Tensor(Tensor self, Tensor other) -> Tensor",
+      "module_path": "model.layers.18.self_attn",
+      "module_relative_path": "self_attn",
+      "runtime_subprocess": "model.layers.18.self_attn",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [],
+      "input_tensor_ids": [
+        "t00002870",
+        "t00002858"
+      ],
+      "output_tensor_ids": [
+        "t00002871"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/call0423/op0027",
+      "event_op_index": 46,
+      "global_op_index": 2829,
+      "op_name": "add.Tensor",
+      "op_schema": "aten::add.Tensor(Tensor self, Tensor other, *, Scalar alpha=1) -> Tensor",
+      "module_path": "model.layers.18.self_attn",
+      "module_relative_path": "self_attn",
+      "runtime_subprocess": "model.layers.18.self_attn",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "attention"
+      ],
+      "input_tensor_ids": [
+        "t00002866",
+        "t00002871"
+      ],
+      "output_tensor_ids": [
+        "t00002872"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/call0423/op0028",
+      "event_op_index": 47,
+      "global_op_index": 2830,
+      "op_name": "cat.default",
+      "op_schema": "aten::cat(Tensor[] tensors, int dim=0) -> Tensor",
+      "module_path": "model.layers.18.self_attn",
+      "module_relative_path": "self_attn",
+      "runtime_subprocess": "model.layers.18.self_attn",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "kv_cache_concat"
+      ],
+      "input_tensor_ids": [
+        "t00002873",
+        "t00002872"
+      ],
+      "output_tensor_ids": [
+        "t00002874"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/call0423/op0029",
+      "event_op_index": 48,
+      "global_op_index": 2831,
+      "op_name": "cat.default",
+      "op_schema": "aten::cat(Tensor[] tensors, int dim=0) -> Tensor",
+      "module_path": "model.layers.18.self_attn",
+      "module_relative_path": "self_attn",
+      "runtime_subprocess": "model.layers.18.self_attn",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "kv_cache_concat"
+      ],
+      "input_tensor_ids": [
+        "t00002875",
+        "t00002847"
+      ],
+      "output_tensor_ids": [
+        "t00002876"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/call0423/op0030",
+      "event_op_index": 49,
+      "global_op_index": 2832,
+      "op_name": "transpose.int",
+      "op_schema": "aten::transpose.int(Tensor(a) self, int dim0, int dim1) -> Tensor(a)",
+      "module_path": "model.layers.18.self_attn",
+      "module_relative_path": "self_attn",
+      "runtime_subprocess": "model.layers.18.self_attn",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "attention"
+      ],
+      "input_tensor_ids": [
+        "t00002874"
+      ],
+      "output_tensor_ids": [
+        "t00002877"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/call0423/op0031",
+      "event_op_index": 50,
+      "global_op_index": 2833,
+      "op_name": "matmul.default",
+      "op_schema": "aten::matmul(Tensor self, Tensor other) -> Tensor",
+      "module_path": "model.layers.18.self_attn",
+      "module_relative_path": "self_attn",
+      "runtime_subprocess": "model.layers.18.self_attn",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "attention"
+      ],
+      "input_tensor_ids": [
+        "t00002865",
+        "t00002877"
+      ],
+      "output_tensor_ids": [
+        "t00002878"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/call0423/op0032",
+      "event_op_index": 51,
+      "global_op_index": 2834,
+      "op_name": "div.Tensor",
+      "op_schema": "aten::div.Tensor(Tensor self, Tensor other) -> Tensor",
+      "module_path": "model.layers.18.self_attn",
+      "module_relative_path": "self_attn",
+      "runtime_subprocess": "model.layers.18.self_attn",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "attention"
+      ],
+      "input_tensor_ids": [
+        "t00002878"
+      ],
+      "output_tensor_ids": [
+        "t00002879"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/call0423/op0033",
+      "event_op_index": 52,
+      "global_op_index": 2835,
+      "op_name": "add.Tensor",
+      "op_schema": "aten::add.Tensor(Tensor self, Tensor other, *, Scalar alpha=1) -> Tensor",
+      "module_path": "model.layers.18.self_attn",
+      "module_relative_path": "self_attn",
+      "runtime_subprocess": "model.layers.18.self_attn",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "attention"
+      ],
+      "input_tensor_ids": [
+        "t00002879",
+        "t00002880"
+      ],
+      "output_tensor_ids": [
+        "t00002881"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/call0423/op0034",
+      "event_op_index": 53,
+      "global_op_index": 2836,
+      "op_name": "softmax.int",
+      "op_schema": "aten::softmax.int(Tensor self, int dim, ScalarType? dtype=None) -> Tensor",
+      "module_path": "model.layers.18.self_attn",
+      "module_relative_path": "self_attn",
+      "runtime_subprocess": "model.layers.18.self_attn",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "attention"
+      ],
+      "input_tensor_ids": [
+        "t00002881"
+      ],
+      "output_tensor_ids": [
+        "t00002882"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/call0423/op0035",
+      "event_op_index": 54,
+      "global_op_index": 2837,
+      "op_name": "to.dtype",
+      "op_schema": "aten::to.dtype(Tensor(a) self, ScalarType dtype, bool non_blocking=False, bool copy=False, MemoryFormat? memory_format=None) -> Tensor(a)",
+      "module_path": "model.layers.18.self_attn",
+      "module_relative_path": "self_attn",
+      "runtime_subprocess": "model.layers.18.self_attn",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "mlp"
+      ],
+      "input_tensor_ids": [
+        "t00002882"
+      ],
+      "output_tensor_ids": [
+        "t00002883"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/call0423/op0036",
+      "event_op_index": 55,
+      "global_op_index": 2838,
+      "op_name": "dropout.default",
+      "op_schema": "aten::dropout(Tensor input, float p, bool train) -> Tensor",
+      "module_path": "model.layers.18.self_attn",
+      "module_relative_path": "self_attn",
+      "runtime_subprocess": "model.layers.18.self_attn",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "attention"
+      ],
+      "input_tensor_ids": [
+        "t00002883"
+      ],
+      "output_tensor_ids": [
+        "t00002883"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/call0423/op0037",
+      "event_op_index": 56,
+      "global_op_index": 2839,
+      "op_name": "matmul.default",
+      "op_schema": "aten::matmul(Tensor self, Tensor other) -> Tensor",
+      "module_path": "model.layers.18.self_attn",
+      "module_relative_path": "self_attn",
+      "runtime_subprocess": "model.layers.18.self_attn",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "attention",
+        "attention_output"
+      ],
+      "input_tensor_ids": [
+        "t00002883",
+        "t00002876"
+      ],
+      "output_tensor_ids": [
+        "t00002884"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/call0423/op0038",
+      "event_op_index": 57,
+      "global_op_index": 2840,
+      "op_name": "transpose.int",
+      "op_schema": "aten::transpose.int(Tensor(a) self, int dim0, int dim1) -> Tensor(a)",
+      "module_path": "model.layers.18.self_attn",
+      "module_relative_path": "self_attn",
+      "runtime_subprocess": "model.layers.18.self_attn",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [],
+      "input_tensor_ids": [
+        "t00002884"
+      ],
+      "output_tensor_ids": [
+        "t00002885"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/call0423/op0039",
+      "event_op_index": 58,
+      "global_op_index": 2841,
+      "op_name": "reshape.default",
+      "op_schema": "aten::reshape(Tensor(a) self, SymInt[] shape) -> Tensor(a)",
+      "module_path": "model.layers.18.self_attn",
+      "module_relative_path": "self_attn",
+      "runtime_subprocess": "model.layers.18.self_attn",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "attention_output"
+      ],
+      "input_tensor_ids": [
+        "t00002885"
+      ],
+      "output_tensor_ids": [
+        "t00002886"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/call0423/op0040",
+      "event_op_index": 59,
+      "global_op_index": 2842,
+      "op_name": "gt.Scalar",
+      "op_schema": "aten::gt.Scalar(Tensor self, Scalar other) -> Tensor",
+      "module_path": "model.layers.18.self_attn",
+      "module_relative_path": "self_attn",
+      "runtime_subprocess": "model.layers.18.self_attn",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [],
+      "input_tensor_ids": [
+        "t00000057"
+      ],
+      "output_tensor_ids": [
+        "t00002887"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/call0423/op0041",
+      "event_op_index": 60,
+      "global_op_index": 2843,
+      "op_name": "is_nonzero.default",
+      "op_schema": "aten::is_nonzero(Tensor self) -> bool",
+      "module_path": "model.layers.18.self_attn",
+      "module_relative_path": "self_attn",
+      "runtime_subprocess": "model.layers.18.self_attn",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [],
+      "input_tensor_ids": [
+        "t00002887"
+      ],
+      "output_tensor_ids": []
+    },
+    {
+      "event_detail_id": "input32_layer18/self_attn/o_proj/call0428/op0001",
+      "event_op_index": 61,
+      "global_op_index": 2844,
+      "op_name": "linear.default",
+      "op_schema": "aten::linear(Tensor input, Tensor weight, Tensor? bias=None) -> Tensor",
+      "module_path": "model.layers.18.self_attn.o_proj",
+      "module_relative_path": "self_attn.o_proj",
+      "runtime_subprocess": "model.layers.18.self_attn.o_proj",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "attention_output",
+        "mlp"
+      ],
+      "input_tensor_ids": [
+        "t00002886",
+        "t00001432"
+      ],
+      "output_tensor_ids": [
+        "t00002888"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/model/layers/18/call0421/op0001",
+      "event_op_index": 62,
+      "global_op_index": 2845,
+      "op_name": "add.Tensor",
+      "op_schema": "aten::add.Tensor(Tensor self, Tensor other, *, Scalar alpha=1) -> Tensor",
+      "module_path": "model.layers.18",
+      "module_relative_path": "",
+      "runtime_subprocess": "model.layers.18",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "attention_output",
+        "mlp"
+      ],
+      "input_tensor_ids": [
+        "t00002830",
+        "t00002888"
+      ],
+      "output_tensor_ids": [
+        "t00002889"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/post_attention_layernorm/call0429/op0001",
+      "event_op_index": 63,
+      "global_op_index": 2846,
+      "op_name": "to.dtype",
+      "op_schema": "aten::to.dtype(Tensor(a) self, ScalarType dtype, bool non_blocking=False, bool copy=False, MemoryFormat? memory_format=None) -> Tensor(a)",
+      "module_path": "model.layers.18.post_attention_layernorm",
+      "module_relative_path": "post_attention_layernorm",
+      "runtime_subprocess": "model.layers.18.post_attention_layernorm",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "mlp"
+      ],
+      "input_tensor_ids": [
+        "t00002889"
+      ],
+      "output_tensor_ids": [
+        "t00002890"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/post_attention_layernorm/call0429/op0002",
+      "event_op_index": 64,
+      "global_op_index": 2847,
+      "op_name": "pow.Tensor_Scalar",
+      "op_schema": "aten::pow.Tensor_Scalar(Tensor self, Scalar exponent) -> Tensor",
+      "module_path": "model.layers.18.post_attention_layernorm",
+      "module_relative_path": "post_attention_layernorm",
+      "runtime_subprocess": "model.layers.18.post_attention_layernorm",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "mlp"
+      ],
+      "input_tensor_ids": [
+        "t00002890"
+      ],
+      "output_tensor_ids": [
+        "t00002891"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/post_attention_layernorm/call0429/op0003",
+      "event_op_index": 65,
+      "global_op_index": 2848,
+      "op_name": "mean.dim",
+      "op_schema": "aten::mean.dim(Tensor self, int[1]? dim, bool keepdim=False, *, ScalarType? dtype=None) -> Tensor",
+      "module_path": "model.layers.18.post_attention_layernorm",
+      "module_relative_path": "post_attention_layernorm",
+      "runtime_subprocess": "model.layers.18.post_attention_layernorm",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "mlp"
+      ],
+      "input_tensor_ids": [
+        "t00002891"
+      ],
+      "output_tensor_ids": [
+        "t00002892"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/post_attention_layernorm/call0429/op0004",
+      "event_op_index": 66,
+      "global_op_index": 2849,
+      "op_name": "add.Tensor",
+      "op_schema": "aten::add.Tensor(Tensor self, Tensor other, *, Scalar alpha=1) -> Tensor",
+      "module_path": "model.layers.18.post_attention_layernorm",
+      "module_relative_path": "post_attention_layernorm",
+      "runtime_subprocess": "model.layers.18.post_attention_layernorm",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "mlp"
+      ],
+      "input_tensor_ids": [
+        "t00002892"
+      ],
+      "output_tensor_ids": [
+        "t00002893"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/post_attention_layernorm/call0429/op0005",
+      "event_op_index": 67,
+      "global_op_index": 2850,
+      "op_name": "rsqrt.default",
+      "op_schema": "aten::rsqrt(Tensor self) -> Tensor",
+      "module_path": "model.layers.18.post_attention_layernorm",
+      "module_relative_path": "post_attention_layernorm",
+      "runtime_subprocess": "model.layers.18.post_attention_layernorm",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "mlp"
+      ],
+      "input_tensor_ids": [
+        "t00002893"
+      ],
+      "output_tensor_ids": [
+        "t00002894"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/post_attention_layernorm/call0429/op0006",
+      "event_op_index": 68,
+      "global_op_index": 2851,
+      "op_name": "mul.Tensor",
+      "op_schema": "aten::mul.Tensor(Tensor self, Tensor other) -> Tensor",
+      "module_path": "model.layers.18.post_attention_layernorm",
+      "module_relative_path": "post_attention_layernorm",
+      "runtime_subprocess": "model.layers.18.post_attention_layernorm",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "mlp"
+      ],
+      "input_tensor_ids": [
+        "t00002890",
+        "t00002894"
+      ],
+      "output_tensor_ids": [
+        "t00002895"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/post_attention_layernorm/call0429/op0007",
+      "event_op_index": 69,
+      "global_op_index": 2852,
+      "op_name": "to.dtype",
+      "op_schema": "aten::to.dtype(Tensor(a) self, ScalarType dtype, bool non_blocking=False, bool copy=False, MemoryFormat? memory_format=None) -> Tensor(a)",
+      "module_path": "model.layers.18.post_attention_layernorm",
+      "module_relative_path": "post_attention_layernorm",
+      "runtime_subprocess": "model.layers.18.post_attention_layernorm",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "mlp"
+      ],
+      "input_tensor_ids": [
+        "t00002895"
+      ],
+      "output_tensor_ids": [
+        "t00002896"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/post_attention_layernorm/call0429/op0008",
+      "event_op_index": 70,
+      "global_op_index": 2853,
+      "op_name": "mul.Tensor",
+      "op_schema": "aten::mul.Tensor(Tensor self, Tensor other) -> Tensor",
+      "module_path": "model.layers.18.post_attention_layernorm",
+      "module_relative_path": "post_attention_layernorm",
+      "runtime_subprocess": "model.layers.18.post_attention_layernorm",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "mlp"
+      ],
+      "input_tensor_ids": [
+        "t00001442",
+        "t00002896"
+      ],
+      "output_tensor_ids": [
+        "t00002897"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/mlp/gate_proj/call0431/op0001",
+      "event_op_index": 71,
+      "global_op_index": 2854,
+      "op_name": "linear.default",
+      "op_schema": "aten::linear(Tensor input, Tensor weight, Tensor? bias=None) -> Tensor",
+      "module_path": "model.layers.18.mlp.gate_proj",
+      "module_relative_path": "mlp.gate_proj",
+      "runtime_subprocess": "model.layers.18.mlp.gate_proj",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "mlp"
+      ],
+      "input_tensor_ids": [
+        "t00002897",
+        "t00001444"
+      ],
+      "output_tensor_ids": [
+        "t00002898"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/mlp/act_fn/call0432/op0001",
+      "event_op_index": 72,
+      "global_op_index": 2855,
+      "op_name": "silu.default",
+      "op_schema": "aten::silu(Tensor self) -> Tensor",
+      "module_path": "model.layers.18.mlp.act_fn",
+      "module_relative_path": "mlp.act_fn",
+      "runtime_subprocess": "model.layers.18.mlp.act_fn",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "mlp"
+      ],
+      "input_tensor_ids": [
+        "t00002898"
+      ],
+      "output_tensor_ids": [
+        "t00002899"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/mlp/up_proj/call0433/op0001",
+      "event_op_index": 73,
+      "global_op_index": 2856,
+      "op_name": "linear.default",
+      "op_schema": "aten::linear(Tensor input, Tensor weight, Tensor? bias=None) -> Tensor",
+      "module_path": "model.layers.18.mlp.up_proj",
+      "module_relative_path": "mlp.up_proj",
+      "runtime_subprocess": "model.layers.18.mlp.up_proj",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "mlp"
+      ],
+      "input_tensor_ids": [
+        "t00002897",
+        "t00001447"
+      ],
+      "output_tensor_ids": [
+        "t00002900"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/mlp/call0430/op0001",
+      "event_op_index": 74,
+      "global_op_index": 2857,
+      "op_name": "mul.Tensor",
+      "op_schema": "aten::mul.Tensor(Tensor self, Tensor other) -> Tensor",
+      "module_path": "model.layers.18.mlp",
+      "module_relative_path": "mlp",
+      "runtime_subprocess": "model.layers.18.mlp",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [],
+      "input_tensor_ids": [
+        "t00002899",
+        "t00002900"
+      ],
+      "output_tensor_ids": [
+        "t00002901"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/mlp/down_proj/call0434/op0001",
+      "event_op_index": 75,
+      "global_op_index": 2858,
+      "op_name": "linear.default",
+      "op_schema": "aten::linear(Tensor input, Tensor weight, Tensor? bias=None) -> Tensor",
+      "module_path": "model.layers.18.mlp.down_proj",
+      "module_relative_path": "mlp.down_proj",
+      "runtime_subprocess": "model.layers.18.mlp.down_proj",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "attention_output"
+      ],
+      "input_tensor_ids": [
+        "t00002901",
+        "t00001450"
+      ],
+      "output_tensor_ids": [
+        "t00002902"
+      ]
+    },
+    {
+      "event_detail_id": "input32_layer18/model/layers/18/call0421/op0002",
+      "event_op_index": 76,
+      "global_op_index": 2859,
+      "op_name": "add.Tensor",
+      "op_schema": "aten::add.Tensor(Tensor self, Tensor other, *, Scalar alpha=1) -> Tensor",
+      "module_path": "model.layers.18",
+      "module_relative_path": "",
+      "runtime_subprocess": "model.layers.18",
+      "module_split_covered": true,
+      "tensor_dataflow_covered": true,
+      "stage_evidence": [
+        "attention_output"
+      ],
+      "input_tensor_ids": [
+        "t00002889",
+        "t00002902"
+      ],
+      "output_tensor_ids": [
+        "t00002903"
+      ]
+    }
+  ]
+}

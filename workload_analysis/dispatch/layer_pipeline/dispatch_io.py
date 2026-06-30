@@ -31,6 +31,15 @@ def parse_json_field(value: str) -> Any:
         return value
 
 
+def tensor_ids_from_row(row: dict[str, str], key: str) -> list[str]:
+    value = parse_json_field(row.get(key, ""))
+    if isinstance(value, list):
+        return [str(item) for item in value if item not in (None, "")]
+    if isinstance(value, str) and value:
+        return [value]
+    return []
+
+
 def tensor_shape(value: Any) -> list[int] | None:
     if isinstance(value, dict) and value.get("type") == "Tensor":
         shape = value.get("shape")

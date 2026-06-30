@@ -21,10 +21,29 @@ from transformers import AutoTokenizer, AutoModelForCausalLM, AutoConfig, BitsAn
 import torch
 from llava.model import *
 from llava.constants import DEFAULT_IMAGE_PATCH_TOKEN, DEFAULT_IM_START_TOKEN, DEFAULT_IM_END_TOKEN
+from llava.model.language_model.decode_optimization import resolve_visipruner_decode_backend
 
 
-def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, load_4bit=False, device_map="auto", device="cuda", use_flash_attn=False, use_visipruner=False, **kwargs):
+def load_pretrained_model(
+    model_path,
+    model_base,
+    model_name,
+    load_8bit=False,
+    load_4bit=False,
+    device_map="auto",
+    device="cuda",
+    use_flash_attn=False,
+    use_visipruner=False,
+    visipruner_decode_backend=None,
+    **kwargs
+):
     kwargs = {"device_map": device_map, **kwargs}
+    decode_backend = resolve_visipruner_decode_backend(
+        visipruner_decode_backend,
+        use_visipruner=use_visipruner,
+        use_flash_attn=use_flash_attn,
+    )
+    use_flash_attn = decode_backend.use_flash_attn
 
     if device != "cuda":
         kwargs['device_map'] = {"": device}
@@ -47,32 +66,37 @@ def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, l
     else:
         kwargs['attn_implementation'] = 'eager'
 
-    # Inject use_visipruner into the model config so LlamaDecoderLayer
-    # selects the correct attention class (VisiPrunerLlamaAttention or
-    # FA2VisiPrunerLlamaAttention) during from_pretrained.
-    # NOTE: Must use the CUSTOM LlavaConfig (from llava_llama, which inherits
-    # LlamaConfig) — NOT AutoConfig (which loads transformers' LlavaConfig
-    # inheriting only PretrainedConfig, missing attention_dropout etc.).
-    # Also MUST set _attn_implementation explicitly — when a config= kwarg is
-    # passed to from_pretrained, HuggingFace ignores the attn_implementation
-    # kwarg and uses whatever is in the config object.
+    llava_llama_cls = LlavaLlamaForCausalLM
+    llava_config_cls = LlavaConfig
+    if decode_backend.use_optimized_modeling:
+        from llava.model.language_model.llava_llama_decode_optimized import (
+            LlavaDecodeOptimizedConfig,
+            LlavaLlamaForCausalLMDecodeOptimized,
+        )
+
+        llava_llama_cls = LlavaLlamaForCausalLMDecodeOptimized
+        llava_config_cls = LlavaDecodeOptimizedConfig
+
+    # Inject use_visipruner into the selected model config so LlamaDecoderLayer
+    # selects the correct attention class during from_pretrained. The eager
+    # fallback uses the original modeling file; the FA2 backend uses the copied
+    # optimized modeling file.
+    visipruner_config = None
     if use_visipruner:
-        from llava.model.language_model.llava_llama import LlavaConfig as _LlavaCfg
-        cfg = _LlavaCfg.from_pretrained(model_path)
-        cfg.use_visipruner = True
-        cfg._attn_implementation = kwargs.get('attn_implementation', 'eager')
-        kwargs['config'] = cfg
+        visipruner_config = llava_config_cls.from_pretrained(model_path)
+        visipruner_config.use_visipruner = True
+        visipruner_config._attn_implementation = kwargs.get('attn_implementation', 'eager')
+        visipruner_config.visipruner_use_vp_fa = decode_backend.selected == "vp_fa"
 
     if 'llava' in model_name.lower():
         # Load LLaVA model
         if 'lora' in model_name.lower() and model_base is None:
             warnings.warn('There is `lora` in model name but no `model_base` is provided. If you are loading a LoRA model, please provide the `model_base` argument. Detailed instruction: https://github.com/haotian-liu/LLaVA#launch-a-model-worker-lora-weights-unmerged.')
         if 'lora' in model_name.lower() and model_base is not None:
-            from llava.model.language_model.llava_llama import LlavaConfig
-            lora_cfg_pretrained = LlavaConfig.from_pretrained(model_path)
+            lora_cfg_pretrained = visipruner_config or llava_config_cls.from_pretrained(model_path)
             tokenizer = AutoTokenizer.from_pretrained(model_base, use_fast=False)
             print('Loading LLaVA from base model...')
-            model = LlavaLlamaForCausalLM.from_pretrained(model_base, low_cpu_mem_usage=True, config=lora_cfg_pretrained, **kwargs)
+            model = llava_llama_cls.from_pretrained(model_base, low_cpu_mem_usage=True, config=lora_cfg_pretrained, **kwargs)
             token_num, tokem_dim = model.lm_head.out_features, model.lm_head.in_features
             if model.lm_head.weight.shape[0] != token_num:
                 model.lm_head.weight = torch.nn.Parameter(torch.empty(token_num, tokem_dim, device=model.device, dtype=model.dtype))
@@ -113,8 +137,8 @@ def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, l
                 model = LlavaMptForCausalLM.from_pretrained(model_base, low_cpu_mem_usage=True, config=cfg_pretrained, **kwargs)
             else:
                 tokenizer = AutoTokenizer.from_pretrained(model_base, use_fast=False)
-                cfg_pretrained = AutoConfig.from_pretrained(model_path)
-                model = LlavaLlamaForCausalLM.from_pretrained(model_base, low_cpu_mem_usage=True, config=cfg_pretrained, **kwargs)
+                cfg_pretrained = visipruner_config or AutoConfig.from_pretrained(model_path)
+                model = llava_llama_cls.from_pretrained(model_base, low_cpu_mem_usage=True, config=cfg_pretrained, **kwargs)
 
             mm_projector_weights = torch.load(os.path.join(model_path, 'mm_projector.bin'), map_location='cpu')
             mm_projector_weights = {k: v.to(torch.float16) for k, v in mm_projector_weights.items()}
@@ -133,11 +157,19 @@ def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, l
             else:
                 tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=False)
                 # kwargs.update({'model_name': model_name})
-                model = LlavaLlamaForCausalLM.from_pretrained(
-                    model_path,
-                    low_cpu_mem_usage=True,
-                    **kwargs
-                )
+                if visipruner_config is not None:
+                    model = llava_llama_cls.from_pretrained(
+                        model_path,
+                        low_cpu_mem_usage=True,
+                        config=visipruner_config,
+                        **kwargs
+                    )
+                else:
+                    model = llava_llama_cls.from_pretrained(
+                        model_path,
+                        low_cpu_mem_usage=True,
+                        **kwargs
+                    )
     else:
         # Load language model
         if model_base is not None:
@@ -182,5 +214,8 @@ def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, l
         context_len = model.config.max_sequence_length
     else:
         context_len = 2048
+
+    if use_visipruner:
+        model.config.visipruner_decode_backend = decode_backend.as_dict()
 
     return tokenizer, model, image_processor, context_len

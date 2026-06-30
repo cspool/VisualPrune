@@ -18,11 +18,17 @@
 - `variance`: `[16, 1]`
 - `inv_rms`: `[16, 1]`
 
+### Dispatch Tensor ID Inputs/Outputs
+
+- Dispatch input tensor ids: `['t00002169', 't00002177']`
+- Dispatch output tensor ids: `['t00002178']`
+- Dispatch tensor-id dependencies inside evidence rows: `[{'tensor_id': 't00002170', 'consumer_event_op_index': 2, 'consumer_op_name': 'pow.Tensor_Scalar'}, {'tensor_id': 't00002171', 'consumer_event_op_index': 3, 'consumer_op_name': 'mean.dim'}, {'tensor_id': 't00002172', 'consumer_event_op_index': 4, 'consumer_op_name': 'add.Tensor'}, {'tensor_id': 't00002173', 'consumer_event_op_index': 5, 'consumer_op_name': 'rsqrt.default'}, {'tensor_id': 't00002170', 'consumer_event_op_index': 6, 'consumer_op_name': 'mul.Tensor'}, {'tensor_id': 't00002174', 'consumer_event_op_index': 6, 'consumer_op_name': 'mul.Tensor'}, {'tensor_id': 't00002175', 'consumer_event_op_index': 7, 'consumer_op_name': 'to.dtype'}, {'tensor_id': 't00002176', 'consumer_event_op_index': 8, 'consumer_op_name': 'mul.Tensor'}]`
+
 ## Corresponding `torch_flow` Code
 
-- Export wrapper: `/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer26/torch_flow/export_stage_onnx.py::InputRMSNormStage`
-- Primary implementation: `/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer26/torch_flow/rmsnorm.py`
-- Support files: `/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer26/torch_flow/config.py`, `/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer26/torch_flow/init_data.py`, `/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer26/torch_flow/export_stage_onnx.py`
+- Export wrapper: `workload_analysis/dispatch/visualize/input1_layer26/torch_flow/export_stage_onnx.py::InputRMSNormStage`
+- Primary implementation: `workload_analysis/dispatch/visualize/input1_layer26/torch_flow/rmsnorm.py`
+- Support files: `workload_analysis/dispatch/visualize/input1_layer26/torch_flow/config.py`, `workload_analysis/dispatch/visualize/input1_layer26/torch_flow/init_data.py`, `workload_analysis/dispatch/visualize/input1_layer26/torch_flow/export_stage_onnx.py`
 
 ## Code Explanation
 
@@ -37,14 +43,14 @@ Normalizes the incoming hidden states with RMSNorm and exposes variance/inverse-
 
 ## Dispatch Evidence Notes
 
-- `#1 to.dtype` -> shape=[1, 58, 4096], dtype=float32
-- `#2 pow.Tensor_Scalar` -> shape=[1, 58, 4096], dtype=float32
-- `#3 mean.dim` -> shape=[1, 58, 1], dtype=float32
-- `#4 add.Tensor` -> shape=[1, 58, 1], dtype=float32
-- `#5 rsqrt.default` -> shape=[1, 58, 1], dtype=float32
-- `#6 mul.Tensor` -> shape=[1, 58, 4096], dtype=float32
-- `#7 to.dtype` -> shape=[1, 58, 4096], dtype=float16
-- `#8 mul.Tensor` -> shape=[1, 58, 4096], dtype=float16
+- `#1 to.dtype` inputs=`['t00002169']` outputs=`['t00002170']` -> shape=[1, 58, 4096], dtype=float32
+- `#2 pow.Tensor_Scalar` inputs=`['t00002170']` outputs=`['t00002171']` -> shape=[1, 58, 4096], dtype=float32
+- `#3 mean.dim` inputs=`['t00002171']` outputs=`['t00002172']` -> shape=[1, 58, 1], dtype=float32
+- `#4 add.Tensor` inputs=`['t00002172']` outputs=`['t00002173']` -> shape=[1, 58, 1], dtype=float32
+- `#5 rsqrt.default` inputs=`['t00002173']` outputs=`['t00002174']` -> shape=[1, 58, 1], dtype=float32
+- `#6 mul.Tensor` inputs=`['t00002170', 't00002174']` outputs=`['t00002175']` -> shape=[1, 58, 4096], dtype=float32
+- `#7 to.dtype` inputs=`['t00002175']` outputs=`['t00002176']` -> shape=[1, 58, 4096], dtype=float16
+- `#8 mul.Tensor` inputs=`['t00002177', 't00002176']` outputs=`['t00002178']` -> shape=[1, 58, 4096], dtype=float16
 
 ## Export Wrapper Source
 

@@ -118,13 +118,15 @@ def run_flow(cfg: FlowConfig = CFG, verbose: bool = True) -> dict[str, torch.Ten
         tensors.update(adjusted)
         attn_for_output = adjusted["adjusted_attn"]
         if verbose:
+            visual_log = {
+                "cleared_visual_region": adjusted["cleared_visual_region"],
+                "adjusted_attn": adjusted["adjusted_attn"],
+            }
+            if "tail_visual_sum" in adjusted:
+                visual_log["tail_visual_sum"] = adjusted["tail_visual_sum"]
             log_tensors(
                 "5. visual attention adjustment",
-                {
-                    "tail_visual_sum": adjusted["tail_visual_sum"],
-                    "cleared_visual_region": adjusted["cleared_visual_region"],
-                    "adjusted_attn": adjusted["adjusted_attn"],
-                },
+                visual_log,
             )
     else:
         tensors["adjusted_attn"] = attention["attn"]

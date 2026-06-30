@@ -20,11 +20,17 @@
 - `attn_out`: `[16, 32]`
 - `after_attn`: `[16, 32]`
 
+### Dispatch Tensor ID Inputs/Outputs
+
+- Dispatch input tensor ids: `['t00001916', 't00001884', 't00001918', 't00001933', 't00001945', 't00001863', 't00001962', 't00001963']`
+- Dispatch output tensor ids: `['t00001917', 't00001934', 't00001965']`
+- Dispatch tensor-id dependencies inside evidence rows: `[{'tensor_id': 't00001919', 'consumer_event_op_index': 57, 'consumer_op_name': 'reshape.default'}, {'tensor_id': 't00001920', 'consumer_event_op_index': 85, 'consumer_op_name': 'linear.default'}, {'tensor_id': 't00001946', 'consumer_event_op_index': 86, 'consumer_op_name': 'add.Tensor'}, {'tensor_id': 't00001947', 'consumer_event_op_index': 100, 'consumer_op_name': 'add.Tensor'}, {'tensor_id': 't00001964', 'consumer_event_op_index': 100, 'consumer_op_name': 'add.Tensor'}]`
+
 ## Corresponding `torch_flow` Code
 
-- Export wrapper: `/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer23/torch_flow/export_stage_onnx.py::AttentionOutputStage`
-- Primary implementation: `/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer23/torch_flow/attention_output.py`
-- Support files: `/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer23/torch_flow/config.py`, `/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer23/torch_flow/init_data.py`, `/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer23/torch_flow/export_stage_onnx.py`
+- Export wrapper: `workload_analysis/dispatch/visualize/input1_layer23/torch_flow/export_stage_onnx.py::AttentionOutputStage`
+- Primary implementation: `workload_analysis/dispatch/visualize/input1_layer23/torch_flow/attention_output.py`
+- Support files: `workload_analysis/dispatch/visualize/input1_layer23/torch_flow/config.py`, `workload_analysis/dispatch/visualize/input1_layer23/torch_flow/init_data.py`, `workload_analysis/dispatch/visualize/input1_layer23/torch_flow/export_stage_onnx.py`
 
 ## Code Explanation
 
@@ -39,14 +45,14 @@ Multiplies attention probabilities by value heads, merges heads back to hidden s
 
 ## Dispatch Evidence Notes
 
-- `#54 matmul.default` -> shape=[1, 32, 58, 128], dtype=float16
-- `#56 contiguous.default` -> shape=[1, 58, 32, 128], dtype=float16
-- `#57 reshape.default` -> shape=[1, 58, 4096], dtype=float16
-- `#73 contiguous.default` -> shape=[1, 58, 32, 128], dtype=float16
-- `#85 linear.default` -> shape=[1, 58, 4096], dtype=float16
-- `#86 add.Tensor` -> shape=[1, 58, 4096], dtype=float16
-- `#99 linear.default` -> shape=[1, 58, 4096], dtype=float16
-- `#100 add.Tensor` -> shape=[1, 58, 4096], dtype=float16
+- `#54 matmul.default` inputs=`['t00001916', 't00001884']` outputs=`['t00001917']` -> shape=[1, 32, 58, 128], dtype=float16
+- `#56 contiguous.default` inputs=`['t00001918']` outputs=`['t00001919']` -> shape=[1, 58, 32, 128], dtype=float16
+- `#57 reshape.default` inputs=`['t00001919']` outputs=`['t00001920']` -> shape=[1, 58, 4096], dtype=float16
+- `#73 contiguous.default` inputs=`['t00001933']` outputs=`['t00001934']` -> shape=[1, 58, 32, 128], dtype=float16
+- `#85 linear.default` inputs=`['t00001920', 't00001945']` outputs=`['t00001946']` -> shape=[1, 58, 4096], dtype=float16
+- `#86 add.Tensor` inputs=`['t00001863', 't00001946']` outputs=`['t00001947']` -> shape=[1, 58, 4096], dtype=float16
+- `#99 linear.default` inputs=`['t00001962', 't00001963']` outputs=`['t00001964']` -> shape=[1, 58, 4096], dtype=float16
+- `#100 add.Tensor` inputs=`['t00001947', 't00001964']` outputs=`['t00001965']` -> shape=[1, 58, 4096], dtype=float16
 
 ## Export Wrapper Source
 

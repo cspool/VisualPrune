@@ -18,11 +18,17 @@
 
 - `output`: `[16, 32]`
 
+### Dispatch Tensor ID Inputs/Outputs
+
+- Dispatch input tensor ids: `[]`
+- Dispatch output tensor ids: `[]`
+- Dispatch tensor-id dependencies inside evidence rows: `[]`
+
 ## Corresponding `torch_flow` Code
 
-- Export wrapper: `/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer24/torch_flow/export_stage_onnx.py::FullFlowStage`
-- Primary implementation: `/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer24/torch_flow/run_full_flow.py`
-- Support files: `/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer24/torch_flow/config.py`, `/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer24/torch_flow/init_data.py`, `/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer24/torch_flow/export_stage_onnx.py`
+- Export wrapper: `workload_analysis/dispatch/visualize/input1_layer24/torch_flow/export_stage_onnx.py::FullFlowStage`
+- Primary implementation: `workload_analysis/dispatch/visualize/input1_layer24/torch_flow/run_full_flow.py`
+- Support files: `workload_analysis/dispatch/visualize/input1_layer24/torch_flow/config.py`, `workload_analysis/dispatch/visualize/input1_layer24/torch_flow/init_data.py`, `workload_analysis/dispatch/visualize/input1_layer24/torch_flow/export_stage_onnx.py`
 
 ## Code Explanation
 
@@ -175,13 +181,15 @@ def run_flow(cfg: FlowConfig = CFG, verbose: bool = True) -> dict[str, torch.Ten
         tensors.update(adjusted)
         attn_for_output = adjusted["adjusted_attn"]
         if verbose:
+            visual_log = {
+                "cleared_visual_region": adjusted["cleared_visual_region"],
+                "adjusted_attn": adjusted["adjusted_attn"],
+            }
+            if "tail_visual_sum" in adjusted:
+                visual_log["tail_visual_sum"] = adjusted["tail_visual_sum"]
             log_tensors(
                 "5. visual attention adjustment",
-                {
-                    "tail_visual_sum": adjusted["tail_visual_sum"],
-                    "cleared_visual_region": adjusted["cleared_visual_region"],
-                    "adjusted_attn": adjusted["adjusted_attn"],
-                },
+                visual_log,
             )
     else:
         tensors["adjusted_attn"] = attention["attn"]

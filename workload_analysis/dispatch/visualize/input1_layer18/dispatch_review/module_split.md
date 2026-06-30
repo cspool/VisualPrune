@@ -1,0 +1,20 @@
+# input1_layer18 Runtime Module Split
+
+This split is derived directly from sampled `module_*` columns in this layer's dispatch rows.
+
+| First op | Last op | Ops | Op indices | Module | Type | Tensor ID inputs | Tensor ID outputs | Forward source | Top ATen ops |
+|---:|---:|---:|---|---|---|---|---|---|---|
+| 1 | 8 | 8 | `1,2,3,4,5,6,7,8` | `model.layers.18.input_layernorm` | `LlamaRMSNorm` | `t00001346, t00001354` | `t00001355` | `/workspace/VisiPrune/repo/llava/model/language_model/custom_modeling_llama.py:139` | `mul.Tensor` x2, `to.dtype` x2, `add.Tensor` x1, `mean.dim` x1, `pow.Tensor_Scalar` x1, `rsqrt.default` x1 |
+| 9 | 9 | 1 | `9` | `model.layers.18.self_attn.q_proj` | `Linear` | `t00001355, t00001356` | `t00001357` | `/opt/conda/envs/cu132/lib/python3.12/site-packages/torch/nn/modules/linear.py:130` | `linear.default` x1 |
+| 10 | 10 | 1 | `10` | `model.layers.18.self_attn.k_proj` | `Linear` | `t00001355, t00001358` | `t00001359` | `/opt/conda/envs/cu132/lib/python3.12/site-packages/torch/nn/modules/linear.py:130` | `linear.default` x1 |
+| 11 | 11 | 1 | `11` | `model.layers.18.self_attn.v_proj` | `Linear` | `t00001355, t00001360` | `t00001361` | `/opt/conda/envs/cu132/lib/python3.12/site-packages/torch/nn/modules/linear.py:130` | `linear.default` x1 |
+| 12 | 88 | 69 | `12,13,14,15,16,17,18,19,20,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88` | `model.layers.18.self_attn` | `VisiPrunerLlamaAttention` | `t00001357, t00001359, t00001361, t00000023, t00001373, t00001375, t00000053, t00000057` | `t00001370, t00001431` | `/workspace/VisiPrune/repo/llava/model/language_model/custom_modeling_llama.py:614` | `add.Tensor` x6, `select.int` x6, `unsqueeze.default` x6, `mul.Tensor` x5, `slice.Tensor` x5, `transpose.int` x5 |
+| 21 | 28 | 8 | `21,22,23,24,25,26,27,28` | `model.layers.18.self_attn.rotary_emb` | `LlamaRotaryEmbedding` | `t00001370, t00001372, t00001374` | `` | `/workspace/VisiPrune/repo/llava/model/language_model/custom_modeling_llama.py:175` | `item.default` x2, `slice.Tensor` x2, `to.dtype` x2, `gt.Scalar` x1, `is_nonzero.default` x1 |
+| 89 | 89 | 1 | `89` | `model.layers.18.self_attn.o_proj` | `Linear` | `t00001403, t00001432` | `t00001433` | `/opt/conda/envs/cu132/lib/python3.12/site-packages/torch/nn/modules/linear.py:130` | `linear.default` x1 |
+| 90 | 104 | 2 | `90,104` | `model.layers.18` | `LlamaDecoderLayer` | `t00001346, t00001433, t00001451` | `t00001452` | `/workspace/VisiPrune/workload_analysis/dispatch/tools/visipruner_filtered_dispatch_profile.py:881` | `add.Tensor` x2 |
+| 91 | 98 | 8 | `91,92,93,94,95,96,97,98` | `model.layers.18.post_attention_layernorm` | `LlamaRMSNorm` | `t00001434, t00001442` | `t00001443` | `/workspace/VisiPrune/repo/llava/model/language_model/custom_modeling_llama.py:139` | `mul.Tensor` x2, `to.dtype` x2, `add.Tensor` x1, `mean.dim` x1, `pow.Tensor_Scalar` x1, `rsqrt.default` x1 |
+| 99 | 99 | 1 | `99` | `model.layers.18.mlp.gate_proj` | `Linear` | `t00001443, t00001444` | `t00001445` | `/opt/conda/envs/cu132/lib/python3.12/site-packages/torch/nn/modules/linear.py:130` | `linear.default` x1 |
+| 100 | 100 | 1 | `100` | `model.layers.18.mlp.act_fn` | `SiLU` | `t00001445` | `t00001446` | `/opt/conda/envs/cu132/lib/python3.12/site-packages/torch/nn/modules/activation.py:471` | `silu.default` x1 |
+| 101 | 101 | 1 | `101` | `model.layers.18.mlp.up_proj` | `Linear` | `t00001443, t00001447` | `t00001448` | `/opt/conda/envs/cu132/lib/python3.12/site-packages/torch/nn/modules/linear.py:130` | `linear.default` x1 |
+| 102 | 102 | 1 | `102` | `model.layers.18.mlp` | `LlamaMLP` | `t00001446, t00001448` | `t00001449` | `/workspace/VisiPrune/repo/llava/model/language_model/custom_modeling_llama.py:277` | `mul.Tensor` x1 |
+| 103 | 103 | 1 | `103` | `model.layers.18.mlp.down_proj` | `Linear` | `t00001449, t00001450` | `t00001451` | `/opt/conda/envs/cu132/lib/python3.12/site-packages/torch/nn/modules/linear.py:130` | `linear.default` x1 |

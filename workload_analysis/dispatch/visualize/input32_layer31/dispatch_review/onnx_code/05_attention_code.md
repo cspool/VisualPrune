@@ -20,11 +20,17 @@
 - `masked_scores`: `[4, 1, 16]`
 - `attn`: `[4, 1, 16]`
 
+### Dispatch Tensor ID Inputs/Outputs
+
+- Dispatch input tensor ids: `['t00003133', 't00003135', 't00003137', 't00003149', 't00003154', 't00003156', 't00003161', 't00003164', 't00003170', 't00003166']`
+- Dispatch output tensor ids: `['t00003134', 't00003136', 't00003138', 't00003162', 't00003172', 't00003174']`
+- Dispatch tensor-id dependencies inside evidence rows: `[{'tensor_id': 't00003155', 'consumer_event_op_index': 50, 'consumer_op_name': 'matmul.default'}, {'tensor_id': 't00003167', 'consumer_event_op_index': 50, 'consumer_op_name': 'matmul.default'}, {'tensor_id': 't00003168', 'consumer_event_op_index': 51, 'consumer_op_name': 'div.Tensor'}, {'tensor_id': 't00003169', 'consumer_event_op_index': 52, 'consumer_op_name': 'add.Tensor'}, {'tensor_id': 't00003171', 'consumer_event_op_index': 53, 'consumer_op_name': 'softmax.int'}, {'tensor_id': 't00003173', 'consumer_event_op_index': 56, 'consumer_op_name': 'matmul.default'}]`
+
 ## Corresponding `torch_flow` Code
 
-- Export wrapper: `/workspace/VisiPrune/workload_analysis/dispatch/visualize/input32_layer31/torch_flow/export_stage_onnx.py::AttentionStage`
-- Primary implementation: `/workspace/VisiPrune/workload_analysis/dispatch/visualize/input32_layer31/torch_flow/attention.py`
-- Support files: `/workspace/VisiPrune/workload_analysis/dispatch/visualize/input32_layer31/torch_flow/config.py`, `/workspace/VisiPrune/workload_analysis/dispatch/visualize/input32_layer31/torch_flow/init_data.py`, `/workspace/VisiPrune/workload_analysis/dispatch/visualize/input32_layer31/torch_flow/export_stage_onnx.py`
+- Export wrapper: `workload_analysis/dispatch/visualize/input32_layer31/torch_flow/export_stage_onnx.py::AttentionStage`
+- Primary implementation: `workload_analysis/dispatch/visualize/input32_layer31/torch_flow/attention.py`
+- Support files: `workload_analysis/dispatch/visualize/input32_layer31/torch_flow/config.py`, `workload_analysis/dispatch/visualize/input32_layer31/torch_flow/init_data.py`, `workload_analysis/dispatch/visualize/input32_layer31/torch_flow/export_stage_onnx.py`
 
 ## Code Explanation
 
@@ -39,18 +45,18 @@ Computes rectangular or square attention scores, applies the mask, and materiali
 
 ## Dispatch Evidence Notes
 
-- `#13 transpose.int` -> shape=[1, 32, 1, 128], dtype=float16
-- `#15 transpose.int` -> shape=[1, 32, 1, 128], dtype=float16
-- `#17 transpose.int` -> shape=[1, 32, 1, 128], dtype=float16
-- `#39 add.Tensor` -> shape=[1, 32, 1, 128], dtype=float16
-- `#46 add.Tensor` -> shape=[1, 32, 1, 128], dtype=float16
-- `#49 transpose.int` -> shape=[1, 32, 128, 79], dtype=float16
-- `#50 matmul.default` -> shape=[1, 32, 1, 79], dtype=float16
-- `#51 div.Tensor` -> shape=[1, 32, 1, 79], dtype=float16
-- `#52 add.Tensor` -> shape=[1, 32, 1, 79], dtype=float16
-- `#53 softmax.int` -> shape=[1, 32, 1, 79], dtype=float32
-- `#55 dropout.default` -> shape=[1, 32, 1, 79], dtype=float16
-- `#56 matmul.default` -> shape=[1, 32, 1, 128], dtype=float16
+- `#13 transpose.int` inputs=`['t00003133']` outputs=`['t00003134']` -> shape=[1, 32, 1, 128], dtype=float16
+- `#15 transpose.int` inputs=`['t00003135']` outputs=`['t00003136']` -> shape=[1, 32, 1, 128], dtype=float16
+- `#17 transpose.int` inputs=`['t00003137']` outputs=`['t00003138']` -> shape=[1, 32, 1, 128], dtype=float16
+- `#39 add.Tensor` inputs=`['t00003149', 't00003154']` outputs=`['t00003155']` -> shape=[1, 32, 1, 128], dtype=float16
+- `#46 add.Tensor` inputs=`['t00003156', 't00003161']` outputs=`['t00003162']` -> shape=[1, 32, 1, 128], dtype=float16
+- `#49 transpose.int` inputs=`['t00003164']` outputs=`['t00003167']` -> shape=[1, 32, 128, 79], dtype=float16
+- `#50 matmul.default` inputs=`['t00003155', 't00003167']` outputs=`['t00003168']` -> shape=[1, 32, 1, 79], dtype=float16
+- `#51 div.Tensor` inputs=`['t00003168']` outputs=`['t00003169']` -> shape=[1, 32, 1, 79], dtype=float16
+- `#52 add.Tensor` inputs=`['t00003169', 't00003170']` outputs=`['t00003171']` -> shape=[1, 32, 1, 79], dtype=float16
+- `#53 softmax.int` inputs=`['t00003171']` outputs=`['t00003172']` -> shape=[1, 32, 1, 79], dtype=float32
+- `#55 dropout.default` inputs=`['t00003173']` outputs=`['t00003173']` -> shape=[1, 32, 1, 79], dtype=float16
+- `#56 matmul.default` inputs=`['t00003173', 't00003166']` outputs=`['t00003174']` -> shape=[1, 32, 1, 128], dtype=float16
 
 ## Export Wrapper Source
 

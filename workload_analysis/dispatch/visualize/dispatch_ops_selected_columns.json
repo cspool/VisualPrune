@@ -1,0 +1,58 @@
+[
+  {
+    "column_1_based": 1,
+    "column_name": "args"
+  },
+  {
+    "column_1_based": 3,
+    "column_name": "event_id"
+  },
+  {
+    "column_1_based": 7,
+    "column_name": "kv_len"
+  },
+  {
+    "column_1_based": 8,
+    "column_name": "kwargs"
+  },
+  {
+    "column_1_based": 13,
+    "column_name": "module_class"
+  },
+  {
+    "column_1_based": 24,
+    "column_name": "op_schema"
+  },
+  {
+    "column_1_based": 25,
+    "column_name": "outputs"
+  },
+  {
+    "column_1_based": 26,
+    "column_name": "past_len"
+  },
+  {
+    "column_1_based": 27,
+    "column_name": "phase"
+  },
+  {
+    "column_1_based": 29,
+    "column_name": "q_len"
+  },
+  {
+    "column_1_based": 31,
+    "column_name": "token_state"
+  },
+  {
+    "column_1_based": 32,
+    "column_name": "visipruner_role"
+  },
+  {
+    "column_1_based": 35,
+    "column_name": "input_tensor_ids"
+  },
+  {
+    "column_1_based": 36,
+    "column_name": "output_tensor_ids"
+  }
+]

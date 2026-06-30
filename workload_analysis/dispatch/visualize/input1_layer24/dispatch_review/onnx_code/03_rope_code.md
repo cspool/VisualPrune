@@ -19,11 +19,17 @@
 - `q_rope`: `[4, 16, 8]`
 - `k_current_rope`: `[4, 16, 8]`
 
+### Dispatch Tensor ID Inputs/Outputs
+
+- Dispatch input tensor ids: `['t00001988', 't00001991', 't00001993', 't00001475', 't00001982']`
+- Dispatch output tensor ids: `['t00001989', 't00002005']`
+- Dispatch tensor-id dependencies inside evidence rows: `[{'tensor_id': 't00001992', 'consumer_event_op_index': 29, 'consumer_op_name': 'index.Tensor'}, {'tensor_id': 't00001995', 'consumer_event_op_index': 30, 'consumer_op_name': 'unsqueeze.default'}, {'tensor_id': 't00001994', 'consumer_event_op_index': 31, 'consumer_op_name': 'index.Tensor'}, {'tensor_id': 't00001997', 'consumer_event_op_index': 32, 'consumer_op_name': 'unsqueeze.default'}, {'tensor_id': 't00001996', 'consumer_event_op_index': 33, 'consumer_op_name': 'mul.Tensor'}, {'tensor_id': 't00002001', 'consumer_event_op_index': 36, 'consumer_op_name': 'neg.default'}, {'tensor_id': 't00002002', 'consumer_event_op_index': 37, 'consumer_op_name': 'cat.default'}, {'tensor_id': 't00002000', 'consumer_event_op_index': 37, 'consumer_op_name': 'cat.default'}, {'tensor_id': 't00002003', 'consumer_event_op_index': 38, 'consumer_op_name': 'mul.Tensor'}, {'tensor_id': 't00001998', 'consumer_event_op_index': 38, 'consumer_op_name': 'mul.Tensor'}, {'tensor_id': 't00001999', 'consumer_event_op_index': 39, 'consumer_op_name': 'add.Tensor'}, {'tensor_id': 't00002004', 'consumer_event_op_index': 39, 'consumer_op_name': 'add.Tensor'}]`
+
 ## Corresponding `torch_flow` Code
 
-- Export wrapper: `/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer24/torch_flow/export_stage_onnx.py::RoPEStage`
-- Primary implementation: `/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer24/torch_flow/rope.py`
-- Support files: `/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer24/torch_flow/config.py`, `/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer24/torch_flow/init_data.py`, `/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer24/torch_flow/export_stage_onnx.py`
+- Export wrapper: `workload_analysis/dispatch/visualize/input1_layer24/torch_flow/export_stage_onnx.py::RoPEStage`
+- Primary implementation: `workload_analysis/dispatch/visualize/input1_layer24/torch_flow/rope.py`
+- Support files: `workload_analysis/dispatch/visualize/input1_layer24/torch_flow/config.py`, `workload_analysis/dispatch/visualize/input1_layer24/torch_flow/init_data.py`, `workload_analysis/dispatch/visualize/input1_layer24/torch_flow/export_stage_onnx.py`
 
 ## Code Explanation
 
@@ -38,20 +44,20 @@ Gathers rotary-position cos/sin values and applies rotate-half RoPE to query and
 
 ## Dispatch Evidence Notes
 
-- `#20 add.Tensor` -> shape=[], dtype=int64
-- `#24 slice.Tensor` -> shape=[624, 128], dtype=float16
-- `#27 slice.Tensor` -> shape=[624, 128], dtype=float16
-- `#29 index.Tensor` -> shape=[1, 58, 128], dtype=float16
-- `#30 unsqueeze.default` -> shape=[1, 1, 58, 128], dtype=float16
-- `#31 index.Tensor` -> shape=[1, 58, 128], dtype=float16
-- `#32 unsqueeze.default` -> shape=[1, 1, 58, 128], dtype=float16
-- `#33 mul.Tensor` -> shape=[1, 32, 58, 128], dtype=float16
-- `#34 slice.Tensor` -> shape=[1, 32, 58, 64], dtype=float16
-- `#35 slice.Tensor` -> shape=[1, 32, 58, 64], dtype=float16
-- `#36 neg.default` -> shape=[1, 32, 58, 64], dtype=float16
-- `#37 cat.default` -> shape=[1, 32, 58, 128], dtype=float16
-- `#38 mul.Tensor` -> shape=[1, 32, 58, 128], dtype=float16
-- `#39 add.Tensor` -> shape=[1, 32, 58, 128], dtype=float16
+- `#20 add.Tensor` inputs=`['t00001988']` outputs=`['t00001989']` -> shape=[], dtype=int64
+- `#24 slice.Tensor` inputs=`['t00001991']` outputs=`['t00001992']` -> shape=[624, 128], dtype=float16
+- `#27 slice.Tensor` inputs=`['t00001993']` outputs=`['t00001994']` -> shape=[624, 128], dtype=float16
+- `#29 index.Tensor` inputs=`['t00001992', 't00001475']` outputs=`['t00001995']` -> shape=[1, 58, 128], dtype=float16
+- `#30 unsqueeze.default` inputs=`['t00001995']` outputs=`['t00001996']` -> shape=[1, 1, 58, 128], dtype=float16
+- `#31 index.Tensor` inputs=`['t00001994', 't00001475']` outputs=`['t00001997']` -> shape=[1, 58, 128], dtype=float16
+- `#32 unsqueeze.default` inputs=`['t00001997']` outputs=`['t00001998']` -> shape=[1, 1, 58, 128], dtype=float16
+- `#33 mul.Tensor` inputs=`['t00001982', 't00001996']` outputs=`['t00001999']` -> shape=[1, 32, 58, 128], dtype=float16
+- `#34 slice.Tensor` inputs=`['t00001982']` outputs=`['t00002000']` -> shape=[1, 32, 58, 64], dtype=float16
+- `#35 slice.Tensor` inputs=`['t00001982']` outputs=`['t00002001']` -> shape=[1, 32, 58, 64], dtype=float16
+- `#36 neg.default` inputs=`['t00002001']` outputs=`['t00002002']` -> shape=[1, 32, 58, 64], dtype=float16
+- `#37 cat.default` inputs=`['t00002002', 't00002000']` outputs=`['t00002003']` -> shape=[1, 32, 58, 128], dtype=float16
+- `#38 mul.Tensor` inputs=`['t00002003', 't00001998']` outputs=`['t00002004']` -> shape=[1, 32, 58, 128], dtype=float16
+- `#39 add.Tensor` inputs=`['t00001999', 't00002004']` outputs=`['t00002005']` -> shape=[1, 32, 58, 128], dtype=float16
 
 ## Export Wrapper Source
 

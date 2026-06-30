@@ -1,0 +1,4598 @@
+{
+  "op_count": 97,
+  "edge_count": 107,
+  "external_input_tensor_ids": [
+    "t00000554",
+    "t00000562",
+    "t00000564",
+    "t00000566",
+    "t00000568",
+    "t00000023",
+    "t00000580",
+    "t00000582",
+    "t00000053",
+    "t00000057",
+    "t00000624",
+    "t00000633",
+    "t00000643",
+    "t00000645",
+    "t00000648",
+    "t00000651"
+  ],
+  "produced_tensor_ids": [
+    "t00000555",
+    "t00000556",
+    "t00000557",
+    "t00000558",
+    "t00000559",
+    "t00000560",
+    "t00000561",
+    "t00000563",
+    "t00000565",
+    "t00000567",
+    "t00000569",
+    "t00000570",
+    "t00000571",
+    "t00000572",
+    "t00000573",
+    "t00000574",
+    "t00000575",
+    "t00000576",
+    "t00000577",
+    "t00000578",
+    "t00000579",
+    "t00000581",
+    "t00000583",
+    "t00000584",
+    "t00000585",
+    "t00000586",
+    "t00000587",
+    "t00000588",
+    "t00000589",
+    "t00000590",
+    "t00000591",
+    "t00000592",
+    "t00000593",
+    "t00000594",
+    "t00000595",
+    "t00000596",
+    "t00000597",
+    "t00000598",
+    "t00000599",
+    "t00000600",
+    "t00000601",
+    "t00000602",
+    "t00000603",
+    "t00000604",
+    "t00000605",
+    "t00000606",
+    "t00000607",
+    "t00000608",
+    "t00000609",
+    "t00000610",
+    "t00000611",
+    "t00000612",
+    "t00000613",
+    "t00000614",
+    "t00000615",
+    "t00000616",
+    "t00000617",
+    "t00000618",
+    "t00000619",
+    "t00000620",
+    "t00000621",
+    "t00000622",
+    "t00000623",
+    "t00000625",
+    "t00000626",
+    "t00000627",
+    "t00000628",
+    "t00000629",
+    "t00000630",
+    "t00000631",
+    "t00000632",
+    "t00000634",
+    "t00000635",
+    "t00000636",
+    "t00000637",
+    "t00000638",
+    "t00000639",
+    "t00000640",
+    "t00000641",
+    "t00000642",
+    "t00000644",
+    "t00000646",
+    "t00000647",
+    "t00000649",
+    "t00000650",
+    "t00000652",
+    "t00000653"
+  ],
+  "final_output_tensor_ids": [
+    "t00000653"
+  ],
+  "ops": [
+    {
+      "event_detail_id": "input1_layer10/input_layernorm/call0086/op0001",
+      "event_op_index": 1,
+      "global_op_index": 541,
+      "op_name": "to.dtype",
+      "module_path": "model.layers.10.input_layernorm",
+      "module_relative_path": "input_layernorm",
+      "input_tensor_ids": [
+        "t00000554"
+      ],
+      "output_tensor_ids": [
+        "t00000555"
+      ],
+      "external_input_tensor_ids": [
+        "t00000554"
+      ],
+      "data_dependencies": []
+    },
+    {
+      "event_detail_id": "input1_layer10/input_layernorm/call0086/op0002",
+      "event_op_index": 2,
+      "global_op_index": 542,
+      "op_name": "pow.Tensor_Scalar",
+      "module_path": "model.layers.10.input_layernorm",
+      "module_relative_path": "input_layernorm",
+      "input_tensor_ids": [
+        "t00000555"
+      ],
+      "output_tensor_ids": [
+        "t00000556"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000555",
+          "producer_event_detail_id": "input1_layer10/input_layernorm/call0086/op0001",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 1,
+          "producer_global_op_index": 541,
+          "producer_op_name": "to.dtype",
+          "consumer_event_detail_id": "input1_layer10/input_layernorm/call0086/op0002",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 2,
+          "consumer_global_op_index": 542,
+          "consumer_op_name": "pow.Tensor_Scalar"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/input_layernorm/call0086/op0003",
+      "event_op_index": 3,
+      "global_op_index": 543,
+      "op_name": "mean.dim",
+      "module_path": "model.layers.10.input_layernorm",
+      "module_relative_path": "input_layernorm",
+      "input_tensor_ids": [
+        "t00000556"
+      ],
+      "output_tensor_ids": [
+        "t00000557"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000556",
+          "producer_event_detail_id": "input1_layer10/input_layernorm/call0086/op0002",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 2,
+          "producer_global_op_index": 542,
+          "producer_op_name": "pow.Tensor_Scalar",
+          "consumer_event_detail_id": "input1_layer10/input_layernorm/call0086/op0003",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 3,
+          "consumer_global_op_index": 543,
+          "consumer_op_name": "mean.dim"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/input_layernorm/call0086/op0004",
+      "event_op_index": 4,
+      "global_op_index": 544,
+      "op_name": "add.Tensor",
+      "module_path": "model.layers.10.input_layernorm",
+      "module_relative_path": "input_layernorm",
+      "input_tensor_ids": [
+        "t00000557"
+      ],
+      "output_tensor_ids": [
+        "t00000558"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000557",
+          "producer_event_detail_id": "input1_layer10/input_layernorm/call0086/op0003",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 3,
+          "producer_global_op_index": 543,
+          "producer_op_name": "mean.dim",
+          "consumer_event_detail_id": "input1_layer10/input_layernorm/call0086/op0004",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 4,
+          "consumer_global_op_index": 544,
+          "consumer_op_name": "add.Tensor"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/input_layernorm/call0086/op0005",
+      "event_op_index": 5,
+      "global_op_index": 545,
+      "op_name": "rsqrt.default",
+      "module_path": "model.layers.10.input_layernorm",
+      "module_relative_path": "input_layernorm",
+      "input_tensor_ids": [
+        "t00000558"
+      ],
+      "output_tensor_ids": [
+        "t00000559"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000558",
+          "producer_event_detail_id": "input1_layer10/input_layernorm/call0086/op0004",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 4,
+          "producer_global_op_index": 544,
+          "producer_op_name": "add.Tensor",
+          "consumer_event_detail_id": "input1_layer10/input_layernorm/call0086/op0005",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 5,
+          "consumer_global_op_index": 545,
+          "consumer_op_name": "rsqrt.default"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/input_layernorm/call0086/op0006",
+      "event_op_index": 6,
+      "global_op_index": 546,
+      "op_name": "mul.Tensor",
+      "module_path": "model.layers.10.input_layernorm",
+      "module_relative_path": "input_layernorm",
+      "input_tensor_ids": [
+        "t00000555",
+        "t00000559"
+      ],
+      "output_tensor_ids": [
+        "t00000560"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000555",
+          "producer_event_detail_id": "input1_layer10/input_layernorm/call0086/op0001",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 1,
+          "producer_global_op_index": 541,
+          "producer_op_name": "to.dtype",
+          "consumer_event_detail_id": "input1_layer10/input_layernorm/call0086/op0006",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 6,
+          "consumer_global_op_index": 546,
+          "consumer_op_name": "mul.Tensor"
+        },
+        {
+          "tensor_id": "t00000559",
+          "producer_event_detail_id": "input1_layer10/input_layernorm/call0086/op0005",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 5,
+          "producer_global_op_index": 545,
+          "producer_op_name": "rsqrt.default",
+          "consumer_event_detail_id": "input1_layer10/input_layernorm/call0086/op0006",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 6,
+          "consumer_global_op_index": 546,
+          "consumer_op_name": "mul.Tensor"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/input_layernorm/call0086/op0007",
+      "event_op_index": 7,
+      "global_op_index": 547,
+      "op_name": "to.dtype",
+      "module_path": "model.layers.10.input_layernorm",
+      "module_relative_path": "input_layernorm",
+      "input_tensor_ids": [
+        "t00000560"
+      ],
+      "output_tensor_ids": [
+        "t00000561"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000560",
+          "producer_event_detail_id": "input1_layer10/input_layernorm/call0086/op0006",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 6,
+          "producer_global_op_index": 546,
+          "producer_op_name": "mul.Tensor",
+          "consumer_event_detail_id": "input1_layer10/input_layernorm/call0086/op0007",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 7,
+          "consumer_global_op_index": 547,
+          "consumer_op_name": "to.dtype"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/input_layernorm/call0086/op0008",
+      "event_op_index": 8,
+      "global_op_index": 548,
+      "op_name": "mul.Tensor",
+      "module_path": "model.layers.10.input_layernorm",
+      "module_relative_path": "input_layernorm",
+      "input_tensor_ids": [
+        "t00000562",
+        "t00000561"
+      ],
+      "output_tensor_ids": [
+        "t00000563"
+      ],
+      "external_input_tensor_ids": [
+        "t00000562"
+      ],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000561",
+          "producer_event_detail_id": "input1_layer10/input_layernorm/call0086/op0007",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 7,
+          "producer_global_op_index": 547,
+          "producer_op_name": "to.dtype",
+          "consumer_event_detail_id": "input1_layer10/input_layernorm/call0086/op0008",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 8,
+          "consumer_global_op_index": 548,
+          "consumer_op_name": "mul.Tensor"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/q_proj/call0088/op0001",
+      "event_op_index": 9,
+      "global_op_index": 549,
+      "op_name": "linear.default",
+      "module_path": "model.layers.10.self_attn.q_proj",
+      "module_relative_path": "self_attn.q_proj",
+      "input_tensor_ids": [
+        "t00000563",
+        "t00000564"
+      ],
+      "output_tensor_ids": [
+        "t00000565"
+      ],
+      "external_input_tensor_ids": [
+        "t00000564"
+      ],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000563",
+          "producer_event_detail_id": "input1_layer10/input_layernorm/call0086/op0008",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 8,
+          "producer_global_op_index": 548,
+          "producer_op_name": "mul.Tensor",
+          "consumer_event_detail_id": "input1_layer10/self_attn/q_proj/call0088/op0001",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 9,
+          "consumer_global_op_index": 549,
+          "consumer_op_name": "linear.default"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/k_proj/call0089/op0001",
+      "event_op_index": 10,
+      "global_op_index": 550,
+      "op_name": "linear.default",
+      "module_path": "model.layers.10.self_attn.k_proj",
+      "module_relative_path": "self_attn.k_proj",
+      "input_tensor_ids": [
+        "t00000563",
+        "t00000566"
+      ],
+      "output_tensor_ids": [
+        "t00000567"
+      ],
+      "external_input_tensor_ids": [
+        "t00000566"
+      ],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000563",
+          "producer_event_detail_id": "input1_layer10/input_layernorm/call0086/op0008",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 8,
+          "producer_global_op_index": 548,
+          "producer_op_name": "mul.Tensor",
+          "consumer_event_detail_id": "input1_layer10/self_attn/k_proj/call0089/op0001",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 10,
+          "consumer_global_op_index": 550,
+          "consumer_op_name": "linear.default"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/v_proj/call0090/op0001",
+      "event_op_index": 11,
+      "global_op_index": 551,
+      "op_name": "linear.default",
+      "module_path": "model.layers.10.self_attn.v_proj",
+      "module_relative_path": "self_attn.v_proj",
+      "input_tensor_ids": [
+        "t00000563",
+        "t00000568"
+      ],
+      "output_tensor_ids": [
+        "t00000569"
+      ],
+      "external_input_tensor_ids": [
+        "t00000568"
+      ],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000563",
+          "producer_event_detail_id": "input1_layer10/input_layernorm/call0086/op0008",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 8,
+          "producer_global_op_index": 548,
+          "producer_op_name": "mul.Tensor",
+          "consumer_event_detail_id": "input1_layer10/self_attn/v_proj/call0090/op0001",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 11,
+          "consumer_global_op_index": 551,
+          "consumer_op_name": "linear.default"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0001",
+      "event_op_index": 12,
+      "global_op_index": 552,
+      "op_name": "view.default",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000565"
+      ],
+      "output_tensor_ids": [
+        "t00000570"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000565",
+          "producer_event_detail_id": "input1_layer10/self_attn/q_proj/call0088/op0001",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 9,
+          "producer_global_op_index": 549,
+          "producer_op_name": "linear.default",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0001",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 12,
+          "consumer_global_op_index": 552,
+          "consumer_op_name": "view.default"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0002",
+      "event_op_index": 13,
+      "global_op_index": 553,
+      "op_name": "transpose.int",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000570"
+      ],
+      "output_tensor_ids": [
+        "t00000571"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000570",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0001",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 12,
+          "producer_global_op_index": 552,
+          "producer_op_name": "view.default",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0002",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 13,
+          "consumer_global_op_index": 553,
+          "consumer_op_name": "transpose.int"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0003",
+      "event_op_index": 14,
+      "global_op_index": 554,
+      "op_name": "view.default",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000567"
+      ],
+      "output_tensor_ids": [
+        "t00000572"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000567",
+          "producer_event_detail_id": "input1_layer10/self_attn/k_proj/call0089/op0001",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 10,
+          "producer_global_op_index": 550,
+          "producer_op_name": "linear.default",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0003",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 14,
+          "consumer_global_op_index": 554,
+          "consumer_op_name": "view.default"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0004",
+      "event_op_index": 15,
+      "global_op_index": 555,
+      "op_name": "transpose.int",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000572"
+      ],
+      "output_tensor_ids": [
+        "t00000573"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000572",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0003",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 14,
+          "producer_global_op_index": 554,
+          "producer_op_name": "view.default",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0004",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 15,
+          "consumer_global_op_index": 555,
+          "consumer_op_name": "transpose.int"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0005",
+      "event_op_index": 16,
+      "global_op_index": 556,
+      "op_name": "view.default",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000569"
+      ],
+      "output_tensor_ids": [
+        "t00000574"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000569",
+          "producer_event_detail_id": "input1_layer10/self_attn/v_proj/call0090/op0001",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 11,
+          "producer_global_op_index": 551,
+          "producer_op_name": "linear.default",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0005",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 16,
+          "consumer_global_op_index": 556,
+          "consumer_op_name": "view.default"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0006",
+      "event_op_index": 17,
+      "global_op_index": 557,
+      "op_name": "transpose.int",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000574"
+      ],
+      "output_tensor_ids": [
+        "t00000575"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000574",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0005",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 16,
+          "producer_global_op_index": 556,
+          "producer_op_name": "view.default",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0006",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 17,
+          "consumer_global_op_index": 557,
+          "consumer_op_name": "transpose.int"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0007",
+      "event_op_index": 18,
+      "global_op_index": 558,
+      "op_name": "select.int",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000023"
+      ],
+      "output_tensor_ids": [
+        "t00000576"
+      ],
+      "external_input_tensor_ids": [
+        "t00000023"
+      ],
+      "data_dependencies": []
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0008",
+      "event_op_index": 19,
+      "global_op_index": 559,
+      "op_name": "select.int",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000576"
+      ],
+      "output_tensor_ids": [
+        "t00000577"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000576",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0007",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 18,
+          "producer_global_op_index": 558,
+          "producer_op_name": "select.int",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0008",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 19,
+          "consumer_global_op_index": 559,
+          "consumer_op_name": "select.int"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0009",
+      "event_op_index": 20,
+      "global_op_index": 560,
+      "op_name": "add.Tensor",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000577"
+      ],
+      "output_tensor_ids": [
+        "t00000578"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000577",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0008",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 19,
+          "producer_global_op_index": 559,
+          "producer_op_name": "select.int",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0009",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 20,
+          "consumer_global_op_index": 560,
+          "consumer_op_name": "add.Tensor"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/rotary_emb/call0091/op0001",
+      "event_op_index": 21,
+      "global_op_index": 561,
+      "op_name": "gt.Scalar",
+      "module_path": "model.layers.10.self_attn.rotary_emb",
+      "module_relative_path": "self_attn.rotary_emb",
+      "input_tensor_ids": [
+        "t00000578"
+      ],
+      "output_tensor_ids": [
+        "t00000579"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000578",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0009",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 20,
+          "producer_global_op_index": 560,
+          "producer_op_name": "add.Tensor",
+          "consumer_event_detail_id": "input1_layer10/self_attn/rotary_emb/call0091/op0001",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 21,
+          "consumer_global_op_index": 561,
+          "consumer_op_name": "gt.Scalar"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/rotary_emb/call0091/op0002",
+      "event_op_index": 22,
+      "global_op_index": 562,
+      "op_name": "is_nonzero.default",
+      "module_path": "model.layers.10.self_attn.rotary_emb",
+      "module_relative_path": "self_attn.rotary_emb",
+      "input_tensor_ids": [
+        "t00000579"
+      ],
+      "output_tensor_ids": [],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000579",
+          "producer_event_detail_id": "input1_layer10/self_attn/rotary_emb/call0091/op0001",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 21,
+          "producer_global_op_index": 561,
+          "producer_op_name": "gt.Scalar",
+          "consumer_event_detail_id": "input1_layer10/self_attn/rotary_emb/call0091/op0002",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 22,
+          "consumer_global_op_index": 562,
+          "consumer_op_name": "is_nonzero.default"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/rotary_emb/call0091/op0003",
+      "event_op_index": 23,
+      "global_op_index": 563,
+      "op_name": "item.default",
+      "module_path": "model.layers.10.self_attn.rotary_emb",
+      "module_relative_path": "self_attn.rotary_emb",
+      "input_tensor_ids": [
+        "t00000578"
+      ],
+      "output_tensor_ids": [],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000578",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0009",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 20,
+          "producer_global_op_index": 560,
+          "producer_op_name": "add.Tensor",
+          "consumer_event_detail_id": "input1_layer10/self_attn/rotary_emb/call0091/op0003",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 23,
+          "consumer_global_op_index": 563,
+          "consumer_op_name": "item.default"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/rotary_emb/call0091/op0004",
+      "event_op_index": 24,
+      "global_op_index": 564,
+      "op_name": "slice.Tensor",
+      "module_path": "model.layers.10.self_attn.rotary_emb",
+      "module_relative_path": "self_attn.rotary_emb",
+      "input_tensor_ids": [
+        "t00000580"
+      ],
+      "output_tensor_ids": [
+        "t00000581"
+      ],
+      "external_input_tensor_ids": [
+        "t00000580"
+      ],
+      "data_dependencies": []
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/rotary_emb/call0091/op0005",
+      "event_op_index": 25,
+      "global_op_index": 565,
+      "op_name": "to.dtype",
+      "module_path": "model.layers.10.self_attn.rotary_emb",
+      "module_relative_path": "self_attn.rotary_emb",
+      "input_tensor_ids": [
+        "t00000581"
+      ],
+      "output_tensor_ids": [
+        "t00000581"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000581",
+          "producer_event_detail_id": "input1_layer10/self_attn/rotary_emb/call0091/op0004",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 24,
+          "producer_global_op_index": 564,
+          "producer_op_name": "slice.Tensor",
+          "consumer_event_detail_id": "input1_layer10/self_attn/rotary_emb/call0091/op0005",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 25,
+          "consumer_global_op_index": 565,
+          "consumer_op_name": "to.dtype"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/rotary_emb/call0091/op0006",
+      "event_op_index": 26,
+      "global_op_index": 566,
+      "op_name": "item.default",
+      "module_path": "model.layers.10.self_attn.rotary_emb",
+      "module_relative_path": "self_attn.rotary_emb",
+      "input_tensor_ids": [
+        "t00000578"
+      ],
+      "output_tensor_ids": [],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000578",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0009",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 20,
+          "producer_global_op_index": 560,
+          "producer_op_name": "add.Tensor",
+          "consumer_event_detail_id": "input1_layer10/self_attn/rotary_emb/call0091/op0006",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 26,
+          "consumer_global_op_index": 566,
+          "consumer_op_name": "item.default"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/rotary_emb/call0091/op0007",
+      "event_op_index": 27,
+      "global_op_index": 567,
+      "op_name": "slice.Tensor",
+      "module_path": "model.layers.10.self_attn.rotary_emb",
+      "module_relative_path": "self_attn.rotary_emb",
+      "input_tensor_ids": [
+        "t00000582"
+      ],
+      "output_tensor_ids": [
+        "t00000583"
+      ],
+      "external_input_tensor_ids": [
+        "t00000582"
+      ],
+      "data_dependencies": []
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/rotary_emb/call0091/op0008",
+      "event_op_index": 28,
+      "global_op_index": 568,
+      "op_name": "to.dtype",
+      "module_path": "model.layers.10.self_attn.rotary_emb",
+      "module_relative_path": "self_attn.rotary_emb",
+      "input_tensor_ids": [
+        "t00000583"
+      ],
+      "output_tensor_ids": [
+        "t00000583"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000583",
+          "producer_event_detail_id": "input1_layer10/self_attn/rotary_emb/call0091/op0007",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 27,
+          "producer_global_op_index": 567,
+          "producer_op_name": "slice.Tensor",
+          "consumer_event_detail_id": "input1_layer10/self_attn/rotary_emb/call0091/op0008",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 28,
+          "consumer_global_op_index": 568,
+          "consumer_op_name": "to.dtype"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0010",
+      "event_op_index": 29,
+      "global_op_index": 569,
+      "op_name": "index.Tensor",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000581",
+        "t00000023"
+      ],
+      "output_tensor_ids": [
+        "t00000584"
+      ],
+      "external_input_tensor_ids": [
+        "t00000023"
+      ],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000581",
+          "producer_event_detail_id": "input1_layer10/self_attn/rotary_emb/call0091/op0005",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 25,
+          "producer_global_op_index": 565,
+          "producer_op_name": "to.dtype",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0010",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 29,
+          "consumer_global_op_index": 569,
+          "consumer_op_name": "index.Tensor"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0011",
+      "event_op_index": 30,
+      "global_op_index": 570,
+      "op_name": "unsqueeze.default",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000584"
+      ],
+      "output_tensor_ids": [
+        "t00000585"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000584",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0010",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 29,
+          "producer_global_op_index": 569,
+          "producer_op_name": "index.Tensor",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0011",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 30,
+          "consumer_global_op_index": 570,
+          "consumer_op_name": "unsqueeze.default"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0012",
+      "event_op_index": 31,
+      "global_op_index": 571,
+      "op_name": "index.Tensor",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000583",
+        "t00000023"
+      ],
+      "output_tensor_ids": [
+        "t00000586"
+      ],
+      "external_input_tensor_ids": [
+        "t00000023"
+      ],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000583",
+          "producer_event_detail_id": "input1_layer10/self_attn/rotary_emb/call0091/op0008",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 28,
+          "producer_global_op_index": 568,
+          "producer_op_name": "to.dtype",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0012",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 31,
+          "consumer_global_op_index": 571,
+          "consumer_op_name": "index.Tensor"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0013",
+      "event_op_index": 32,
+      "global_op_index": 572,
+      "op_name": "unsqueeze.default",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000586"
+      ],
+      "output_tensor_ids": [
+        "t00000587"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000586",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0012",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 31,
+          "producer_global_op_index": 571,
+          "producer_op_name": "index.Tensor",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0013",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 32,
+          "consumer_global_op_index": 572,
+          "consumer_op_name": "unsqueeze.default"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0014",
+      "event_op_index": 33,
+      "global_op_index": 573,
+      "op_name": "mul.Tensor",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000571",
+        "t00000585"
+      ],
+      "output_tensor_ids": [
+        "t00000588"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000571",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0002",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 13,
+          "producer_global_op_index": 553,
+          "producer_op_name": "transpose.int",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0014",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 33,
+          "consumer_global_op_index": 573,
+          "consumer_op_name": "mul.Tensor"
+        },
+        {
+          "tensor_id": "t00000585",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0011",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 30,
+          "producer_global_op_index": 570,
+          "producer_op_name": "unsqueeze.default",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0014",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 33,
+          "consumer_global_op_index": 573,
+          "consumer_op_name": "mul.Tensor"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0015",
+      "event_op_index": 34,
+      "global_op_index": 574,
+      "op_name": "slice.Tensor",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000571"
+      ],
+      "output_tensor_ids": [
+        "t00000589"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000571",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0002",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 13,
+          "producer_global_op_index": 553,
+          "producer_op_name": "transpose.int",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0015",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 34,
+          "consumer_global_op_index": 574,
+          "consumer_op_name": "slice.Tensor"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0016",
+      "event_op_index": 35,
+      "global_op_index": 575,
+      "op_name": "slice.Tensor",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000571"
+      ],
+      "output_tensor_ids": [
+        "t00000590"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000571",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0002",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 13,
+          "producer_global_op_index": 553,
+          "producer_op_name": "transpose.int",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0016",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 35,
+          "consumer_global_op_index": 575,
+          "consumer_op_name": "slice.Tensor"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0017",
+      "event_op_index": 36,
+      "global_op_index": 576,
+      "op_name": "neg.default",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000590"
+      ],
+      "output_tensor_ids": [
+        "t00000591"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000590",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0016",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 35,
+          "producer_global_op_index": 575,
+          "producer_op_name": "slice.Tensor",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0017",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 36,
+          "consumer_global_op_index": 576,
+          "consumer_op_name": "neg.default"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0018",
+      "event_op_index": 37,
+      "global_op_index": 577,
+      "op_name": "cat.default",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000591",
+        "t00000589"
+      ],
+      "output_tensor_ids": [
+        "t00000592"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000591",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0017",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 36,
+          "producer_global_op_index": 576,
+          "producer_op_name": "neg.default",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0018",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 37,
+          "consumer_global_op_index": 577,
+          "consumer_op_name": "cat.default"
+        },
+        {
+          "tensor_id": "t00000589",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0015",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 34,
+          "producer_global_op_index": 574,
+          "producer_op_name": "slice.Tensor",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0018",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 37,
+          "consumer_global_op_index": 577,
+          "consumer_op_name": "cat.default"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0019",
+      "event_op_index": 38,
+      "global_op_index": 578,
+      "op_name": "mul.Tensor",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000592",
+        "t00000587"
+      ],
+      "output_tensor_ids": [
+        "t00000593"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000592",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0018",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 37,
+          "producer_global_op_index": 577,
+          "producer_op_name": "cat.default",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0019",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 38,
+          "consumer_global_op_index": 578,
+          "consumer_op_name": "mul.Tensor"
+        },
+        {
+          "tensor_id": "t00000587",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0013",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 32,
+          "producer_global_op_index": 572,
+          "producer_op_name": "unsqueeze.default",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0019",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 38,
+          "consumer_global_op_index": 578,
+          "consumer_op_name": "mul.Tensor"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0020",
+      "event_op_index": 39,
+      "global_op_index": 579,
+      "op_name": "add.Tensor",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000588",
+        "t00000593"
+      ],
+      "output_tensor_ids": [
+        "t00000594"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000588",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0014",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 33,
+          "producer_global_op_index": 573,
+          "producer_op_name": "mul.Tensor",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0020",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 39,
+          "consumer_global_op_index": 579,
+          "consumer_op_name": "add.Tensor"
+        },
+        {
+          "tensor_id": "t00000593",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0019",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 38,
+          "producer_global_op_index": 578,
+          "producer_op_name": "mul.Tensor",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0020",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 39,
+          "consumer_global_op_index": 579,
+          "consumer_op_name": "add.Tensor"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0021",
+      "event_op_index": 40,
+      "global_op_index": 580,
+      "op_name": "mul.Tensor",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000573",
+        "t00000585"
+      ],
+      "output_tensor_ids": [
+        "t00000595"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000573",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0004",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 15,
+          "producer_global_op_index": 555,
+          "producer_op_name": "transpose.int",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0021",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 40,
+          "consumer_global_op_index": 580,
+          "consumer_op_name": "mul.Tensor"
+        },
+        {
+          "tensor_id": "t00000585",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0011",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 30,
+          "producer_global_op_index": 570,
+          "producer_op_name": "unsqueeze.default",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0021",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 40,
+          "consumer_global_op_index": 580,
+          "consumer_op_name": "mul.Tensor"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0022",
+      "event_op_index": 41,
+      "global_op_index": 581,
+      "op_name": "slice.Tensor",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000573"
+      ],
+      "output_tensor_ids": [
+        "t00000596"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000573",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0004",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 15,
+          "producer_global_op_index": 555,
+          "producer_op_name": "transpose.int",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0022",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 41,
+          "consumer_global_op_index": 581,
+          "consumer_op_name": "slice.Tensor"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0023",
+      "event_op_index": 42,
+      "global_op_index": 582,
+      "op_name": "slice.Tensor",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000573"
+      ],
+      "output_tensor_ids": [
+        "t00000597"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000573",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0004",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 15,
+          "producer_global_op_index": 555,
+          "producer_op_name": "transpose.int",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0023",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 42,
+          "consumer_global_op_index": 582,
+          "consumer_op_name": "slice.Tensor"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0024",
+      "event_op_index": 43,
+      "global_op_index": 583,
+      "op_name": "neg.default",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000597"
+      ],
+      "output_tensor_ids": [
+        "t00000598"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000597",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0023",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 42,
+          "producer_global_op_index": 582,
+          "producer_op_name": "slice.Tensor",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0024",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 43,
+          "consumer_global_op_index": 583,
+          "consumer_op_name": "neg.default"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0025",
+      "event_op_index": 44,
+      "global_op_index": 584,
+      "op_name": "cat.default",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000598",
+        "t00000596"
+      ],
+      "output_tensor_ids": [
+        "t00000599"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000598",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0024",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 43,
+          "producer_global_op_index": 583,
+          "producer_op_name": "neg.default",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0025",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 44,
+          "consumer_global_op_index": 584,
+          "consumer_op_name": "cat.default"
+        },
+        {
+          "tensor_id": "t00000596",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0022",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 41,
+          "producer_global_op_index": 581,
+          "producer_op_name": "slice.Tensor",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0025",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 44,
+          "consumer_global_op_index": 584,
+          "consumer_op_name": "cat.default"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0026",
+      "event_op_index": 45,
+      "global_op_index": 585,
+      "op_name": "mul.Tensor",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000599",
+        "t00000587"
+      ],
+      "output_tensor_ids": [
+        "t00000600"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000599",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0025",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 44,
+          "producer_global_op_index": 584,
+          "producer_op_name": "cat.default",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0026",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 45,
+          "consumer_global_op_index": 585,
+          "consumer_op_name": "mul.Tensor"
+        },
+        {
+          "tensor_id": "t00000587",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0013",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 32,
+          "producer_global_op_index": 572,
+          "producer_op_name": "unsqueeze.default",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0026",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 45,
+          "consumer_global_op_index": 585,
+          "consumer_op_name": "mul.Tensor"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0027",
+      "event_op_index": 46,
+      "global_op_index": 586,
+      "op_name": "add.Tensor",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000595",
+        "t00000600"
+      ],
+      "output_tensor_ids": [
+        "t00000601"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000595",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0021",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 40,
+          "producer_global_op_index": 580,
+          "producer_op_name": "mul.Tensor",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0027",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 46,
+          "consumer_global_op_index": 586,
+          "consumer_op_name": "add.Tensor"
+        },
+        {
+          "tensor_id": "t00000600",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0026",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 45,
+          "producer_global_op_index": 585,
+          "producer_op_name": "mul.Tensor",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0027",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 46,
+          "consumer_global_op_index": 586,
+          "consumer_op_name": "add.Tensor"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0028",
+      "event_op_index": 47,
+      "global_op_index": 587,
+      "op_name": "transpose.int",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000601"
+      ],
+      "output_tensor_ids": [
+        "t00000602"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000601",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0027",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 46,
+          "producer_global_op_index": 586,
+          "producer_op_name": "add.Tensor",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0028",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 47,
+          "consumer_global_op_index": 587,
+          "consumer_op_name": "transpose.int"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0029",
+      "event_op_index": 48,
+      "global_op_index": 588,
+      "op_name": "matmul.default",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000594",
+        "t00000602"
+      ],
+      "output_tensor_ids": [
+        "t00000603"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000594",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0020",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 39,
+          "producer_global_op_index": 579,
+          "producer_op_name": "add.Tensor",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0029",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 48,
+          "consumer_global_op_index": 588,
+          "consumer_op_name": "matmul.default"
+        },
+        {
+          "tensor_id": "t00000602",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0028",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 47,
+          "producer_global_op_index": 587,
+          "producer_op_name": "transpose.int",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0029",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 48,
+          "consumer_global_op_index": 588,
+          "consumer_op_name": "matmul.default"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0030",
+      "event_op_index": 49,
+      "global_op_index": 589,
+      "op_name": "div.Tensor",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000603"
+      ],
+      "output_tensor_ids": [
+        "t00000604"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000603",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0029",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 48,
+          "producer_global_op_index": 588,
+          "producer_op_name": "matmul.default",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0030",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 49,
+          "consumer_global_op_index": 589,
+          "consumer_op_name": "div.Tensor"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0031",
+      "event_op_index": 50,
+      "global_op_index": 590,
+      "op_name": "add.Tensor",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000604",
+        "t00000053"
+      ],
+      "output_tensor_ids": [
+        "t00000605"
+      ],
+      "external_input_tensor_ids": [
+        "t00000053"
+      ],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000604",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0030",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 49,
+          "producer_global_op_index": 589,
+          "producer_op_name": "div.Tensor",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0031",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 50,
+          "consumer_global_op_index": 590,
+          "consumer_op_name": "add.Tensor"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0032",
+      "event_op_index": 51,
+      "global_op_index": 591,
+      "op_name": "softmax.int",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000605"
+      ],
+      "output_tensor_ids": [
+        "t00000606"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000605",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0031",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 50,
+          "producer_global_op_index": 590,
+          "producer_op_name": "add.Tensor",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0032",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 51,
+          "consumer_global_op_index": 591,
+          "consumer_op_name": "softmax.int"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0033",
+      "event_op_index": 52,
+      "global_op_index": 592,
+      "op_name": "to.dtype",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000606"
+      ],
+      "output_tensor_ids": [
+        "t00000607"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000606",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0032",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 51,
+          "producer_global_op_index": 591,
+          "producer_op_name": "softmax.int",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0033",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 52,
+          "consumer_global_op_index": 592,
+          "consumer_op_name": "to.dtype"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0034",
+      "event_op_index": 53,
+      "global_op_index": 593,
+      "op_name": "dropout.default",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000607"
+      ],
+      "output_tensor_ids": [
+        "t00000607"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000607",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0033",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 52,
+          "producer_global_op_index": 592,
+          "producer_op_name": "to.dtype",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0034",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 53,
+          "consumer_global_op_index": 593,
+          "consumer_op_name": "dropout.default"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0035",
+      "event_op_index": 54,
+      "global_op_index": 594,
+      "op_name": "matmul.default",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000607",
+        "t00000575"
+      ],
+      "output_tensor_ids": [
+        "t00000608"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000607",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0034",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 53,
+          "producer_global_op_index": 593,
+          "producer_op_name": "dropout.default",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0035",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 54,
+          "consumer_global_op_index": 594,
+          "consumer_op_name": "matmul.default"
+        },
+        {
+          "tensor_id": "t00000575",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0006",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 17,
+          "producer_global_op_index": 557,
+          "producer_op_name": "transpose.int",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0035",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 54,
+          "consumer_global_op_index": 594,
+          "consumer_op_name": "matmul.default"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0036",
+      "event_op_index": 55,
+      "global_op_index": 595,
+      "op_name": "transpose.int",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000608"
+      ],
+      "output_tensor_ids": [
+        "t00000609"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000608",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0035",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 54,
+          "producer_global_op_index": 594,
+          "producer_op_name": "matmul.default",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0036",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 55,
+          "consumer_global_op_index": 595,
+          "consumer_op_name": "transpose.int"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0037",
+      "event_op_index": 56,
+      "global_op_index": 596,
+      "op_name": "contiguous.default",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000609"
+      ],
+      "output_tensor_ids": [
+        "t00000610"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000609",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0036",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 55,
+          "producer_global_op_index": 595,
+          "producer_op_name": "transpose.int",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0037",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 56,
+          "consumer_global_op_index": 596,
+          "consumer_op_name": "contiguous.default"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0038",
+      "event_op_index": 57,
+      "global_op_index": 597,
+      "op_name": "reshape.default",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000610"
+      ],
+      "output_tensor_ids": [
+        "t00000611"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000610",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0037",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 56,
+          "producer_global_op_index": 596,
+          "producer_op_name": "contiguous.default",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0038",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 57,
+          "consumer_global_op_index": 597,
+          "consumer_op_name": "reshape.default"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0039",
+      "event_op_index": 58,
+      "global_op_index": 598,
+      "op_name": "gt.Scalar",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000057"
+      ],
+      "output_tensor_ids": [
+        "t00000612"
+      ],
+      "external_input_tensor_ids": [
+        "t00000057"
+      ],
+      "data_dependencies": []
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0040",
+      "event_op_index": 59,
+      "global_op_index": 599,
+      "op_name": "is_nonzero.default",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000612"
+      ],
+      "output_tensor_ids": [],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000612",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0039",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 58,
+          "producer_global_op_index": 598,
+          "producer_op_name": "gt.Scalar",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0040",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 59,
+          "consumer_global_op_index": 599,
+          "consumer_op_name": "is_nonzero.default"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0041",
+      "event_op_index": 60,
+      "global_op_index": 600,
+      "op_name": "select.int",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000023"
+      ],
+      "output_tensor_ids": [
+        "t00000613"
+      ],
+      "external_input_tensor_ids": [
+        "t00000023"
+      ],
+      "data_dependencies": []
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0042",
+      "event_op_index": 61,
+      "global_op_index": 601,
+      "op_name": "select.int",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000613"
+      ],
+      "output_tensor_ids": [
+        "t00000614"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000613",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0041",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 60,
+          "producer_global_op_index": 600,
+          "producer_op_name": "select.int",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0042",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 61,
+          "consumer_global_op_index": 601,
+          "consumer_op_name": "select.int"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0043",
+      "event_op_index": 62,
+      "global_op_index": 602,
+      "op_name": "add.Tensor",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000614"
+      ],
+      "output_tensor_ids": [
+        "t00000615"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000614",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0042",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 61,
+          "producer_global_op_index": 601,
+          "producer_op_name": "select.int",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0043",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 62,
+          "consumer_global_op_index": 602,
+          "consumer_op_name": "add.Tensor"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0044",
+      "event_op_index": 63,
+      "global_op_index": 603,
+      "op_name": "eq.Scalar",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000615"
+      ],
+      "output_tensor_ids": [
+        "t00000616"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000615",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0043",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 62,
+          "producer_global_op_index": 602,
+          "producer_op_name": "add.Tensor",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0044",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 63,
+          "consumer_global_op_index": 603,
+          "consumer_op_name": "eq.Scalar"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0045",
+      "event_op_index": 64,
+      "global_op_index": 604,
+      "op_name": "is_nonzero.default",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000616"
+      ],
+      "output_tensor_ids": [],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000616",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0044",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 63,
+          "producer_global_op_index": 603,
+          "producer_op_name": "eq.Scalar",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0045",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 64,
+          "consumer_global_op_index": 604,
+          "consumer_op_name": "is_nonzero.default"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0046",
+      "event_op_index": 65,
+      "global_op_index": 605,
+      "op_name": "select.int",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000611"
+      ],
+      "output_tensor_ids": [
+        "t00000617"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000611",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0038",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 57,
+          "producer_global_op_index": 597,
+          "producer_op_name": "reshape.default",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0046",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 65,
+          "consumer_global_op_index": 605,
+          "consumer_op_name": "select.int"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0047",
+      "event_op_index": 66,
+      "global_op_index": 606,
+      "op_name": "select.int",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000607"
+      ],
+      "output_tensor_ids": [
+        "t00000618"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000607",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0034",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 53,
+          "producer_global_op_index": 593,
+          "producer_op_name": "dropout.default",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0047",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 66,
+          "consumer_global_op_index": 606,
+          "consumer_op_name": "select.int"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0048",
+      "event_op_index": 67,
+      "global_op_index": 607,
+      "op_name": "unsqueeze.default",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000618"
+      ],
+      "output_tensor_ids": [
+        "t00000619"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000618",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0047",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 66,
+          "producer_global_op_index": 606,
+          "producer_op_name": "select.int",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0048",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 67,
+          "consumer_global_op_index": 607,
+          "consumer_op_name": "unsqueeze.default"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0049",
+      "event_op_index": 68,
+      "global_op_index": 608,
+      "op_name": "mul.Tensor",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000619",
+        "t00000575"
+      ],
+      "output_tensor_ids": [
+        "t00000620"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000619",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0048",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 67,
+          "producer_global_op_index": 607,
+          "producer_op_name": "unsqueeze.default",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0049",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 68,
+          "consumer_global_op_index": 608,
+          "consumer_op_name": "mul.Tensor"
+        },
+        {
+          "tensor_id": "t00000575",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0006",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 17,
+          "producer_global_op_index": 557,
+          "producer_op_name": "transpose.int",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0049",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 68,
+          "consumer_global_op_index": 608,
+          "consumer_op_name": "mul.Tensor"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0050",
+      "event_op_index": 69,
+      "global_op_index": 609,
+      "op_name": "permute.default",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000620"
+      ],
+      "output_tensor_ids": [
+        "t00000621"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000620",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0049",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 68,
+          "producer_global_op_index": 608,
+          "producer_op_name": "mul.Tensor",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0050",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 69,
+          "consumer_global_op_index": 609,
+          "consumer_op_name": "permute.default"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0051",
+      "event_op_index": 70,
+      "global_op_index": 610,
+      "op_name": "contiguous.default",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000621"
+      ],
+      "output_tensor_ids": [
+        "t00000622"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000621",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0050",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 69,
+          "producer_global_op_index": 609,
+          "producer_op_name": "permute.default",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0051",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 70,
+          "consumer_global_op_index": 610,
+          "consumer_op_name": "contiguous.default"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0052",
+      "event_op_index": 71,
+      "global_op_index": 611,
+      "op_name": "view.default",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000622"
+      ],
+      "output_tensor_ids": [
+        "t00000623"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000622",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0051",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 70,
+          "producer_global_op_index": 610,
+          "producer_op_name": "contiguous.default",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0052",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 71,
+          "consumer_global_op_index": 611,
+          "consumer_op_name": "view.default"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0053",
+      "event_op_index": 72,
+      "global_op_index": 612,
+      "op_name": "item.default",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000624"
+      ],
+      "output_tensor_ids": [],
+      "external_input_tensor_ids": [
+        "t00000624"
+      ],
+      "data_dependencies": []
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0054",
+      "event_op_index": 73,
+      "global_op_index": 613,
+      "op_name": "slice.Tensor",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000623"
+      ],
+      "output_tensor_ids": [
+        "t00000625"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000623",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0052",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 71,
+          "producer_global_op_index": 611,
+          "producer_op_name": "view.default",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0054",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 73,
+          "consumer_global_op_index": 613,
+          "consumer_op_name": "slice.Tensor"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0055",
+      "event_op_index": 74,
+      "global_op_index": 614,
+      "op_name": "unsqueeze.default",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000617"
+      ],
+      "output_tensor_ids": [
+        "t00000626"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000617",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0046",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 65,
+          "producer_global_op_index": 605,
+          "producer_op_name": "select.int",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0055",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 74,
+          "consumer_global_op_index": 614,
+          "consumer_op_name": "unsqueeze.default"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0056",
+      "event_op_index": 75,
+      "global_op_index": 615,
+      "op_name": "sub.Tensor",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000626",
+        "t00000625"
+      ],
+      "output_tensor_ids": [
+        "t00000627"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000626",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0055",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 74,
+          "producer_global_op_index": 614,
+          "producer_op_name": "unsqueeze.default",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0056",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 75,
+          "consumer_global_op_index": 615,
+          "consumer_op_name": "sub.Tensor"
+        },
+        {
+          "tensor_id": "t00000625",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0054",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 73,
+          "producer_global_op_index": 613,
+          "producer_op_name": "slice.Tensor",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0056",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 75,
+          "consumer_global_op_index": 615,
+          "consumer_op_name": "sub.Tensor"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0057",
+      "event_op_index": 76,
+      "global_op_index": 616,
+      "op_name": "unsqueeze.default",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000617"
+      ],
+      "output_tensor_ids": [
+        "t00000628"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000617",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0046",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 65,
+          "producer_global_op_index": 605,
+          "producer_op_name": "select.int",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0057",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 76,
+          "consumer_global_op_index": 616,
+          "consumer_op_name": "unsqueeze.default"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0058",
+      "event_op_index": 77,
+      "global_op_index": 617,
+      "op_name": "cosine_similarity.default",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000627",
+        "t00000628"
+      ],
+      "output_tensor_ids": [
+        "t00000629"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000627",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0056",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 75,
+          "producer_global_op_index": 615,
+          "producer_op_name": "sub.Tensor",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0058",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 77,
+          "consumer_global_op_index": 617,
+          "consumer_op_name": "cosine_similarity.default"
+        },
+        {
+          "tensor_id": "t00000628",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0057",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 76,
+          "producer_global_op_index": 616,
+          "producer_op_name": "unsqueeze.default",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0058",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 77,
+          "consumer_global_op_index": 617,
+          "consumer_op_name": "cosine_similarity.default"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0059",
+      "event_op_index": 78,
+      "global_op_index": 618,
+      "op_name": "squeeze.dim",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000629"
+      ],
+      "output_tensor_ids": [
+        "t00000630"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000629",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0058",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 77,
+          "producer_global_op_index": 617,
+          "producer_op_name": "cosine_similarity.default",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0059",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 78,
+          "consumer_global_op_index": 618,
+          "consumer_op_name": "squeeze.dim"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0060",
+      "event_op_index": 79,
+      "global_op_index": 619,
+      "op_name": "lt.Scalar",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000630"
+      ],
+      "output_tensor_ids": [
+        "t00000631"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000630",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0059",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 78,
+          "producer_global_op_index": 618,
+          "producer_op_name": "squeeze.dim",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0060",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 79,
+          "consumer_global_op_index": 619,
+          "consumer_op_name": "lt.Scalar"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0061",
+      "event_op_index": 80,
+      "global_op_index": 620,
+      "op_name": "any.default",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000631"
+      ],
+      "output_tensor_ids": [
+        "t00000632"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000631",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0060",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 79,
+          "producer_global_op_index": 619,
+          "producer_op_name": "lt.Scalar",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0061",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 80,
+          "consumer_global_op_index": 620,
+          "consumer_op_name": "any.default"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/call0087/op0062",
+      "event_op_index": 81,
+      "global_op_index": 621,
+      "op_name": "item.default",
+      "module_path": "model.layers.10.self_attn",
+      "module_relative_path": "self_attn",
+      "input_tensor_ids": [
+        "t00000632"
+      ],
+      "output_tensor_ids": [],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000632",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0061",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 80,
+          "producer_global_op_index": 620,
+          "producer_op_name": "any.default",
+          "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0062",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 81,
+          "consumer_global_op_index": 621,
+          "consumer_op_name": "item.default"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/self_attn/o_proj/call0092/op0001",
+      "event_op_index": 82,
+      "global_op_index": 622,
+      "op_name": "linear.default",
+      "module_path": "model.layers.10.self_attn.o_proj",
+      "module_relative_path": "self_attn.o_proj",
+      "input_tensor_ids": [
+        "t00000611",
+        "t00000633"
+      ],
+      "output_tensor_ids": [
+        "t00000634"
+      ],
+      "external_input_tensor_ids": [
+        "t00000633"
+      ],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000611",
+          "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0038",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 57,
+          "producer_global_op_index": 597,
+          "producer_op_name": "reshape.default",
+          "consumer_event_detail_id": "input1_layer10/self_attn/o_proj/call0092/op0001",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 82,
+          "consumer_global_op_index": 622,
+          "consumer_op_name": "linear.default"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/model/layers/10/call0085/op0001",
+      "event_op_index": 83,
+      "global_op_index": 623,
+      "op_name": "add.Tensor",
+      "module_path": "model.layers.10",
+      "module_relative_path": "",
+      "input_tensor_ids": [
+        "t00000554",
+        "t00000634"
+      ],
+      "output_tensor_ids": [
+        "t00000635"
+      ],
+      "external_input_tensor_ids": [
+        "t00000554"
+      ],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000634",
+          "producer_event_detail_id": "input1_layer10/self_attn/o_proj/call0092/op0001",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 82,
+          "producer_global_op_index": 622,
+          "producer_op_name": "linear.default",
+          "consumer_event_detail_id": "input1_layer10/model/layers/10/call0085/op0001",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 83,
+          "consumer_global_op_index": 623,
+          "consumer_op_name": "add.Tensor"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/post_attention_layernorm/call0093/op0001",
+      "event_op_index": 84,
+      "global_op_index": 624,
+      "op_name": "to.dtype",
+      "module_path": "model.layers.10.post_attention_layernorm",
+      "module_relative_path": "post_attention_layernorm",
+      "input_tensor_ids": [
+        "t00000635"
+      ],
+      "output_tensor_ids": [
+        "t00000636"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000635",
+          "producer_event_detail_id": "input1_layer10/model/layers/10/call0085/op0001",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 83,
+          "producer_global_op_index": 623,
+          "producer_op_name": "add.Tensor",
+          "consumer_event_detail_id": "input1_layer10/post_attention_layernorm/call0093/op0001",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 84,
+          "consumer_global_op_index": 624,
+          "consumer_op_name": "to.dtype"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/post_attention_layernorm/call0093/op0002",
+      "event_op_index": 85,
+      "global_op_index": 625,
+      "op_name": "pow.Tensor_Scalar",
+      "module_path": "model.layers.10.post_attention_layernorm",
+      "module_relative_path": "post_attention_layernorm",
+      "input_tensor_ids": [
+        "t00000636"
+      ],
+      "output_tensor_ids": [
+        "t00000637"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000636",
+          "producer_event_detail_id": "input1_layer10/post_attention_layernorm/call0093/op0001",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 84,
+          "producer_global_op_index": 624,
+          "producer_op_name": "to.dtype",
+          "consumer_event_detail_id": "input1_layer10/post_attention_layernorm/call0093/op0002",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 85,
+          "consumer_global_op_index": 625,
+          "consumer_op_name": "pow.Tensor_Scalar"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/post_attention_layernorm/call0093/op0003",
+      "event_op_index": 86,
+      "global_op_index": 626,
+      "op_name": "mean.dim",
+      "module_path": "model.layers.10.post_attention_layernorm",
+      "module_relative_path": "post_attention_layernorm",
+      "input_tensor_ids": [
+        "t00000637"
+      ],
+      "output_tensor_ids": [
+        "t00000638"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000637",
+          "producer_event_detail_id": "input1_layer10/post_attention_layernorm/call0093/op0002",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 85,
+          "producer_global_op_index": 625,
+          "producer_op_name": "pow.Tensor_Scalar",
+          "consumer_event_detail_id": "input1_layer10/post_attention_layernorm/call0093/op0003",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 86,
+          "consumer_global_op_index": 626,
+          "consumer_op_name": "mean.dim"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/post_attention_layernorm/call0093/op0004",
+      "event_op_index": 87,
+      "global_op_index": 627,
+      "op_name": "add.Tensor",
+      "module_path": "model.layers.10.post_attention_layernorm",
+      "module_relative_path": "post_attention_layernorm",
+      "input_tensor_ids": [
+        "t00000638"
+      ],
+      "output_tensor_ids": [
+        "t00000639"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000638",
+          "producer_event_detail_id": "input1_layer10/post_attention_layernorm/call0093/op0003",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 86,
+          "producer_global_op_index": 626,
+          "producer_op_name": "mean.dim",
+          "consumer_event_detail_id": "input1_layer10/post_attention_layernorm/call0093/op0004",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 87,
+          "consumer_global_op_index": 627,
+          "consumer_op_name": "add.Tensor"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/post_attention_layernorm/call0093/op0005",
+      "event_op_index": 88,
+      "global_op_index": 628,
+      "op_name": "rsqrt.default",
+      "module_path": "model.layers.10.post_attention_layernorm",
+      "module_relative_path": "post_attention_layernorm",
+      "input_tensor_ids": [
+        "t00000639"
+      ],
+      "output_tensor_ids": [
+        "t00000640"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000639",
+          "producer_event_detail_id": "input1_layer10/post_attention_layernorm/call0093/op0004",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 87,
+          "producer_global_op_index": 627,
+          "producer_op_name": "add.Tensor",
+          "consumer_event_detail_id": "input1_layer10/post_attention_layernorm/call0093/op0005",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 88,
+          "consumer_global_op_index": 628,
+          "consumer_op_name": "rsqrt.default"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/post_attention_layernorm/call0093/op0006",
+      "event_op_index": 89,
+      "global_op_index": 629,
+      "op_name": "mul.Tensor",
+      "module_path": "model.layers.10.post_attention_layernorm",
+      "module_relative_path": "post_attention_layernorm",
+      "input_tensor_ids": [
+        "t00000636",
+        "t00000640"
+      ],
+      "output_tensor_ids": [
+        "t00000641"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000636",
+          "producer_event_detail_id": "input1_layer10/post_attention_layernorm/call0093/op0001",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 84,
+          "producer_global_op_index": 624,
+          "producer_op_name": "to.dtype",
+          "consumer_event_detail_id": "input1_layer10/post_attention_layernorm/call0093/op0006",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 89,
+          "consumer_global_op_index": 629,
+          "consumer_op_name": "mul.Tensor"
+        },
+        {
+          "tensor_id": "t00000640",
+          "producer_event_detail_id": "input1_layer10/post_attention_layernorm/call0093/op0005",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 88,
+          "producer_global_op_index": 628,
+          "producer_op_name": "rsqrt.default",
+          "consumer_event_detail_id": "input1_layer10/post_attention_layernorm/call0093/op0006",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 89,
+          "consumer_global_op_index": 629,
+          "consumer_op_name": "mul.Tensor"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/post_attention_layernorm/call0093/op0007",
+      "event_op_index": 90,
+      "global_op_index": 630,
+      "op_name": "to.dtype",
+      "module_path": "model.layers.10.post_attention_layernorm",
+      "module_relative_path": "post_attention_layernorm",
+      "input_tensor_ids": [
+        "t00000641"
+      ],
+      "output_tensor_ids": [
+        "t00000642"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000641",
+          "producer_event_detail_id": "input1_layer10/post_attention_layernorm/call0093/op0006",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 89,
+          "producer_global_op_index": 629,
+          "producer_op_name": "mul.Tensor",
+          "consumer_event_detail_id": "input1_layer10/post_attention_layernorm/call0093/op0007",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 90,
+          "consumer_global_op_index": 630,
+          "consumer_op_name": "to.dtype"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/post_attention_layernorm/call0093/op0008",
+      "event_op_index": 91,
+      "global_op_index": 631,
+      "op_name": "mul.Tensor",
+      "module_path": "model.layers.10.post_attention_layernorm",
+      "module_relative_path": "post_attention_layernorm",
+      "input_tensor_ids": [
+        "t00000643",
+        "t00000642"
+      ],
+      "output_tensor_ids": [
+        "t00000644"
+      ],
+      "external_input_tensor_ids": [
+        "t00000643"
+      ],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000642",
+          "producer_event_detail_id": "input1_layer10/post_attention_layernorm/call0093/op0007",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 90,
+          "producer_global_op_index": 630,
+          "producer_op_name": "to.dtype",
+          "consumer_event_detail_id": "input1_layer10/post_attention_layernorm/call0093/op0008",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 91,
+          "consumer_global_op_index": 631,
+          "consumer_op_name": "mul.Tensor"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/mlp/gate_proj/call0095/op0001",
+      "event_op_index": 92,
+      "global_op_index": 632,
+      "op_name": "linear.default",
+      "module_path": "model.layers.10.mlp.gate_proj",
+      "module_relative_path": "mlp.gate_proj",
+      "input_tensor_ids": [
+        "t00000644",
+        "t00000645"
+      ],
+      "output_tensor_ids": [
+        "t00000646"
+      ],
+      "external_input_tensor_ids": [
+        "t00000645"
+      ],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000644",
+          "producer_event_detail_id": "input1_layer10/post_attention_layernorm/call0093/op0008",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 91,
+          "producer_global_op_index": 631,
+          "producer_op_name": "mul.Tensor",
+          "consumer_event_detail_id": "input1_layer10/mlp/gate_proj/call0095/op0001",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 92,
+          "consumer_global_op_index": 632,
+          "consumer_op_name": "linear.default"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/mlp/act_fn/call0096/op0001",
+      "event_op_index": 93,
+      "global_op_index": 633,
+      "op_name": "silu.default",
+      "module_path": "model.layers.10.mlp.act_fn",
+      "module_relative_path": "mlp.act_fn",
+      "input_tensor_ids": [
+        "t00000646"
+      ],
+      "output_tensor_ids": [
+        "t00000647"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000646",
+          "producer_event_detail_id": "input1_layer10/mlp/gate_proj/call0095/op0001",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 92,
+          "producer_global_op_index": 632,
+          "producer_op_name": "linear.default",
+          "consumer_event_detail_id": "input1_layer10/mlp/act_fn/call0096/op0001",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 93,
+          "consumer_global_op_index": 633,
+          "consumer_op_name": "silu.default"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/mlp/up_proj/call0097/op0001",
+      "event_op_index": 94,
+      "global_op_index": 634,
+      "op_name": "linear.default",
+      "module_path": "model.layers.10.mlp.up_proj",
+      "module_relative_path": "mlp.up_proj",
+      "input_tensor_ids": [
+        "t00000644",
+        "t00000648"
+      ],
+      "output_tensor_ids": [
+        "t00000649"
+      ],
+      "external_input_tensor_ids": [
+        "t00000648"
+      ],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000644",
+          "producer_event_detail_id": "input1_layer10/post_attention_layernorm/call0093/op0008",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 91,
+          "producer_global_op_index": 631,
+          "producer_op_name": "mul.Tensor",
+          "consumer_event_detail_id": "input1_layer10/mlp/up_proj/call0097/op0001",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 94,
+          "consumer_global_op_index": 634,
+          "consumer_op_name": "linear.default"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/mlp/call0094/op0001",
+      "event_op_index": 95,
+      "global_op_index": 635,
+      "op_name": "mul.Tensor",
+      "module_path": "model.layers.10.mlp",
+      "module_relative_path": "mlp",
+      "input_tensor_ids": [
+        "t00000647",
+        "t00000649"
+      ],
+      "output_tensor_ids": [
+        "t00000650"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000647",
+          "producer_event_detail_id": "input1_layer10/mlp/act_fn/call0096/op0001",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 93,
+          "producer_global_op_index": 633,
+          "producer_op_name": "silu.default",
+          "consumer_event_detail_id": "input1_layer10/mlp/call0094/op0001",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 95,
+          "consumer_global_op_index": 635,
+          "consumer_op_name": "mul.Tensor"
+        },
+        {
+          "tensor_id": "t00000649",
+          "producer_event_detail_id": "input1_layer10/mlp/up_proj/call0097/op0001",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 94,
+          "producer_global_op_index": 634,
+          "producer_op_name": "linear.default",
+          "consumer_event_detail_id": "input1_layer10/mlp/call0094/op0001",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 95,
+          "consumer_global_op_index": 635,
+          "consumer_op_name": "mul.Tensor"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/mlp/down_proj/call0098/op0001",
+      "event_op_index": 96,
+      "global_op_index": 636,
+      "op_name": "linear.default",
+      "module_path": "model.layers.10.mlp.down_proj",
+      "module_relative_path": "mlp.down_proj",
+      "input_tensor_ids": [
+        "t00000650",
+        "t00000651"
+      ],
+      "output_tensor_ids": [
+        "t00000652"
+      ],
+      "external_input_tensor_ids": [
+        "t00000651"
+      ],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000650",
+          "producer_event_detail_id": "input1_layer10/mlp/call0094/op0001",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 95,
+          "producer_global_op_index": 635,
+          "producer_op_name": "mul.Tensor",
+          "consumer_event_detail_id": "input1_layer10/mlp/down_proj/call0098/op0001",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 96,
+          "consumer_global_op_index": 636,
+          "consumer_op_name": "linear.default"
+        }
+      ]
+    },
+    {
+      "event_detail_id": "input1_layer10/model/layers/10/call0085/op0002",
+      "event_op_index": 97,
+      "global_op_index": 637,
+      "op_name": "add.Tensor",
+      "module_path": "model.layers.10",
+      "module_relative_path": "",
+      "input_tensor_ids": [
+        "t00000635",
+        "t00000652"
+      ],
+      "output_tensor_ids": [
+        "t00000653"
+      ],
+      "external_input_tensor_ids": [],
+      "data_dependencies": [
+        {
+          "tensor_id": "t00000635",
+          "producer_event_detail_id": "input1_layer10/model/layers/10/call0085/op0001",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 83,
+          "producer_global_op_index": 623,
+          "producer_op_name": "add.Tensor",
+          "consumer_event_detail_id": "input1_layer10/model/layers/10/call0085/op0002",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 97,
+          "consumer_global_op_index": 637,
+          "consumer_op_name": "add.Tensor"
+        },
+        {
+          "tensor_id": "t00000652",
+          "producer_event_detail_id": "input1_layer10/mlp/down_proj/call0098/op0001",
+          "producer_event_id": "input1_layer10",
+          "producer_event_op_index": 96,
+          "producer_global_op_index": 636,
+          "producer_op_name": "linear.default",
+          "consumer_event_detail_id": "input1_layer10/model/layers/10/call0085/op0002",
+          "consumer_event_id": "input1_layer10",
+          "consumer_event_op_index": 97,
+          "consumer_global_op_index": 637,
+          "consumer_op_name": "add.Tensor"
+        }
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "tensor_id": "t00000555",
+      "producer_event_detail_id": "input1_layer10/input_layernorm/call0086/op0001",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 1,
+      "producer_global_op_index": 541,
+      "producer_op_name": "to.dtype",
+      "consumer_event_detail_id": "input1_layer10/input_layernorm/call0086/op0002",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 2,
+      "consumer_global_op_index": 542,
+      "consumer_op_name": "pow.Tensor_Scalar"
+    },
+    {
+      "tensor_id": "t00000556",
+      "producer_event_detail_id": "input1_layer10/input_layernorm/call0086/op0002",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 2,
+      "producer_global_op_index": 542,
+      "producer_op_name": "pow.Tensor_Scalar",
+      "consumer_event_detail_id": "input1_layer10/input_layernorm/call0086/op0003",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 3,
+      "consumer_global_op_index": 543,
+      "consumer_op_name": "mean.dim"
+    },
+    {
+      "tensor_id": "t00000557",
+      "producer_event_detail_id": "input1_layer10/input_layernorm/call0086/op0003",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 3,
+      "producer_global_op_index": 543,
+      "producer_op_name": "mean.dim",
+      "consumer_event_detail_id": "input1_layer10/input_layernorm/call0086/op0004",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 4,
+      "consumer_global_op_index": 544,
+      "consumer_op_name": "add.Tensor"
+    },
+    {
+      "tensor_id": "t00000558",
+      "producer_event_detail_id": "input1_layer10/input_layernorm/call0086/op0004",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 4,
+      "producer_global_op_index": 544,
+      "producer_op_name": "add.Tensor",
+      "consumer_event_detail_id": "input1_layer10/input_layernorm/call0086/op0005",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 5,
+      "consumer_global_op_index": 545,
+      "consumer_op_name": "rsqrt.default"
+    },
+    {
+      "tensor_id": "t00000555",
+      "producer_event_detail_id": "input1_layer10/input_layernorm/call0086/op0001",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 1,
+      "producer_global_op_index": 541,
+      "producer_op_name": "to.dtype",
+      "consumer_event_detail_id": "input1_layer10/input_layernorm/call0086/op0006",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 6,
+      "consumer_global_op_index": 546,
+      "consumer_op_name": "mul.Tensor"
+    },
+    {
+      "tensor_id": "t00000559",
+      "producer_event_detail_id": "input1_layer10/input_layernorm/call0086/op0005",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 5,
+      "producer_global_op_index": 545,
+      "producer_op_name": "rsqrt.default",
+      "consumer_event_detail_id": "input1_layer10/input_layernorm/call0086/op0006",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 6,
+      "consumer_global_op_index": 546,
+      "consumer_op_name": "mul.Tensor"
+    },
+    {
+      "tensor_id": "t00000560",
+      "producer_event_detail_id": "input1_layer10/input_layernorm/call0086/op0006",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 6,
+      "producer_global_op_index": 546,
+      "producer_op_name": "mul.Tensor",
+      "consumer_event_detail_id": "input1_layer10/input_layernorm/call0086/op0007",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 7,
+      "consumer_global_op_index": 547,
+      "consumer_op_name": "to.dtype"
+    },
+    {
+      "tensor_id": "t00000561",
+      "producer_event_detail_id": "input1_layer10/input_layernorm/call0086/op0007",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 7,
+      "producer_global_op_index": 547,
+      "producer_op_name": "to.dtype",
+      "consumer_event_detail_id": "input1_layer10/input_layernorm/call0086/op0008",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 8,
+      "consumer_global_op_index": 548,
+      "consumer_op_name": "mul.Tensor"
+    },
+    {
+      "tensor_id": "t00000563",
+      "producer_event_detail_id": "input1_layer10/input_layernorm/call0086/op0008",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 8,
+      "producer_global_op_index": 548,
+      "producer_op_name": "mul.Tensor",
+      "consumer_event_detail_id": "input1_layer10/self_attn/q_proj/call0088/op0001",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 9,
+      "consumer_global_op_index": 549,
+      "consumer_op_name": "linear.default"
+    },
+    {
+      "tensor_id": "t00000563",
+      "producer_event_detail_id": "input1_layer10/input_layernorm/call0086/op0008",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 8,
+      "producer_global_op_index": 548,
+      "producer_op_name": "mul.Tensor",
+      "consumer_event_detail_id": "input1_layer10/self_attn/k_proj/call0089/op0001",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 10,
+      "consumer_global_op_index": 550,
+      "consumer_op_name": "linear.default"
+    },
+    {
+      "tensor_id": "t00000563",
+      "producer_event_detail_id": "input1_layer10/input_layernorm/call0086/op0008",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 8,
+      "producer_global_op_index": 548,
+      "producer_op_name": "mul.Tensor",
+      "consumer_event_detail_id": "input1_layer10/self_attn/v_proj/call0090/op0001",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 11,
+      "consumer_global_op_index": 551,
+      "consumer_op_name": "linear.default"
+    },
+    {
+      "tensor_id": "t00000565",
+      "producer_event_detail_id": "input1_layer10/self_attn/q_proj/call0088/op0001",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 9,
+      "producer_global_op_index": 549,
+      "producer_op_name": "linear.default",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0001",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 12,
+      "consumer_global_op_index": 552,
+      "consumer_op_name": "view.default"
+    },
+    {
+      "tensor_id": "t00000570",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0001",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 12,
+      "producer_global_op_index": 552,
+      "producer_op_name": "view.default",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0002",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 13,
+      "consumer_global_op_index": 553,
+      "consumer_op_name": "transpose.int"
+    },
+    {
+      "tensor_id": "t00000567",
+      "producer_event_detail_id": "input1_layer10/self_attn/k_proj/call0089/op0001",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 10,
+      "producer_global_op_index": 550,
+      "producer_op_name": "linear.default",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0003",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 14,
+      "consumer_global_op_index": 554,
+      "consumer_op_name": "view.default"
+    },
+    {
+      "tensor_id": "t00000572",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0003",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 14,
+      "producer_global_op_index": 554,
+      "producer_op_name": "view.default",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0004",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 15,
+      "consumer_global_op_index": 555,
+      "consumer_op_name": "transpose.int"
+    },
+    {
+      "tensor_id": "t00000569",
+      "producer_event_detail_id": "input1_layer10/self_attn/v_proj/call0090/op0001",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 11,
+      "producer_global_op_index": 551,
+      "producer_op_name": "linear.default",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0005",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 16,
+      "consumer_global_op_index": 556,
+      "consumer_op_name": "view.default"
+    },
+    {
+      "tensor_id": "t00000574",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0005",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 16,
+      "producer_global_op_index": 556,
+      "producer_op_name": "view.default",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0006",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 17,
+      "consumer_global_op_index": 557,
+      "consumer_op_name": "transpose.int"
+    },
+    {
+      "tensor_id": "t00000576",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0007",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 18,
+      "producer_global_op_index": 558,
+      "producer_op_name": "select.int",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0008",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 19,
+      "consumer_global_op_index": 559,
+      "consumer_op_name": "select.int"
+    },
+    {
+      "tensor_id": "t00000577",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0008",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 19,
+      "producer_global_op_index": 559,
+      "producer_op_name": "select.int",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0009",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 20,
+      "consumer_global_op_index": 560,
+      "consumer_op_name": "add.Tensor"
+    },
+    {
+      "tensor_id": "t00000578",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0009",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 20,
+      "producer_global_op_index": 560,
+      "producer_op_name": "add.Tensor",
+      "consumer_event_detail_id": "input1_layer10/self_attn/rotary_emb/call0091/op0001",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 21,
+      "consumer_global_op_index": 561,
+      "consumer_op_name": "gt.Scalar"
+    },
+    {
+      "tensor_id": "t00000579",
+      "producer_event_detail_id": "input1_layer10/self_attn/rotary_emb/call0091/op0001",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 21,
+      "producer_global_op_index": 561,
+      "producer_op_name": "gt.Scalar",
+      "consumer_event_detail_id": "input1_layer10/self_attn/rotary_emb/call0091/op0002",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 22,
+      "consumer_global_op_index": 562,
+      "consumer_op_name": "is_nonzero.default"
+    },
+    {
+      "tensor_id": "t00000578",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0009",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 20,
+      "producer_global_op_index": 560,
+      "producer_op_name": "add.Tensor",
+      "consumer_event_detail_id": "input1_layer10/self_attn/rotary_emb/call0091/op0003",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 23,
+      "consumer_global_op_index": 563,
+      "consumer_op_name": "item.default"
+    },
+    {
+      "tensor_id": "t00000581",
+      "producer_event_detail_id": "input1_layer10/self_attn/rotary_emb/call0091/op0004",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 24,
+      "producer_global_op_index": 564,
+      "producer_op_name": "slice.Tensor",
+      "consumer_event_detail_id": "input1_layer10/self_attn/rotary_emb/call0091/op0005",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 25,
+      "consumer_global_op_index": 565,
+      "consumer_op_name": "to.dtype"
+    },
+    {
+      "tensor_id": "t00000578",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0009",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 20,
+      "producer_global_op_index": 560,
+      "producer_op_name": "add.Tensor",
+      "consumer_event_detail_id": "input1_layer10/self_attn/rotary_emb/call0091/op0006",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 26,
+      "consumer_global_op_index": 566,
+      "consumer_op_name": "item.default"
+    },
+    {
+      "tensor_id": "t00000583",
+      "producer_event_detail_id": "input1_layer10/self_attn/rotary_emb/call0091/op0007",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 27,
+      "producer_global_op_index": 567,
+      "producer_op_name": "slice.Tensor",
+      "consumer_event_detail_id": "input1_layer10/self_attn/rotary_emb/call0091/op0008",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 28,
+      "consumer_global_op_index": 568,
+      "consumer_op_name": "to.dtype"
+    },
+    {
+      "tensor_id": "t00000581",
+      "producer_event_detail_id": "input1_layer10/self_attn/rotary_emb/call0091/op0005",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 25,
+      "producer_global_op_index": 565,
+      "producer_op_name": "to.dtype",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0010",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 29,
+      "consumer_global_op_index": 569,
+      "consumer_op_name": "index.Tensor"
+    },
+    {
+      "tensor_id": "t00000584",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0010",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 29,
+      "producer_global_op_index": 569,
+      "producer_op_name": "index.Tensor",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0011",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 30,
+      "consumer_global_op_index": 570,
+      "consumer_op_name": "unsqueeze.default"
+    },
+    {
+      "tensor_id": "t00000583",
+      "producer_event_detail_id": "input1_layer10/self_attn/rotary_emb/call0091/op0008",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 28,
+      "producer_global_op_index": 568,
+      "producer_op_name": "to.dtype",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0012",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 31,
+      "consumer_global_op_index": 571,
+      "consumer_op_name": "index.Tensor"
+    },
+    {
+      "tensor_id": "t00000586",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0012",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 31,
+      "producer_global_op_index": 571,
+      "producer_op_name": "index.Tensor",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0013",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 32,
+      "consumer_global_op_index": 572,
+      "consumer_op_name": "unsqueeze.default"
+    },
+    {
+      "tensor_id": "t00000571",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0002",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 13,
+      "producer_global_op_index": 553,
+      "producer_op_name": "transpose.int",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0014",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 33,
+      "consumer_global_op_index": 573,
+      "consumer_op_name": "mul.Tensor"
+    },
+    {
+      "tensor_id": "t00000585",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0011",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 30,
+      "producer_global_op_index": 570,
+      "producer_op_name": "unsqueeze.default",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0014",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 33,
+      "consumer_global_op_index": 573,
+      "consumer_op_name": "mul.Tensor"
+    },
+    {
+      "tensor_id": "t00000571",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0002",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 13,
+      "producer_global_op_index": 553,
+      "producer_op_name": "transpose.int",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0015",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 34,
+      "consumer_global_op_index": 574,
+      "consumer_op_name": "slice.Tensor"
+    },
+    {
+      "tensor_id": "t00000571",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0002",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 13,
+      "producer_global_op_index": 553,
+      "producer_op_name": "transpose.int",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0016",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 35,
+      "consumer_global_op_index": 575,
+      "consumer_op_name": "slice.Tensor"
+    },
+    {
+      "tensor_id": "t00000590",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0016",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 35,
+      "producer_global_op_index": 575,
+      "producer_op_name": "slice.Tensor",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0017",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 36,
+      "consumer_global_op_index": 576,
+      "consumer_op_name": "neg.default"
+    },
+    {
+      "tensor_id": "t00000591",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0017",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 36,
+      "producer_global_op_index": 576,
+      "producer_op_name": "neg.default",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0018",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 37,
+      "consumer_global_op_index": 577,
+      "consumer_op_name": "cat.default"
+    },
+    {
+      "tensor_id": "t00000589",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0015",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 34,
+      "producer_global_op_index": 574,
+      "producer_op_name": "slice.Tensor",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0018",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 37,
+      "consumer_global_op_index": 577,
+      "consumer_op_name": "cat.default"
+    },
+    {
+      "tensor_id": "t00000592",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0018",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 37,
+      "producer_global_op_index": 577,
+      "producer_op_name": "cat.default",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0019",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 38,
+      "consumer_global_op_index": 578,
+      "consumer_op_name": "mul.Tensor"
+    },
+    {
+      "tensor_id": "t00000587",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0013",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 32,
+      "producer_global_op_index": 572,
+      "producer_op_name": "unsqueeze.default",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0019",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 38,
+      "consumer_global_op_index": 578,
+      "consumer_op_name": "mul.Tensor"
+    },
+    {
+      "tensor_id": "t00000588",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0014",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 33,
+      "producer_global_op_index": 573,
+      "producer_op_name": "mul.Tensor",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0020",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 39,
+      "consumer_global_op_index": 579,
+      "consumer_op_name": "add.Tensor"
+    },
+    {
+      "tensor_id": "t00000593",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0019",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 38,
+      "producer_global_op_index": 578,
+      "producer_op_name": "mul.Tensor",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0020",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 39,
+      "consumer_global_op_index": 579,
+      "consumer_op_name": "add.Tensor"
+    },
+    {
+      "tensor_id": "t00000573",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0004",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 15,
+      "producer_global_op_index": 555,
+      "producer_op_name": "transpose.int",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0021",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 40,
+      "consumer_global_op_index": 580,
+      "consumer_op_name": "mul.Tensor"
+    },
+    {
+      "tensor_id": "t00000585",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0011",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 30,
+      "producer_global_op_index": 570,
+      "producer_op_name": "unsqueeze.default",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0021",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 40,
+      "consumer_global_op_index": 580,
+      "consumer_op_name": "mul.Tensor"
+    },
+    {
+      "tensor_id": "t00000573",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0004",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 15,
+      "producer_global_op_index": 555,
+      "producer_op_name": "transpose.int",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0022",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 41,
+      "consumer_global_op_index": 581,
+      "consumer_op_name": "slice.Tensor"
+    },
+    {
+      "tensor_id": "t00000573",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0004",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 15,
+      "producer_global_op_index": 555,
+      "producer_op_name": "transpose.int",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0023",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 42,
+      "consumer_global_op_index": 582,
+      "consumer_op_name": "slice.Tensor"
+    },
+    {
+      "tensor_id": "t00000597",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0023",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 42,
+      "producer_global_op_index": 582,
+      "producer_op_name": "slice.Tensor",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0024",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 43,
+      "consumer_global_op_index": 583,
+      "consumer_op_name": "neg.default"
+    },
+    {
+      "tensor_id": "t00000598",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0024",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 43,
+      "producer_global_op_index": 583,
+      "producer_op_name": "neg.default",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0025",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 44,
+      "consumer_global_op_index": 584,
+      "consumer_op_name": "cat.default"
+    },
+    {
+      "tensor_id": "t00000596",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0022",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 41,
+      "producer_global_op_index": 581,
+      "producer_op_name": "slice.Tensor",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0025",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 44,
+      "consumer_global_op_index": 584,
+      "consumer_op_name": "cat.default"
+    },
+    {
+      "tensor_id": "t00000599",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0025",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 44,
+      "producer_global_op_index": 584,
+      "producer_op_name": "cat.default",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0026",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 45,
+      "consumer_global_op_index": 585,
+      "consumer_op_name": "mul.Tensor"
+    },
+    {
+      "tensor_id": "t00000587",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0013",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 32,
+      "producer_global_op_index": 572,
+      "producer_op_name": "unsqueeze.default",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0026",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 45,
+      "consumer_global_op_index": 585,
+      "consumer_op_name": "mul.Tensor"
+    },
+    {
+      "tensor_id": "t00000595",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0021",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 40,
+      "producer_global_op_index": 580,
+      "producer_op_name": "mul.Tensor",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0027",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 46,
+      "consumer_global_op_index": 586,
+      "consumer_op_name": "add.Tensor"
+    },
+    {
+      "tensor_id": "t00000600",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0026",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 45,
+      "producer_global_op_index": 585,
+      "producer_op_name": "mul.Tensor",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0027",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 46,
+      "consumer_global_op_index": 586,
+      "consumer_op_name": "add.Tensor"
+    },
+    {
+      "tensor_id": "t00000601",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0027",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 46,
+      "producer_global_op_index": 586,
+      "producer_op_name": "add.Tensor",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0028",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 47,
+      "consumer_global_op_index": 587,
+      "consumer_op_name": "transpose.int"
+    },
+    {
+      "tensor_id": "t00000594",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0020",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 39,
+      "producer_global_op_index": 579,
+      "producer_op_name": "add.Tensor",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0029",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 48,
+      "consumer_global_op_index": 588,
+      "consumer_op_name": "matmul.default"
+    },
+    {
+      "tensor_id": "t00000602",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0028",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 47,
+      "producer_global_op_index": 587,
+      "producer_op_name": "transpose.int",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0029",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 48,
+      "consumer_global_op_index": 588,
+      "consumer_op_name": "matmul.default"
+    },
+    {
+      "tensor_id": "t00000603",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0029",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 48,
+      "producer_global_op_index": 588,
+      "producer_op_name": "matmul.default",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0030",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 49,
+      "consumer_global_op_index": 589,
+      "consumer_op_name": "div.Tensor"
+    },
+    {
+      "tensor_id": "t00000604",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0030",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 49,
+      "producer_global_op_index": 589,
+      "producer_op_name": "div.Tensor",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0031",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 50,
+      "consumer_global_op_index": 590,
+      "consumer_op_name": "add.Tensor"
+    },
+    {
+      "tensor_id": "t00000605",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0031",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 50,
+      "producer_global_op_index": 590,
+      "producer_op_name": "add.Tensor",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0032",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 51,
+      "consumer_global_op_index": 591,
+      "consumer_op_name": "softmax.int"
+    },
+    {
+      "tensor_id": "t00000606",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0032",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 51,
+      "producer_global_op_index": 591,
+      "producer_op_name": "softmax.int",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0033",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 52,
+      "consumer_global_op_index": 592,
+      "consumer_op_name": "to.dtype"
+    },
+    {
+      "tensor_id": "t00000607",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0033",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 52,
+      "producer_global_op_index": 592,
+      "producer_op_name": "to.dtype",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0034",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 53,
+      "consumer_global_op_index": 593,
+      "consumer_op_name": "dropout.default"
+    },
+    {
+      "tensor_id": "t00000607",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0034",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 53,
+      "producer_global_op_index": 593,
+      "producer_op_name": "dropout.default",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0035",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 54,
+      "consumer_global_op_index": 594,
+      "consumer_op_name": "matmul.default"
+    },
+    {
+      "tensor_id": "t00000575",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0006",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 17,
+      "producer_global_op_index": 557,
+      "producer_op_name": "transpose.int",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0035",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 54,
+      "consumer_global_op_index": 594,
+      "consumer_op_name": "matmul.default"
+    },
+    {
+      "tensor_id": "t00000608",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0035",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 54,
+      "producer_global_op_index": 594,
+      "producer_op_name": "matmul.default",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0036",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 55,
+      "consumer_global_op_index": 595,
+      "consumer_op_name": "transpose.int"
+    },
+    {
+      "tensor_id": "t00000609",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0036",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 55,
+      "producer_global_op_index": 595,
+      "producer_op_name": "transpose.int",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0037",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 56,
+      "consumer_global_op_index": 596,
+      "consumer_op_name": "contiguous.default"
+    },
+    {
+      "tensor_id": "t00000610",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0037",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 56,
+      "producer_global_op_index": 596,
+      "producer_op_name": "contiguous.default",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0038",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 57,
+      "consumer_global_op_index": 597,
+      "consumer_op_name": "reshape.default"
+    },
+    {
+      "tensor_id": "t00000612",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0039",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 58,
+      "producer_global_op_index": 598,
+      "producer_op_name": "gt.Scalar",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0040",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 59,
+      "consumer_global_op_index": 599,
+      "consumer_op_name": "is_nonzero.default"
+    },
+    {
+      "tensor_id": "t00000613",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0041",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 60,
+      "producer_global_op_index": 600,
+      "producer_op_name": "select.int",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0042",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 61,
+      "consumer_global_op_index": 601,
+      "consumer_op_name": "select.int"
+    },
+    {
+      "tensor_id": "t00000614",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0042",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 61,
+      "producer_global_op_index": 601,
+      "producer_op_name": "select.int",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0043",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 62,
+      "consumer_global_op_index": 602,
+      "consumer_op_name": "add.Tensor"
+    },
+    {
+      "tensor_id": "t00000615",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0043",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 62,
+      "producer_global_op_index": 602,
+      "producer_op_name": "add.Tensor",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0044",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 63,
+      "consumer_global_op_index": 603,
+      "consumer_op_name": "eq.Scalar"
+    },
+    {
+      "tensor_id": "t00000616",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0044",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 63,
+      "producer_global_op_index": 603,
+      "producer_op_name": "eq.Scalar",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0045",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 64,
+      "consumer_global_op_index": 604,
+      "consumer_op_name": "is_nonzero.default"
+    },
+    {
+      "tensor_id": "t00000611",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0038",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 57,
+      "producer_global_op_index": 597,
+      "producer_op_name": "reshape.default",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0046",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 65,
+      "consumer_global_op_index": 605,
+      "consumer_op_name": "select.int"
+    },
+    {
+      "tensor_id": "t00000607",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0034",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 53,
+      "producer_global_op_index": 593,
+      "producer_op_name": "dropout.default",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0047",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 66,
+      "consumer_global_op_index": 606,
+      "consumer_op_name": "select.int"
+    },
+    {
+      "tensor_id": "t00000618",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0047",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 66,
+      "producer_global_op_index": 606,
+      "producer_op_name": "select.int",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0048",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 67,
+      "consumer_global_op_index": 607,
+      "consumer_op_name": "unsqueeze.default"
+    },
+    {
+      "tensor_id": "t00000619",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0048",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 67,
+      "producer_global_op_index": 607,
+      "producer_op_name": "unsqueeze.default",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0049",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 68,
+      "consumer_global_op_index": 608,
+      "consumer_op_name": "mul.Tensor"
+    },
+    {
+      "tensor_id": "t00000575",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0006",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 17,
+      "producer_global_op_index": 557,
+      "producer_op_name": "transpose.int",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0049",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 68,
+      "consumer_global_op_index": 608,
+      "consumer_op_name": "mul.Tensor"
+    },
+    {
+      "tensor_id": "t00000620",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0049",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 68,
+      "producer_global_op_index": 608,
+      "producer_op_name": "mul.Tensor",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0050",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 69,
+      "consumer_global_op_index": 609,
+      "consumer_op_name": "permute.default"
+    },
+    {
+      "tensor_id": "t00000621",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0050",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 69,
+      "producer_global_op_index": 609,
+      "producer_op_name": "permute.default",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0051",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 70,
+      "consumer_global_op_index": 610,
+      "consumer_op_name": "contiguous.default"
+    },
+    {
+      "tensor_id": "t00000622",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0051",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 70,
+      "producer_global_op_index": 610,
+      "producer_op_name": "contiguous.default",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0052",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 71,
+      "consumer_global_op_index": 611,
+      "consumer_op_name": "view.default"
+    },
+    {
+      "tensor_id": "t00000623",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0052",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 71,
+      "producer_global_op_index": 611,
+      "producer_op_name": "view.default",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0054",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 73,
+      "consumer_global_op_index": 613,
+      "consumer_op_name": "slice.Tensor"
+    },
+    {
+      "tensor_id": "t00000617",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0046",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 65,
+      "producer_global_op_index": 605,
+      "producer_op_name": "select.int",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0055",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 74,
+      "consumer_global_op_index": 614,
+      "consumer_op_name": "unsqueeze.default"
+    },
+    {
+      "tensor_id": "t00000626",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0055",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 74,
+      "producer_global_op_index": 614,
+      "producer_op_name": "unsqueeze.default",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0056",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 75,
+      "consumer_global_op_index": 615,
+      "consumer_op_name": "sub.Tensor"
+    },
+    {
+      "tensor_id": "t00000625",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0054",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 73,
+      "producer_global_op_index": 613,
+      "producer_op_name": "slice.Tensor",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0056",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 75,
+      "consumer_global_op_index": 615,
+      "consumer_op_name": "sub.Tensor"
+    },
+    {
+      "tensor_id": "t00000617",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0046",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 65,
+      "producer_global_op_index": 605,
+      "producer_op_name": "select.int",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0057",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 76,
+      "consumer_global_op_index": 616,
+      "consumer_op_name": "unsqueeze.default"
+    },
+    {
+      "tensor_id": "t00000627",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0056",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 75,
+      "producer_global_op_index": 615,
+      "producer_op_name": "sub.Tensor",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0058",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 77,
+      "consumer_global_op_index": 617,
+      "consumer_op_name": "cosine_similarity.default"
+    },
+    {
+      "tensor_id": "t00000628",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0057",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 76,
+      "producer_global_op_index": 616,
+      "producer_op_name": "unsqueeze.default",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0058",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 77,
+      "consumer_global_op_index": 617,
+      "consumer_op_name": "cosine_similarity.default"
+    },
+    {
+      "tensor_id": "t00000629",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0058",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 77,
+      "producer_global_op_index": 617,
+      "producer_op_name": "cosine_similarity.default",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0059",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 78,
+      "consumer_global_op_index": 618,
+      "consumer_op_name": "squeeze.dim"
+    },
+    {
+      "tensor_id": "t00000630",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0059",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 78,
+      "producer_global_op_index": 618,
+      "producer_op_name": "squeeze.dim",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0060",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 79,
+      "consumer_global_op_index": 619,
+      "consumer_op_name": "lt.Scalar"
+    },
+    {
+      "tensor_id": "t00000631",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0060",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 79,
+      "producer_global_op_index": 619,
+      "producer_op_name": "lt.Scalar",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0061",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 80,
+      "consumer_global_op_index": 620,
+      "consumer_op_name": "any.default"
+    },
+    {
+      "tensor_id": "t00000632",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0061",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 80,
+      "producer_global_op_index": 620,
+      "producer_op_name": "any.default",
+      "consumer_event_detail_id": "input1_layer10/self_attn/call0087/op0062",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 81,
+      "consumer_global_op_index": 621,
+      "consumer_op_name": "item.default"
+    },
+    {
+      "tensor_id": "t00000611",
+      "producer_event_detail_id": "input1_layer10/self_attn/call0087/op0038",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 57,
+      "producer_global_op_index": 597,
+      "producer_op_name": "reshape.default",
+      "consumer_event_detail_id": "input1_layer10/self_attn/o_proj/call0092/op0001",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 82,
+      "consumer_global_op_index": 622,
+      "consumer_op_name": "linear.default"
+    },
+    {
+      "tensor_id": "t00000634",
+      "producer_event_detail_id": "input1_layer10/self_attn/o_proj/call0092/op0001",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 82,
+      "producer_global_op_index": 622,
+      "producer_op_name": "linear.default",
+      "consumer_event_detail_id": "input1_layer10/model/layers/10/call0085/op0001",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 83,
+      "consumer_global_op_index": 623,
+      "consumer_op_name": "add.Tensor"
+    },
+    {
+      "tensor_id": "t00000635",
+      "producer_event_detail_id": "input1_layer10/model/layers/10/call0085/op0001",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 83,
+      "producer_global_op_index": 623,
+      "producer_op_name": "add.Tensor",
+      "consumer_event_detail_id": "input1_layer10/post_attention_layernorm/call0093/op0001",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 84,
+      "consumer_global_op_index": 624,
+      "consumer_op_name": "to.dtype"
+    },
+    {
+      "tensor_id": "t00000636",
+      "producer_event_detail_id": "input1_layer10/post_attention_layernorm/call0093/op0001",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 84,
+      "producer_global_op_index": 624,
+      "producer_op_name": "to.dtype",
+      "consumer_event_detail_id": "input1_layer10/post_attention_layernorm/call0093/op0002",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 85,
+      "consumer_global_op_index": 625,
+      "consumer_op_name": "pow.Tensor_Scalar"
+    },
+    {
+      "tensor_id": "t00000637",
+      "producer_event_detail_id": "input1_layer10/post_attention_layernorm/call0093/op0002",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 85,
+      "producer_global_op_index": 625,
+      "producer_op_name": "pow.Tensor_Scalar",
+      "consumer_event_detail_id": "input1_layer10/post_attention_layernorm/call0093/op0003",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 86,
+      "consumer_global_op_index": 626,
+      "consumer_op_name": "mean.dim"
+    },
+    {
+      "tensor_id": "t00000638",
+      "producer_event_detail_id": "input1_layer10/post_attention_layernorm/call0093/op0003",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 86,
+      "producer_global_op_index": 626,
+      "producer_op_name": "mean.dim",
+      "consumer_event_detail_id": "input1_layer10/post_attention_layernorm/call0093/op0004",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 87,
+      "consumer_global_op_index": 627,
+      "consumer_op_name": "add.Tensor"
+    },
+    {
+      "tensor_id": "t00000639",
+      "producer_event_detail_id": "input1_layer10/post_attention_layernorm/call0093/op0004",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 87,
+      "producer_global_op_index": 627,
+      "producer_op_name": "add.Tensor",
+      "consumer_event_detail_id": "input1_layer10/post_attention_layernorm/call0093/op0005",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 88,
+      "consumer_global_op_index": 628,
+      "consumer_op_name": "rsqrt.default"
+    },
+    {
+      "tensor_id": "t00000636",
+      "producer_event_detail_id": "input1_layer10/post_attention_layernorm/call0093/op0001",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 84,
+      "producer_global_op_index": 624,
+      "producer_op_name": "to.dtype",
+      "consumer_event_detail_id": "input1_layer10/post_attention_layernorm/call0093/op0006",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 89,
+      "consumer_global_op_index": 629,
+      "consumer_op_name": "mul.Tensor"
+    },
+    {
+      "tensor_id": "t00000640",
+      "producer_event_detail_id": "input1_layer10/post_attention_layernorm/call0093/op0005",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 88,
+      "producer_global_op_index": 628,
+      "producer_op_name": "rsqrt.default",
+      "consumer_event_detail_id": "input1_layer10/post_attention_layernorm/call0093/op0006",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 89,
+      "consumer_global_op_index": 629,
+      "consumer_op_name": "mul.Tensor"
+    },
+    {
+      "tensor_id": "t00000641",
+      "producer_event_detail_id": "input1_layer10/post_attention_layernorm/call0093/op0006",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 89,
+      "producer_global_op_index": 629,
+      "producer_op_name": "mul.Tensor",
+      "consumer_event_detail_id": "input1_layer10/post_attention_layernorm/call0093/op0007",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 90,
+      "consumer_global_op_index": 630,
+      "consumer_op_name": "to.dtype"
+    },
+    {
+      "tensor_id": "t00000642",
+      "producer_event_detail_id": "input1_layer10/post_attention_layernorm/call0093/op0007",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 90,
+      "producer_global_op_index": 630,
+      "producer_op_name": "to.dtype",
+      "consumer_event_detail_id": "input1_layer10/post_attention_layernorm/call0093/op0008",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 91,
+      "consumer_global_op_index": 631,
+      "consumer_op_name": "mul.Tensor"
+    },
+    {
+      "tensor_id": "t00000644",
+      "producer_event_detail_id": "input1_layer10/post_attention_layernorm/call0093/op0008",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 91,
+      "producer_global_op_index": 631,
+      "producer_op_name": "mul.Tensor",
+      "consumer_event_detail_id": "input1_layer10/mlp/gate_proj/call0095/op0001",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 92,
+      "consumer_global_op_index": 632,
+      "consumer_op_name": "linear.default"
+    },
+    {
+      "tensor_id": "t00000646",
+      "producer_event_detail_id": "input1_layer10/mlp/gate_proj/call0095/op0001",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 92,
+      "producer_global_op_index": 632,
+      "producer_op_name": "linear.default",
+      "consumer_event_detail_id": "input1_layer10/mlp/act_fn/call0096/op0001",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 93,
+      "consumer_global_op_index": 633,
+      "consumer_op_name": "silu.default"
+    },
+    {
+      "tensor_id": "t00000644",
+      "producer_event_detail_id": "input1_layer10/post_attention_layernorm/call0093/op0008",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 91,
+      "producer_global_op_index": 631,
+      "producer_op_name": "mul.Tensor",
+      "consumer_event_detail_id": "input1_layer10/mlp/up_proj/call0097/op0001",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 94,
+      "consumer_global_op_index": 634,
+      "consumer_op_name": "linear.default"
+    },
+    {
+      "tensor_id": "t00000647",
+      "producer_event_detail_id": "input1_layer10/mlp/act_fn/call0096/op0001",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 93,
+      "producer_global_op_index": 633,
+      "producer_op_name": "silu.default",
+      "consumer_event_detail_id": "input1_layer10/mlp/call0094/op0001",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 95,
+      "consumer_global_op_index": 635,
+      "consumer_op_name": "mul.Tensor"
+    },
+    {
+      "tensor_id": "t00000649",
+      "producer_event_detail_id": "input1_layer10/mlp/up_proj/call0097/op0001",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 94,
+      "producer_global_op_index": 634,
+      "producer_op_name": "linear.default",
+      "consumer_event_detail_id": "input1_layer10/mlp/call0094/op0001",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 95,
+      "consumer_global_op_index": 635,
+      "consumer_op_name": "mul.Tensor"
+    },
+    {
+      "tensor_id": "t00000650",
+      "producer_event_detail_id": "input1_layer10/mlp/call0094/op0001",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 95,
+      "producer_global_op_index": 635,
+      "producer_op_name": "mul.Tensor",
+      "consumer_event_detail_id": "input1_layer10/mlp/down_proj/call0098/op0001",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 96,
+      "consumer_global_op_index": 636,
+      "consumer_op_name": "linear.default"
+    },
+    {
+      "tensor_id": "t00000635",
+      "producer_event_detail_id": "input1_layer10/model/layers/10/call0085/op0001",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 83,
+      "producer_global_op_index": 623,
+      "producer_op_name": "add.Tensor",
+      "consumer_event_detail_id": "input1_layer10/model/layers/10/call0085/op0002",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 97,
+      "consumer_global_op_index": 637,
+      "consumer_op_name": "add.Tensor"
+    },
+    {
+      "tensor_id": "t00000652",
+      "producer_event_detail_id": "input1_layer10/mlp/down_proj/call0098/op0001",
+      "producer_event_id": "input1_layer10",
+      "producer_event_op_index": 96,
+      "producer_global_op_index": 636,
+      "producer_op_name": "linear.default",
+      "consumer_event_detail_id": "input1_layer10/model/layers/10/call0085/op0002",
+      "consumer_event_id": "input1_layer10",
+      "consumer_event_op_index": 97,
+      "consumer_global_op_index": 637,
+      "consumer_op_name": "add.Tensor"
+    }
+  ]
+}

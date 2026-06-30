@@ -1,8 +1,10 @@
 {
-  "timestamp_utc": "2026-06-24T13:44:24.855341+00:00",
+  "timestamp_utc": "2026-06-29T09:04:46.823361+00:00",
   "analysis_type": "visipruner_filtered_torch_dispatch_profile",
   "full_profile_forbidden": true,
   "dispatch_scope": "TorchDispatchMode is entered only inside manifest-selected layer.forward calls.",
+  "dispatch_detail_scope": "dispatch_ops.csv keeps layer-level event_id/layer_id/layer_module_path for manifest compatibility and adds sampled runtime module-call columns from live nn.Module hooks. module_* fields identify the current stack-top module and module_stack keeps the full active module call stack. Tensor provenance columns record only runtime Tensor object/storage metadata, observed input producers, and observed producer-consumer edges from tensor ids captured inside the selected layer scope. No separate nearest-layer extraction, semantic op-stage rules, path synthesis, shape-based inference, or op-name dependency rules are applied.",
+  "tensor_provenance_scope": "input_tensors/output_tensors record runtime Tensor ids plus shape/stride/device/storage metadata. observed_tensor_edges are emitted only when an input tensor id was previously observed as an output tensor id in the same captured dispatch scope. Missing producers mean external input or producer outside the captured selected-layer scope, not an inferred dependency.",
   "source_trace": "/workspace/VisiPrune/workload_analysis/algorithmic_trace/traces/fresh_forward_visipruner_full_32tok/algorithmic_trace.json",
   "tag": "filtered_dispatch_visipruner_full_32tok",
   "config": "visipruner-full",

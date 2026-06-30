@@ -18,12 +18,18 @@
 - `ffn_out`: `[16, 32]`
 - `output`: `[16, 32]`
 
+### Dispatch Tensor ID Inputs/Outputs
+
+- Dispatch input tensor ids: `['t00000809', 't00000831', 't00000752', 't00000841', 't00000843', 't00000846']`
+- Dispatch output tensor ids: `['t00000848']`
+- Dispatch tensor-id dependencies inside evidence rows: `[{'tensor_id': 't00000832', 'consumer_event_op_index': 83, 'consumer_op_name': 'add.Tensor'}, {'tensor_id': 't00000833', 'consumer_event_op_index': 84, 'consumer_op_name': 'to.dtype'}, {'tensor_id': 't00000834', 'consumer_event_op_index': 85, 'consumer_op_name': 'pow.Tensor_Scalar'}, {'tensor_id': 't00000835', 'consumer_event_op_index': 86, 'consumer_op_name': 'mean.dim'}, {'tensor_id': 't00000836', 'consumer_event_op_index': 87, 'consumer_op_name': 'add.Tensor'}, {'tensor_id': 't00000837', 'consumer_event_op_index': 88, 'consumer_op_name': 'rsqrt.default'}, {'tensor_id': 't00000834', 'consumer_event_op_index': 89, 'consumer_op_name': 'mul.Tensor'}, {'tensor_id': 't00000838', 'consumer_event_op_index': 89, 'consumer_op_name': 'mul.Tensor'}, {'tensor_id': 't00000839', 'consumer_event_op_index': 90, 'consumer_op_name': 'to.dtype'}, {'tensor_id': 't00000840', 'consumer_event_op_index': 91, 'consumer_op_name': 'mul.Tensor'}, {'tensor_id': 't00000842', 'consumer_event_op_index': 92, 'consumer_op_name': 'linear.default'}, {'tensor_id': 't00000844', 'consumer_event_op_index': 93, 'consumer_op_name': 'silu.default'}]`
+
 ## Corresponding `torch_flow` Code
 
-- Export wrapper: `/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer12/torch_flow/export_stage_onnx.py::MLPStage`
-- Primary implementation: `/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer12/torch_flow/mlp.py`
-- Primary implementation: `/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer12/torch_flow/rmsnorm.py`
-- Support files: `/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer12/torch_flow/config.py`, `/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer12/torch_flow/init_data.py`, `/workspace/VisiPrune/workload_analysis/dispatch/visualize/input1_layer12/torch_flow/export_stage_onnx.py`
+- Export wrapper: `workload_analysis/dispatch/visualize/input1_layer12/torch_flow/export_stage_onnx.py::MLPStage`
+- Primary implementation: `workload_analysis/dispatch/visualize/input1_layer12/torch_flow/mlp.py`
+- Primary implementation: `workload_analysis/dispatch/visualize/input1_layer12/torch_flow/rmsnorm.py`
+- Support files: `workload_analysis/dispatch/visualize/input1_layer12/torch_flow/config.py`, `workload_analysis/dispatch/visualize/input1_layer12/torch_flow/init_data.py`, `workload_analysis/dispatch/visualize/input1_layer12/torch_flow/export_stage_onnx.py`
 
 ## Code Explanation
 
@@ -38,20 +44,20 @@ Runs post-attention RMSNorm, gated SiLU MLP, down projection, and residual addit
 
 ## Dispatch Evidence Notes
 
-- `#82 linear.default` -> shape=[1, 624, 4096], dtype=float16
-- `#83 add.Tensor` -> shape=[1, 624, 4096], dtype=float16
-- `#84 to.dtype` -> shape=[1, 624, 4096], dtype=float32
-- `#85 pow.Tensor_Scalar` -> shape=[1, 624, 4096], dtype=float32
-- `#86 mean.dim` -> shape=[1, 624, 1], dtype=float32
-- `#87 add.Tensor` -> shape=[1, 624, 1], dtype=float32
-- `#88 rsqrt.default` -> shape=[1, 624, 1], dtype=float32
-- `#89 mul.Tensor` -> shape=[1, 624, 4096], dtype=float32
-- `#90 to.dtype` -> shape=[1, 624, 4096], dtype=float16
-- `#91 mul.Tensor` -> shape=[1, 624, 4096], dtype=float16
-- `#92 linear.default` -> shape=[1, 624, 11008], dtype=float16
-- `#93 silu.default` -> shape=[1, 624, 11008], dtype=float16
-- `#94 linear.default` -> shape=[1, 624, 11008], dtype=float16
-- `#95 mul.Tensor` -> shape=[1, 624, 11008], dtype=float16
+- `#82 linear.default` inputs=`['t00000809', 't00000831']` outputs=`['t00000832']` -> shape=[1, 624, 4096], dtype=float16
+- `#83 add.Tensor` inputs=`['t00000752', 't00000832']` outputs=`['t00000833']` -> shape=[1, 624, 4096], dtype=float16
+- `#84 to.dtype` inputs=`['t00000833']` outputs=`['t00000834']` -> shape=[1, 624, 4096], dtype=float32
+- `#85 pow.Tensor_Scalar` inputs=`['t00000834']` outputs=`['t00000835']` -> shape=[1, 624, 4096], dtype=float32
+- `#86 mean.dim` inputs=`['t00000835']` outputs=`['t00000836']` -> shape=[1, 624, 1], dtype=float32
+- `#87 add.Tensor` inputs=`['t00000836']` outputs=`['t00000837']` -> shape=[1, 624, 1], dtype=float32
+- `#88 rsqrt.default` inputs=`['t00000837']` outputs=`['t00000838']` -> shape=[1, 624, 1], dtype=float32
+- `#89 mul.Tensor` inputs=`['t00000834', 't00000838']` outputs=`['t00000839']` -> shape=[1, 624, 4096], dtype=float32
+- `#90 to.dtype` inputs=`['t00000839']` outputs=`['t00000840']` -> shape=[1, 624, 4096], dtype=float16
+- `#91 mul.Tensor` inputs=`['t00000841', 't00000840']` outputs=`['t00000842']` -> shape=[1, 624, 4096], dtype=float16
+- `#92 linear.default` inputs=`['t00000842', 't00000843']` outputs=`['t00000844']` -> shape=[1, 624, 11008], dtype=float16
+- `#93 silu.default` inputs=`['t00000844']` outputs=`['t00000845']` -> shape=[1, 624, 11008], dtype=float16
+- `#94 linear.default` inputs=`['t00000842', 't00000846']` outputs=`['t00000847']` -> shape=[1, 624, 11008], dtype=float16
+- `#95 mul.Tensor` inputs=`['t00000845', 't00000847']` outputs=`['t00000848']` -> shape=[1, 624, 11008], dtype=float16
 
 ## Export Wrapper Source
 

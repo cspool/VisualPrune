@@ -17,7 +17,7 @@ DEFAULT_INPUT = (
     / "dispatch/profiles/filtered_dispatch_visipruner_full_32tok/dispatch_ops.csv"
 )
 DEFAULT_OUTPUT_DIR = WORKLOAD_DIR / "dispatch/visualize"
-DEFAULT_KEEP_COLUMNS_1_BASED = (1, 2, 6, 7, 9, 10, 11, 12, 15, 16)
+DEFAULT_KEEP_COLUMNS_1_BASED = (1, 3, 7, 8, 13, 24, 25, 26, 27, 29, 31, 32, 35, 36)
 
 
 def safe_dir_name(value: str) -> str:
@@ -38,6 +38,19 @@ def selected_fieldnames(fieldnames: list[str], columns_1_based: tuple[int, ...])
             )
         selected.append(fieldnames[index])
     return selected
+
+
+def selected_column_metadata(
+    fieldnames: list[str],
+    columns_1_based: tuple[int, ...],
+) -> list[dict[str, str | int]]:
+    return [
+        {
+            "column_1_based": col,
+            "column_name": fieldnames[col - 1],
+        }
+        for col in columns_1_based
+    ]
 
 
 def parse_column_selection(value: str) -> tuple[int, ...]:
@@ -82,6 +95,7 @@ def split_dispatch_ops(
 ) -> list[dict[str, str | int]]:
     fieldnames, groups = read_dispatch_ops(input_csv, event_column)
     output_fieldnames = selected_fieldnames(fieldnames, keep_columns_1_based)
+    column_metadata = selected_column_metadata(fieldnames, keep_columns_1_based)
     if event_column not in output_fieldnames:
         raise ValueError(
             f"event column {event_column!r} must be included in output columns; "
@@ -111,6 +125,15 @@ def split_dispatch_ops(
 
     index_json = output_dir / "dispatch_ops_by_event_index.json"
     index_json.write_text(json.dumps(index_rows, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+
+    columns_csv = output_dir / "dispatch_ops_selected_columns.csv"
+    with columns_csv.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=["column_1_based", "column_name"])
+        writer.writeheader()
+        writer.writerows(column_metadata)
+
+    columns_json = output_dir / "dispatch_ops_selected_columns.json"
+    columns_json.write_text(json.dumps(column_metadata, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     return index_rows
 
 
@@ -124,7 +147,7 @@ def parse_args() -> argparse.Namespace:
         default=",".join(str(col) for col in DEFAULT_KEEP_COLUMNS_1_BASED),
         help=(
             "Comma-separated 1-based CSV column numbers to keep in each split file. "
-            "Default keeps columns 1,2,6,7,9,10,11,12,15,16."
+            f"Default keeps columns {', '.join(str(col) for col in DEFAULT_KEEP_COLUMNS_1_BASED)}."
         ),
     )
     return parser.parse_args()
@@ -139,6 +162,8 @@ def main() -> None:
 
     keep_columns = parse_column_selection(args.keep_columns)
     index_rows = split_dispatch_ops(input_csv, output_dir, args.event_column, keep_columns)
+    source_fieldnames, _ = read_dispatch_ops(input_csv, args.event_column)
+    column_metadata = selected_column_metadata(source_fieldnames, keep_columns)
     print(
         json.dumps(
             {
@@ -147,8 +172,12 @@ def main() -> None:
                 "event_count": len(index_rows),
                 "row_count": sum(int(row["row_count"]) for row in index_rows),
                 "keep_columns_1_based": list(keep_columns),
+                "keep_column_names": [str(item["column_name"]) for item in column_metadata],
+                "selected_columns": column_metadata,
                 "index_csv": str(output_dir / "dispatch_ops_by_event_index.csv"),
                 "index_json": str(output_dir / "dispatch_ops_by_event_index.json"),
+                "columns_csv": str(output_dir / "dispatch_ops_selected_columns.csv"),
+                "columns_json": str(output_dir / "dispatch_ops_selected_columns.json"),
             },
             indent=2,
             ensure_ascii=False,

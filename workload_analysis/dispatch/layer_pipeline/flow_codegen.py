@@ -8,6 +8,8 @@ import sys
 import textwrap
 from pathlib import Path
 
+from analyze import build_stage_tensor_io
+
 
 DISPATCH_SCRIPT_DIR = Path(__file__).resolve().parents[1]
 TEMPLATE_DIR = DISPATCH_SCRIPT_DIR / "templates/small_tensor_flow"
@@ -129,6 +131,8 @@ def copy_flow_template(
 
 
 def export_stage_onnx(flow_dir: Path, onnx_out_dir: Path) -> None:
+    flow_dir = flow_dir.resolve()
+    onnx_out_dir = onnx_out_dir.resolve()
     if onnx_out_dir.exists():
         shutil.rmtree(onnx_out_dir)
     subprocess.run(
@@ -603,6 +607,53 @@ def _process_index_markdown(
     ]
     for index, stage in enumerate(features.get("expected_stages", []), start=1):
         lines.append(f"{index}. `{stage}`")
+    stage_tensor_io = process_manifest.get("stage_tensor_io", {})
+    if isinstance(stage_tensor_io, dict):
+        lines.extend(["", "## Dispatch Tensor ID Stage I/O", ""])
+        for stage in features.get("expected_stages", []):
+            item = stage_tensor_io.get(stage, {})
+            if not isinstance(item, dict):
+                continue
+            inputs = ", ".join(str(value) for value in item.get("input_tensor_ids", [])[:12])
+            outputs = ", ".join(str(value) for value in item.get("output_tensor_ids", [])[:12])
+            lines.append(f"- `{stage}` inputs: `{inputs}`")
+            lines.append(f"- `{stage}` outputs: `{outputs}`")
+    op_coverage = process_manifest.get("dispatch_op_coverage", {})
+    if isinstance(op_coverage, dict):
+        summary = op_coverage.get("summary", {}) if isinstance(op_coverage.get("summary", {}), dict) else {}
+        lines.extend([
+            "",
+            "## Complete Dispatch Op Coverage",
+            "",
+            f"- coverage json: `{op_coverage.get('dispatch_op_coverage_json', '')}`",
+            f"- coverage csv: `{op_coverage.get('dispatch_op_coverage_csv', '')}`",
+            f"- coverage markdown: `{op_coverage.get('dispatch_op_coverage_markdown', '')}`",
+            f"- ops in dispatch rows: `{summary.get('op_count', '')}`",
+            f"- ops listed in coverage: `{summary.get('covered_op_count', '')}`",
+            f"- missing event_op_index values: `{summary.get('missing_event_op_indices', [])}`",
+            f"- missing from module_split: `{summary.get('missing_from_module_split', [])}`",
+            f"- missing from tensor_dataflow: `{summary.get('missing_from_tensor_dataflow', [])}`",
+        ])
+        ops = op_coverage.get("ops", [])
+        if isinstance(ops, list):
+            lines.extend([
+                "",
+                "| # | Op | Runtime subprocess | Module split | Tensor dataflow | Stage evidence |",
+                "|---:|---|---|---|---|---|",
+            ])
+            for item in ops:
+                if not isinstance(item, dict):
+                    continue
+                lines.append(
+                    "| {idx} | `{op}` | `{subprocess}` | `{module}` | `{dataflow}` | `{stages}` |".format(
+                        idx=item.get("event_op_index", ""),
+                        op=item.get("op_name", ""),
+                        subprocess=item.get("runtime_subprocess", ""),
+                        module=item.get("module_split_covered", ""),
+                        dataflow=item.get("tensor_dataflow_covered", ""),
+                        stages=", ".join(str(value) for value in item.get("stage_evidence", [])),
+                    )
+                )
     lines.extend(["", "## Evidence Rows", ""])
     for stage, evidence in core_evidence.items():
         lines.append(f"### `{stage}`")
@@ -610,7 +661,10 @@ def _process_index_markdown(
         if not rows:
             lines.append("- none")
         for item in rows:
-            lines.append(f"- `#{item['event_op_index']} {item['op_name']}` -> {item['output']}")
+            lines.append(
+                f"- `#{item['event_op_index']} {item['op_name']}` "
+                f"inputs=`{item.get('input_tensor_ids', [])}` outputs=`{item.get('output_tensor_ids', [])}` -> {item['output']}"
+            )
         lines.append("")
     return "\n".join(lines)
 
@@ -709,7 +763,8 @@ def _evidence_lines(stage: str, core_evidence: dict[str, object]) -> list[str]:
     if not rows:
         return ["- No direct dispatch evidence rows were assigned to this stage."]
     return [
-        f"- `#{item['event_op_index']} {item['op_name']}` -> {item['output']}"
+        f"- `#{item['event_op_index']} {item['op_name']}` "
+        f"inputs=`{item.get('input_tensor_ids', [])}` outputs=`{item.get('output_tensor_ids', [])}` -> {item['output']}"
         for item in rows[:20]
     ]
 
@@ -722,6 +777,7 @@ def _write_single_onnx_code_markdown(
     flow_dir: Path,
     export_source: str,
     core_evidence: dict[str, object],
+    stage_tensor_io: dict[str, dict[str, object]],
 ) -> dict[str, object]:
     info = ONNX_STAGE_INFO.get(stage, {
         "title": stage,
@@ -740,6 +796,10 @@ def _write_single_onnx_code_markdown(
     evidence = _evidence_lines(stage, core_evidence)
     inputs = onnx_item.get("inputs", {}) if isinstance(onnx_item.get("inputs", {}), dict) else {}
     outputs = onnx_item.get("outputs", {}) if isinstance(onnx_item.get("outputs", {}), dict) else {}
+    dispatch_tensor_io = stage_tensor_io.get(stage, {})
+    dispatch_input_tensor_ids = list(dispatch_tensor_io.get("input_tensor_ids", [])) if isinstance(dispatch_tensor_io, dict) else []
+    dispatch_output_tensor_ids = list(dispatch_tensor_io.get("output_tensor_ids", [])) if isinstance(dispatch_tensor_io, dict) else []
+    dispatch_dependencies = list(dispatch_tensor_io.get("data_dependencies", [])) if isinstance(dispatch_tensor_io, dict) else []
 
     lines = [
         f"# {event_id} `{Path(str(onnx_item['path'])).name}` Code Review",
@@ -759,6 +819,12 @@ def _write_single_onnx_code_markdown(
         "### ONNX Outputs",
         "",
         *_shape_lines(outputs),
+        "",
+        "### Dispatch Tensor ID Inputs/Outputs",
+        "",
+        f"- Dispatch input tensor ids: `{dispatch_input_tensor_ids}`",
+        f"- Dispatch output tensor ids: `{dispatch_output_tensor_ids}`",
+        f"- Dispatch tensor-id dependencies inside evidence rows: `{dispatch_dependencies[:12]}`",
         "",
         "## Corresponding `torch_flow` Code",
         "",
@@ -809,6 +875,9 @@ def _write_single_onnx_code_markdown(
         "support_code_files": [str(path) for path in support_files],
         "inputs": inputs,
         "outputs": outputs,
+        "dispatch_input_tensor_ids": dispatch_input_tensor_ids,
+        "dispatch_output_tensor_ids": dispatch_output_tensor_ids,
+        "dispatch_tensor_dependencies": dispatch_dependencies,
         "nodes": onnx_item.get("nodes"),
         "initializers": onnx_item.get("initializers"),
         "explanation": info["explanation"],
@@ -858,6 +927,7 @@ def write_onnx_code_review(
     review_dir.mkdir(parents=True, exist_ok=True)
 
     export_source = _read_source(flow_dir / "export_stage_onnx.py")
+    stage_tensor_io = build_stage_tensor_io(core_evidence)
     entries = []
     for item in onnx_manifest:
         stage = _stage_from_onnx_path(str(item["path"]))
@@ -871,6 +941,7 @@ def write_onnx_code_review(
                 flow_dir=flow_dir,
                 export_source=export_source,
                 core_evidence=core_evidence,
+                stage_tensor_io=stage_tensor_io,
             )
         )
 
@@ -899,6 +970,7 @@ def write_onnx_code_review(
         "onnx_code_review_dir": str(review_dir),
         "onnx_sidecar": onnx_sidecar,
         "onnx_code_index": str(index_path),
+        "stage_tensor_io": stage_tensor_io,
         "entries": entries,
     }
     map_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
@@ -914,6 +986,10 @@ def write_process_code_outputs(
     dims: dict[str, int | None],
     features: dict[str, object],
     core_evidence: dict[str, object],
+    tensor_dataflow: dict[str, object],
+    tensor_dataflow_outputs: dict[str, str],
+    dispatch_op_coverage: dict[str, object],
+    dispatch_op_coverage_outputs: dict[str, str],
 ) -> dict[str, object]:
     flow_dir.mkdir(parents=True, exist_ok=True)
     analysis_dir.mkdir(parents=True, exist_ok=True)
@@ -939,6 +1015,20 @@ def write_process_code_outputs(
         "original_dimensions": dims,
         "dispatch_features": features,
         "core_evidence": core_evidence,
+        "stage_tensor_io": build_stage_tensor_io(core_evidence),
+        "tensor_dataflow_summary": {
+            "op_count": tensor_dataflow.get("op_count", 0),
+            "edge_count": tensor_dataflow.get("edge_count", 0),
+            "external_input_tensor_ids": tensor_dataflow.get("external_input_tensor_ids", []),
+            "final_output_tensor_ids": tensor_dataflow.get("final_output_tensor_ids", []),
+        },
+        "dispatch_op_coverage_summary": {
+            "op_count": dispatch_op_coverage.get("op_count", 0),
+            "covered_op_count": dispatch_op_coverage.get("covered_op_count", 0),
+            "missing_event_op_indices": dispatch_op_coverage.get("missing_event_op_indices", []),
+            "missing_from_module_split": dispatch_op_coverage.get("missing_from_module_split", []),
+            "missing_from_tensor_dataflow": dispatch_op_coverage.get("missing_from_tensor_dataflow", []),
+        },
     }
     layer_profile.write_text(json.dumps(profile, indent=2) + "\n", encoding="utf-8")
 
@@ -966,6 +1056,23 @@ def write_process_code_outputs(
         "expected_stages": features.get("expected_stages", []),
         "original_dimensions": dims,
         "small_config": summary["small_config"],
+        "stage_tensor_io": build_stage_tensor_io(core_evidence),
+        "tensor_dataflow": {
+            **tensor_dataflow_outputs,
+            "op_count": tensor_dataflow.get("op_count", 0),
+            "edge_count": tensor_dataflow.get("edge_count", 0),
+        },
+        "dispatch_op_coverage": {
+            **dispatch_op_coverage_outputs,
+            "summary": {
+                "op_count": dispatch_op_coverage.get("op_count", 0),
+                "covered_op_count": dispatch_op_coverage.get("covered_op_count", 0),
+                "missing_event_op_indices": dispatch_op_coverage.get("missing_event_op_indices", []),
+                "missing_from_module_split": dispatch_op_coverage.get("missing_from_module_split", []),
+                "missing_from_tensor_dataflow": dispatch_op_coverage.get("missing_from_tensor_dataflow", []),
+            },
+            "ops": dispatch_op_coverage.get("ops", []),
+        },
     }
     process_index.write_text(
         _process_index_markdown(event_id, process_manifest, features, core_evidence),
