@@ -1,0 +1,2005 @@
+{
+  "graph_module_pt": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input32_layer19/fx_graph_module.pt",
+  "node_count": 109,
+  "nodes": [
+    {
+      "args": [],
+      "index": 0,
+      "meta": {},
+      "name": "arg0_1",
+      "op": "placeholder",
+      "process_stage": "inputs",
+      "target": "arg0_1",
+      "users": [
+        "_to_copy_default",
+        "add_tensor_4"
+      ]
+    },
+    {
+      "args": [],
+      "index": 1,
+      "meta": {},
+      "name": "arg1_1",
+      "op": "placeholder",
+      "process_stage": "inputs",
+      "target": "arg1_1",
+      "users": [
+        "add_tensor_3"
+      ]
+    },
+    {
+      "args": [],
+      "index": 2,
+      "meta": {},
+      "name": "arg2_1",
+      "op": "placeholder",
+      "process_stage": "inputs",
+      "target": "arg2_1",
+      "users": [
+        "index_tensor",
+        "index_tensor_1"
+      ]
+    },
+    {
+      "args": [],
+      "index": 3,
+      "meta": {},
+      "name": "arg3_1",
+      "op": "placeholder",
+      "process_stage": "inputs",
+      "target": "arg3_1",
+      "users": []
+    },
+    {
+      "args": [],
+      "index": 4,
+      "meta": {},
+      "name": "arg4_1",
+      "op": "placeholder",
+      "process_stage": "inputs",
+      "target": "arg4_1",
+      "users": []
+    },
+    {
+      "args": [],
+      "index": 5,
+      "meta": {},
+      "name": "arg5_1",
+      "op": "placeholder",
+      "process_stage": "inputs",
+      "target": "arg5_1",
+      "users": []
+    },
+    {
+      "args": [],
+      "index": 6,
+      "meta": {},
+      "name": "arg6_1",
+      "op": "placeholder",
+      "process_stage": "inputs",
+      "target": "arg6_1",
+      "users": []
+    },
+    {
+      "args": [],
+      "index": 7,
+      "meta": {},
+      "name": "arg7_1",
+      "op": "placeholder",
+      "process_stage": "inputs",
+      "target": "arg7_1",
+      "users": []
+    },
+    {
+      "args": [
+        "arg0_1"
+      ],
+      "index": 8,
+      "meta": {},
+      "name": "_to_copy_default",
+      "op": "call_function",
+      "process_stage": "input_rmsnorm",
+      "target": "aten._to_copy.default",
+      "users": [
+        "mul_tensor",
+        "pow_tensor_scalar"
+      ]
+    },
+    {
+      "args": [
+        "_to_copy_default"
+      ],
+      "index": 9,
+      "meta": {},
+      "name": "pow_tensor_scalar",
+      "op": "call_function",
+      "process_stage": "input_rmsnorm",
+      "target": "aten.pow.Tensor_Scalar",
+      "users": [
+        "mean_dim"
+      ]
+    },
+    {
+      "args": [
+        "pow_tensor_scalar"
+      ],
+      "index": 10,
+      "meta": {},
+      "name": "mean_dim",
+      "op": "call_function",
+      "process_stage": "input_rmsnorm",
+      "target": "aten.mean.dim",
+      "users": [
+        "add_tensor"
+      ]
+    },
+    {
+      "args": [
+        "mean_dim"
+      ],
+      "index": 11,
+      "meta": {},
+      "name": "add_tensor",
+      "op": "call_function",
+      "process_stage": "input_rmsnorm",
+      "target": "aten.add.Tensor",
+      "users": [
+        "rsqrt_default"
+      ]
+    },
+    {
+      "args": [
+        "add_tensor"
+      ],
+      "index": 12,
+      "meta": {},
+      "name": "rsqrt_default",
+      "op": "call_function",
+      "process_stage": "input_rmsnorm",
+      "target": "aten.rsqrt.default",
+      "users": [
+        "mul_tensor"
+      ]
+    },
+    {
+      "args": [
+        "_to_copy_default",
+        "rsqrt_default"
+      ],
+      "index": 13,
+      "meta": {},
+      "name": "mul_tensor",
+      "op": "call_function",
+      "process_stage": "input_rmsnorm",
+      "target": "aten.mul.Tensor",
+      "users": [
+        "_to_copy_default_1"
+      ]
+    },
+    {
+      "args": [
+        "mul_tensor"
+      ],
+      "index": 14,
+      "meta": {},
+      "name": "_to_copy_default_1",
+      "op": "call_function",
+      "process_stage": "input_rmsnorm",
+      "target": "aten._to_copy.default",
+      "users": [
+        "mul_tensor_1"
+      ]
+    },
+    {
+      "args": [],
+      "index": 15,
+      "meta": {
+        "dtype": "float16",
+        "shape": [
+          4096
+        ],
+        "val": {
+          "device": "cpu",
+          "dtype": "float16",
+          "shape": [
+            4096
+          ],
+          "type": "FakeTensor"
+        }
+      },
+      "name": "_param_constant0",
+      "op": "get_attr",
+      "process_stage": "input_rmsnorm",
+      "target": "_param_constant0",
+      "users": [
+        "mul_tensor_1"
+      ]
+    },
+    {
+      "args": [
+        "_param_constant0",
+        "_to_copy_default_1"
+      ],
+      "index": 16,
+      "meta": {},
+      "name": "mul_tensor_1",
+      "op": "call_function",
+      "process_stage": "qkv_projection",
+      "target": "aten.mul.Tensor",
+      "users": [
+        "view_default",
+        "view_default_1",
+        "view_default_2"
+      ]
+    },
+    {
+      "args": [
+        "mul_tensor_1"
+      ],
+      "index": 17,
+      "meta": {},
+      "name": "view_default",
+      "op": "call_function",
+      "process_stage": "qkv_projection",
+      "target": "aten.view.default",
+      "users": [
+        "mm_default"
+      ]
+    },
+    {
+      "args": [],
+      "index": 18,
+      "meta": {
+        "dtype": "float16",
+        "shape": [
+          4096,
+          4096
+        ],
+        "val": {
+          "device": "cpu",
+          "dtype": "float16",
+          "shape": [
+            4096,
+            4096
+          ],
+          "type": "FakeTensor"
+        }
+      },
+      "name": "_tensor_constant293",
+      "op": "get_attr",
+      "process_stage": "qkv_projection",
+      "target": "_tensor_constant293",
+      "users": [
+        "mm_default"
+      ]
+    },
+    {
+      "args": [
+        "view_default",
+        "_tensor_constant293"
+      ],
+      "index": 19,
+      "meta": {},
+      "name": "mm_default",
+      "op": "call_function",
+      "process_stage": "qkv_projection",
+      "target": "aten.mm.default",
+      "users": [
+        "_unsafe_view_default"
+      ]
+    },
+    {
+      "args": [
+        "mm_default"
+      ],
+      "index": 20,
+      "meta": {},
+      "name": "_unsafe_view_default",
+      "op": "call_function",
+      "process_stage": "qkv_projection",
+      "target": "aten._unsafe_view.default",
+      "users": [
+        "view_default_3"
+      ]
+    },
+    {
+      "args": [
+        "mul_tensor_1"
+      ],
+      "index": 21,
+      "meta": {},
+      "name": "view_default_1",
+      "op": "call_function",
+      "process_stage": "qkv_projection",
+      "target": "aten.view.default",
+      "users": [
+        "mm_default_1"
+      ]
+    },
+    {
+      "args": [],
+      "index": 22,
+      "meta": {
+        "dtype": "float16",
+        "shape": [
+          4096,
+          4096
+        ],
+        "val": {
+          "device": "cpu",
+          "dtype": "float16",
+          "shape": [
+            4096,
+            4096
+          ],
+          "type": "FakeTensor"
+        }
+      },
+      "name": "_tensor_constant294",
+      "op": "get_attr",
+      "process_stage": "qkv_projection",
+      "target": "_tensor_constant294",
+      "users": [
+        "mm_default_1"
+      ]
+    },
+    {
+      "args": [
+        "view_default_1",
+        "_tensor_constant294"
+      ],
+      "index": 23,
+      "meta": {},
+      "name": "mm_default_1",
+      "op": "call_function",
+      "process_stage": "qkv_projection",
+      "target": "aten.mm.default",
+      "users": [
+        "_unsafe_view_default_1"
+      ]
+    },
+    {
+      "args": [
+        "mm_default_1"
+      ],
+      "index": 24,
+      "meta": {},
+      "name": "_unsafe_view_default_1",
+      "op": "call_function",
+      "process_stage": "qkv_projection",
+      "target": "aten._unsafe_view.default",
+      "users": [
+        "view_default_4"
+      ]
+    },
+    {
+      "args": [
+        "mul_tensor_1"
+      ],
+      "index": 25,
+      "meta": {},
+      "name": "view_default_2",
+      "op": "call_function",
+      "process_stage": "qkv_projection",
+      "target": "aten.view.default",
+      "users": [
+        "mm_default_2"
+      ]
+    },
+    {
+      "args": [],
+      "index": 26,
+      "meta": {
+        "dtype": "float16",
+        "shape": [
+          4096,
+          4096
+        ],
+        "val": {
+          "device": "cpu",
+          "dtype": "float16",
+          "shape": [
+            4096,
+            4096
+          ],
+          "type": "FakeTensor"
+        }
+      },
+      "name": "_tensor_constant295",
+      "op": "get_attr",
+      "process_stage": "qkv_projection",
+      "target": "_tensor_constant295",
+      "users": [
+        "mm_default_2"
+      ]
+    },
+    {
+      "args": [
+        "view_default_2",
+        "_tensor_constant295"
+      ],
+      "index": 27,
+      "meta": {},
+      "name": "mm_default_2",
+      "op": "call_function",
+      "process_stage": "qkv_projection",
+      "target": "aten.mm.default",
+      "users": [
+        "_unsafe_view_default_2"
+      ]
+    },
+    {
+      "args": [
+        "mm_default_2"
+      ],
+      "index": 28,
+      "meta": {},
+      "name": "_unsafe_view_default_2",
+      "op": "call_function",
+      "process_stage": "qkv_projection",
+      "target": "aten._unsafe_view.default",
+      "users": [
+        "view_default_5"
+      ]
+    },
+    {
+      "args": [
+        "_unsafe_view_default"
+      ],
+      "index": 29,
+      "meta": {},
+      "name": "view_default_3",
+      "op": "call_function",
+      "process_stage": "qkv_projection",
+      "target": "aten.view.default",
+      "users": [
+        "transpose_int"
+      ]
+    },
+    {
+      "args": [
+        "view_default_3"
+      ],
+      "index": 30,
+      "meta": {},
+      "name": "transpose_int",
+      "op": "call_function",
+      "process_stage": "qkv_projection",
+      "target": "aten.transpose.int",
+      "users": [
+        "mul_tensor_2",
+        "slice_tensor",
+        "slice_tensor_1"
+      ]
+    },
+    {
+      "args": [
+        "_unsafe_view_default_1"
+      ],
+      "index": 31,
+      "meta": {},
+      "name": "view_default_4",
+      "op": "call_function",
+      "process_stage": "qkv_projection",
+      "target": "aten.view.default",
+      "users": [
+        "transpose_int_1"
+      ]
+    },
+    {
+      "args": [
+        "view_default_4"
+      ],
+      "index": 32,
+      "meta": {},
+      "name": "transpose_int_1",
+      "op": "call_function",
+      "process_stage": "qkv_projection",
+      "target": "aten.transpose.int",
+      "users": [
+        "mul_tensor_4",
+        "slice_tensor_2",
+        "slice_tensor_3"
+      ]
+    },
+    {
+      "args": [
+        "_unsafe_view_default_2"
+      ],
+      "index": 33,
+      "meta": {},
+      "name": "view_default_5",
+      "op": "call_function",
+      "process_stage": "qkv_projection",
+      "target": "aten.view.default",
+      "users": [
+        "transpose_int_2"
+      ]
+    },
+    {
+      "args": [
+        "view_default_5"
+      ],
+      "index": 34,
+      "meta": {},
+      "name": "transpose_int_2",
+      "op": "call_function",
+      "process_stage": "qkv_projection",
+      "target": "aten.transpose.int",
+      "users": [
+        "cat_default_3"
+      ]
+    },
+    {
+      "args": [],
+      "index": 35,
+      "meta": {
+        "dtype": "float16",
+        "shape": [
+          655,
+          128
+        ],
+        "val": {
+          "device": "cpu",
+          "dtype": "float16",
+          "shape": [
+            655,
+            128
+          ],
+          "type": "FakeTensor"
+        }
+      },
+      "name": "_tensor_constant296",
+      "op": "get_attr",
+      "process_stage": "rope",
+      "target": "_tensor_constant296",
+      "users": [
+        "index_tensor"
+      ]
+    },
+    {
+      "args": [
+        "_tensor_constant296",
+        "arg2_1"
+      ],
+      "index": 36,
+      "meta": {},
+      "name": "index_tensor",
+      "op": "call_function",
+      "process_stage": "rope",
+      "target": "aten.index.Tensor",
+      "users": [
+        "unsqueeze_default"
+      ]
+    },
+    {
+      "args": [
+        "index_tensor"
+      ],
+      "index": 37,
+      "meta": {},
+      "name": "unsqueeze_default",
+      "op": "call_function",
+      "process_stage": "rope",
+      "target": "aten.unsqueeze.default",
+      "users": [
+        "mul_tensor_2",
+        "mul_tensor_4"
+      ]
+    },
+    {
+      "args": [],
+      "index": 38,
+      "meta": {
+        "dtype": "float16",
+        "shape": [
+          655,
+          128
+        ],
+        "val": {
+          "device": "cpu",
+          "dtype": "float16",
+          "shape": [
+            655,
+            128
+          ],
+          "type": "FakeTensor"
+        }
+      },
+      "name": "_tensor_constant297",
+      "op": "get_attr",
+      "process_stage": "rope",
+      "target": "_tensor_constant297",
+      "users": [
+        "index_tensor_1"
+      ]
+    },
+    {
+      "args": [
+        "_tensor_constant297",
+        "arg2_1"
+      ],
+      "index": 39,
+      "meta": {},
+      "name": "index_tensor_1",
+      "op": "call_function",
+      "process_stage": "rope",
+      "target": "aten.index.Tensor",
+      "users": [
+        "unsqueeze_default_1"
+      ]
+    },
+    {
+      "args": [
+        "index_tensor_1"
+      ],
+      "index": 40,
+      "meta": {},
+      "name": "unsqueeze_default_1",
+      "op": "call_function",
+      "process_stage": "rope",
+      "target": "aten.unsqueeze.default",
+      "users": [
+        "mul_tensor_3",
+        "mul_tensor_5"
+      ]
+    },
+    {
+      "args": [
+        "transpose_int",
+        "unsqueeze_default"
+      ],
+      "index": 41,
+      "meta": {},
+      "name": "mul_tensor_2",
+      "op": "call_function",
+      "process_stage": "rope",
+      "target": "aten.mul.Tensor",
+      "users": [
+        "add_tensor_1"
+      ]
+    },
+    {
+      "args": [
+        "transpose_int"
+      ],
+      "index": 42,
+      "meta": {},
+      "name": "slice_tensor",
+      "op": "call_function",
+      "process_stage": "rope",
+      "target": "aten.slice.Tensor",
+      "users": [
+        "cat_default"
+      ]
+    },
+    {
+      "args": [
+        "transpose_int"
+      ],
+      "index": 43,
+      "meta": {},
+      "name": "slice_tensor_1",
+      "op": "call_function",
+      "process_stage": "rope",
+      "target": "aten.slice.Tensor",
+      "users": [
+        "neg_default"
+      ]
+    },
+    {
+      "args": [
+        "slice_tensor_1"
+      ],
+      "index": 44,
+      "meta": {},
+      "name": "neg_default",
+      "op": "call_function",
+      "process_stage": "rope",
+      "target": "aten.neg.default",
+      "users": [
+        "cat_default"
+      ]
+    },
+    {
+      "args": [
+        "neg_default",
+        "slice_tensor"
+      ],
+      "index": 45,
+      "meta": {},
+      "name": "cat_default",
+      "op": "call_function",
+      "process_stage": "rope",
+      "target": "aten.cat.default",
+      "users": [
+        "mul_tensor_3"
+      ]
+    },
+    {
+      "args": [
+        "cat_default",
+        "unsqueeze_default_1"
+      ],
+      "index": 46,
+      "meta": {},
+      "name": "mul_tensor_3",
+      "op": "call_function",
+      "process_stage": "rope",
+      "target": "aten.mul.Tensor",
+      "users": [
+        "add_tensor_1"
+      ]
+    },
+    {
+      "args": [
+        "mul_tensor_2",
+        "mul_tensor_3"
+      ],
+      "index": 47,
+      "meta": {},
+      "name": "add_tensor_1",
+      "op": "call_function",
+      "process_stage": "rope",
+      "target": "aten.add.Tensor",
+      "users": [
+        "expand_default"
+      ]
+    },
+    {
+      "args": [
+        "transpose_int_1",
+        "unsqueeze_default"
+      ],
+      "index": 48,
+      "meta": {},
+      "name": "mul_tensor_4",
+      "op": "call_function",
+      "process_stage": "rope",
+      "target": "aten.mul.Tensor",
+      "users": [
+        "add_tensor_2"
+      ]
+    },
+    {
+      "args": [
+        "transpose_int_1"
+      ],
+      "index": 49,
+      "meta": {},
+      "name": "slice_tensor_2",
+      "op": "call_function",
+      "process_stage": "rope",
+      "target": "aten.slice.Tensor",
+      "users": [
+        "cat_default_1"
+      ]
+    },
+    {
+      "args": [
+        "transpose_int_1"
+      ],
+      "index": 50,
+      "meta": {},
+      "name": "slice_tensor_3",
+      "op": "call_function",
+      "process_stage": "rope",
+      "target": "aten.slice.Tensor",
+      "users": [
+        "neg_default_1"
+      ]
+    },
+    {
+      "args": [
+        "slice_tensor_3"
+      ],
+      "index": 51,
+      "meta": {},
+      "name": "neg_default_1",
+      "op": "call_function",
+      "process_stage": "rope",
+      "target": "aten.neg.default",
+      "users": [
+        "cat_default_1"
+      ]
+    },
+    {
+      "args": [
+        "neg_default_1",
+        "slice_tensor_2"
+      ],
+      "index": 52,
+      "meta": {},
+      "name": "cat_default_1",
+      "op": "call_function",
+      "process_stage": "rope",
+      "target": "aten.cat.default",
+      "users": [
+        "mul_tensor_5"
+      ]
+    },
+    {
+      "args": [
+        "cat_default_1",
+        "unsqueeze_default_1"
+      ],
+      "index": 53,
+      "meta": {},
+      "name": "mul_tensor_5",
+      "op": "call_function",
+      "process_stage": "rope",
+      "target": "aten.mul.Tensor",
+      "users": [
+        "add_tensor_2"
+      ]
+    },
+    {
+      "args": [
+        "mul_tensor_4",
+        "mul_tensor_5"
+      ],
+      "index": 54,
+      "meta": {},
+      "name": "add_tensor_2",
+      "op": "call_function",
+      "process_stage": "rope",
+      "target": "aten.add.Tensor",
+      "users": [
+        "cat_default_2"
+      ]
+    },
+    {
+      "args": [],
+      "index": 55,
+      "meta": {
+        "dtype": "float16",
+        "shape": [
+          1,
+          32,
+          88,
+          128
+        ],
+        "val": {
+          "device": "cpu",
+          "dtype": "float16",
+          "shape": [
+            1,
+            32,
+            88,
+            128
+          ],
+          "type": "FakeTensor"
+        }
+      },
+      "name": "_tensor_constant2",
+      "op": "get_attr",
+      "process_stage": "attention_scores",
+      "target": "_tensor_constant2",
+      "users": [
+        "cat_default_2"
+      ]
+    },
+    {
+      "args": [
+        "_tensor_constant2",
+        "add_tensor_2"
+      ],
+      "index": 56,
+      "meta": {},
+      "name": "cat_default_2",
+      "op": "call_function",
+      "process_stage": "attention_scores",
+      "target": "aten.cat.default",
+      "users": [
+        "output",
+        "transpose_int_3"
+      ]
+    },
+    {
+      "args": [],
+      "index": 57,
+      "meta": {
+        "dtype": "float16",
+        "shape": [
+          1,
+          32,
+          88,
+          128
+        ],
+        "val": {
+          "device": "cpu",
+          "dtype": "float16",
+          "shape": [
+            1,
+            32,
+            88,
+            128
+          ],
+          "type": "FakeTensor"
+        }
+      },
+      "name": "_tensor_constant3",
+      "op": "get_attr",
+      "process_stage": "attention_scores",
+      "target": "_tensor_constant3",
+      "users": [
+        "cat_default_3"
+      ]
+    },
+    {
+      "args": [
+        "_tensor_constant3",
+        "transpose_int_2"
+      ],
+      "index": 58,
+      "meta": {},
+      "name": "cat_default_3",
+      "op": "call_function",
+      "process_stage": "attention_scores",
+      "target": "aten.cat.default",
+      "users": [
+        "expand_default_3",
+        "output"
+      ]
+    },
+    {
+      "args": [
+        "cat_default_2"
+      ],
+      "index": 59,
+      "meta": {},
+      "name": "transpose_int_3",
+      "op": "call_function",
+      "process_stage": "attention_scores",
+      "target": "aten.transpose.int",
+      "users": [
+        "expand_default_1"
+      ]
+    },
+    {
+      "args": [
+        "add_tensor_1"
+      ],
+      "index": 60,
+      "meta": {},
+      "name": "expand_default",
+      "op": "call_function",
+      "process_stage": "attention_scores",
+      "target": "aten.expand.default",
+      "users": [
+        "view_default_6"
+      ]
+    },
+    {
+      "args": [
+        "expand_default"
+      ],
+      "index": 61,
+      "meta": {},
+      "name": "view_default_6",
+      "op": "call_function",
+      "process_stage": "attention_scores",
+      "target": "aten.view.default",
+      "users": [
+        "bmm_default"
+      ]
+    },
+    {
+      "args": [
+        "transpose_int_3"
+      ],
+      "index": 62,
+      "meta": {},
+      "name": "expand_default_1",
+      "op": "call_function",
+      "process_stage": "attention_scores",
+      "target": "aten.expand.default",
+      "users": [
+        "view_default_7"
+      ]
+    },
+    {
+      "args": [
+        "expand_default_1"
+      ],
+      "index": 63,
+      "meta": {},
+      "name": "view_default_7",
+      "op": "call_function",
+      "process_stage": "attention_scores",
+      "target": "aten.view.default",
+      "users": [
+        "bmm_default"
+      ]
+    },
+    {
+      "args": [
+        "view_default_6",
+        "view_default_7"
+      ],
+      "index": 64,
+      "meta": {},
+      "name": "bmm_default",
+      "op": "call_function",
+      "process_stage": "attention_scores",
+      "target": "aten.bmm.default",
+      "users": [
+        "view_default_8"
+      ]
+    },
+    {
+      "args": [
+        "bmm_default"
+      ],
+      "index": 65,
+      "meta": {},
+      "name": "view_default_8",
+      "op": "call_function",
+      "process_stage": "attention_scores",
+      "target": "aten.view.default",
+      "users": [
+        "div_tensor"
+      ]
+    },
+    {
+      "args": [
+        "view_default_8"
+      ],
+      "index": 66,
+      "meta": {},
+      "name": "div_tensor",
+      "op": "call_function",
+      "process_stage": "attention_scores",
+      "target": "aten.div.Tensor",
+      "users": [
+        "add_tensor_3"
+      ]
+    },
+    {
+      "args": [
+        "div_tensor",
+        "arg1_1"
+      ],
+      "index": 67,
+      "meta": {},
+      "name": "add_tensor_3",
+      "op": "call_function",
+      "process_stage": "attention_scores",
+      "target": "aten.add.Tensor",
+      "users": [
+        "_softmax_default"
+      ]
+    },
+    {
+      "args": [
+        "add_tensor_3"
+      ],
+      "index": 68,
+      "meta": {},
+      "name": "_softmax_default",
+      "op": "call_function",
+      "process_stage": "attention_scores",
+      "target": "aten._softmax.default",
+      "users": [
+        "_to_copy_default_2"
+      ]
+    },
+    {
+      "args": [
+        "_softmax_default"
+      ],
+      "index": 69,
+      "meta": {},
+      "name": "_to_copy_default_2",
+      "op": "call_function",
+      "process_stage": "attention_scores",
+      "target": "aten._to_copy.default",
+      "users": [
+        "clone_default"
+      ]
+    },
+    {
+      "args": [
+        "_to_copy_default_2"
+      ],
+      "index": 70,
+      "meta": {},
+      "name": "clone_default",
+      "op": "call_function",
+      "process_stage": "attention_scores",
+      "target": "aten.clone.default",
+      "users": [
+        "expand_default_2"
+      ]
+    },
+    {
+      "args": [
+        "clone_default"
+      ],
+      "index": 71,
+      "meta": {},
+      "name": "expand_default_2",
+      "op": "call_function",
+      "process_stage": "attention_output",
+      "target": "aten.expand.default",
+      "users": [
+        "view_default_9"
+      ]
+    },
+    {
+      "args": [
+        "expand_default_2"
+      ],
+      "index": 72,
+      "meta": {},
+      "name": "view_default_9",
+      "op": "call_function",
+      "process_stage": "attention_output",
+      "target": "aten.view.default",
+      "users": [
+        "bmm_default_1"
+      ]
+    },
+    {
+      "args": [
+        "cat_default_3"
+      ],
+      "index": 73,
+      "meta": {},
+      "name": "expand_default_3",
+      "op": "call_function",
+      "process_stage": "attention_output",
+      "target": "aten.expand.default",
+      "users": [
+        "view_default_10"
+      ]
+    },
+    {
+      "args": [
+        "expand_default_3"
+      ],
+      "index": 74,
+      "meta": {},
+      "name": "view_default_10",
+      "op": "call_function",
+      "process_stage": "attention_output",
+      "target": "aten.view.default",
+      "users": [
+        "bmm_default_1"
+      ]
+    },
+    {
+      "args": [
+        "view_default_9",
+        "view_default_10"
+      ],
+      "index": 75,
+      "meta": {},
+      "name": "bmm_default_1",
+      "op": "call_function",
+      "process_stage": "attention_output",
+      "target": "aten.bmm.default",
+      "users": [
+        "view_default_11"
+      ]
+    },
+    {
+      "args": [
+        "bmm_default_1"
+      ],
+      "index": 76,
+      "meta": {},
+      "name": "view_default_11",
+      "op": "call_function",
+      "process_stage": "attention_output",
+      "target": "aten.view.default",
+      "users": [
+        "transpose_int_4"
+      ]
+    },
+    {
+      "args": [
+        "view_default_11"
+      ],
+      "index": 77,
+      "meta": {},
+      "name": "transpose_int_4",
+      "op": "call_function",
+      "process_stage": "attention_output",
+      "target": "aten.transpose.int",
+      "users": [
+        "view_default_12"
+      ]
+    },
+    {
+      "args": [
+        "transpose_int_4"
+      ],
+      "index": 78,
+      "meta": {},
+      "name": "view_default_12",
+      "op": "call_function",
+      "process_stage": "attention_output",
+      "target": "aten.view.default",
+      "users": [
+        "view_default_13"
+      ]
+    },
+    {
+      "args": [
+        "view_default_12"
+      ],
+      "index": 79,
+      "meta": {},
+      "name": "view_default_13",
+      "op": "call_function",
+      "process_stage": "output_projection",
+      "target": "aten.view.default",
+      "users": [
+        "mm_default_3"
+      ]
+    },
+    {
+      "args": [],
+      "index": 80,
+      "meta": {
+        "dtype": "float16",
+        "shape": [
+          4096,
+          4096
+        ],
+        "val": {
+          "device": "cpu",
+          "dtype": "float16",
+          "shape": [
+            4096,
+            4096
+          ],
+          "type": "FakeTensor"
+        }
+      },
+      "name": "_tensor_constant298",
+      "op": "get_attr",
+      "process_stage": "output_projection",
+      "target": "_tensor_constant298",
+      "users": [
+        "mm_default_3"
+      ]
+    },
+    {
+      "args": [
+        "view_default_13",
+        "_tensor_constant298"
+      ],
+      "index": 81,
+      "meta": {},
+      "name": "mm_default_3",
+      "op": "call_function",
+      "process_stage": "output_projection",
+      "target": "aten.mm.default",
+      "users": [
+        "_unsafe_view_default_3"
+      ]
+    },
+    {
+      "args": [
+        "mm_default_3"
+      ],
+      "index": 82,
+      "meta": {},
+      "name": "_unsafe_view_default_3",
+      "op": "call_function",
+      "process_stage": "output_projection",
+      "target": "aten._unsafe_view.default",
+      "users": [
+        "add_tensor_4"
+      ]
+    },
+    {
+      "args": [
+        "arg0_1",
+        "_unsafe_view_default_3"
+      ],
+      "index": 83,
+      "meta": {},
+      "name": "add_tensor_4",
+      "op": "call_function",
+      "process_stage": "output_projection",
+      "target": "aten.add.Tensor",
+      "users": [
+        "_to_copy_default_3",
+        "add_tensor_6"
+      ]
+    },
+    {
+      "args": [
+        "add_tensor_4"
+      ],
+      "index": 84,
+      "meta": {},
+      "name": "_to_copy_default_3",
+      "op": "call_function",
+      "process_stage": "post_attention_rmsnorm",
+      "target": "aten._to_copy.default",
+      "users": [
+        "mul_tensor_6",
+        "pow_tensor_scalar_1"
+      ]
+    },
+    {
+      "args": [
+        "_to_copy_default_3"
+      ],
+      "index": 85,
+      "meta": {},
+      "name": "pow_tensor_scalar_1",
+      "op": "call_function",
+      "process_stage": "post_attention_rmsnorm",
+      "target": "aten.pow.Tensor_Scalar",
+      "users": [
+        "mean_dim_1"
+      ]
+    },
+    {
+      "args": [
+        "pow_tensor_scalar_1"
+      ],
+      "index": 86,
+      "meta": {},
+      "name": "mean_dim_1",
+      "op": "call_function",
+      "process_stage": "post_attention_rmsnorm",
+      "target": "aten.mean.dim",
+      "users": [
+        "add_tensor_5"
+      ]
+    },
+    {
+      "args": [
+        "mean_dim_1"
+      ],
+      "index": 87,
+      "meta": {},
+      "name": "add_tensor_5",
+      "op": "call_function",
+      "process_stage": "post_attention_rmsnorm",
+      "target": "aten.add.Tensor",
+      "users": [
+        "rsqrt_default_1"
+      ]
+    },
+    {
+      "args": [
+        "add_tensor_5"
+      ],
+      "index": 88,
+      "meta": {},
+      "name": "rsqrt_default_1",
+      "op": "call_function",
+      "process_stage": "post_attention_rmsnorm",
+      "target": "aten.rsqrt.default",
+      "users": [
+        "mul_tensor_6"
+      ]
+    },
+    {
+      "args": [
+        "_to_copy_default_3",
+        "rsqrt_default_1"
+      ],
+      "index": 89,
+      "meta": {},
+      "name": "mul_tensor_6",
+      "op": "call_function",
+      "process_stage": "post_attention_rmsnorm",
+      "target": "aten.mul.Tensor",
+      "users": [
+        "_to_copy_default_4"
+      ]
+    },
+    {
+      "args": [
+        "mul_tensor_6"
+      ],
+      "index": 90,
+      "meta": {},
+      "name": "_to_copy_default_4",
+      "op": "call_function",
+      "process_stage": "post_attention_rmsnorm",
+      "target": "aten._to_copy.default",
+      "users": [
+        "mul_tensor_7"
+      ]
+    },
+    {
+      "args": [],
+      "index": 91,
+      "meta": {
+        "dtype": "float16",
+        "shape": [
+          4096
+        ],
+        "val": {
+          "device": "cpu",
+          "dtype": "float16",
+          "shape": [
+            4096
+          ],
+          "type": "FakeTensor"
+        }
+      },
+      "name": "_param_constant5",
+      "op": "get_attr",
+      "process_stage": "post_attention_rmsnorm",
+      "target": "_param_constant5",
+      "users": [
+        "mul_tensor_7"
+      ]
+    },
+    {
+      "args": [
+        "_param_constant5",
+        "_to_copy_default_4"
+      ],
+      "index": 92,
+      "meta": {},
+      "name": "mul_tensor_7",
+      "op": "call_function",
+      "process_stage": "post_attention_rmsnorm",
+      "target": "aten.mul.Tensor",
+      "users": [
+        "view_default_14",
+        "view_default_15"
+      ]
+    },
+    {
+      "args": [
+        "mul_tensor_7"
+      ],
+      "index": 93,
+      "meta": {},
+      "name": "view_default_14",
+      "op": "call_function",
+      "process_stage": "post_attention_rmsnorm",
+      "target": "aten.view.default",
+      "users": [
+        "mm_default_4"
+      ]
+    },
+    {
+      "args": [],
+      "index": 94,
+      "meta": {
+        "dtype": "float16",
+        "shape": [
+          4096,
+          11008
+        ],
+        "val": {
+          "device": "cpu",
+          "dtype": "float16",
+          "shape": [
+            4096,
+            11008
+          ],
+          "type": "FakeTensor"
+        }
+      },
+      "name": "_tensor_constant299",
+      "op": "get_attr",
+      "process_stage": "mlp",
+      "target": "_tensor_constant299",
+      "users": [
+        "mm_default_4"
+      ]
+    },
+    {
+      "args": [
+        "view_default_14",
+        "_tensor_constant299"
+      ],
+      "index": 95,
+      "meta": {},
+      "name": "mm_default_4",
+      "op": "call_function",
+      "process_stage": "mlp",
+      "target": "aten.mm.default",
+      "users": [
+        "_unsafe_view_default_4"
+      ]
+    },
+    {
+      "args": [
+        "mm_default_4"
+      ],
+      "index": 96,
+      "meta": {},
+      "name": "_unsafe_view_default_4",
+      "op": "call_function",
+      "process_stage": "mlp",
+      "target": "aten._unsafe_view.default",
+      "users": [
+        "silu_default"
+      ]
+    },
+    {
+      "args": [
+        "_unsafe_view_default_4"
+      ],
+      "index": 97,
+      "meta": {},
+      "name": "silu_default",
+      "op": "call_function",
+      "process_stage": "mlp",
+      "target": "aten.silu.default",
+      "users": [
+        "mul_tensor_8"
+      ]
+    },
+    {
+      "args": [
+        "mul_tensor_7"
+      ],
+      "index": 98,
+      "meta": {},
+      "name": "view_default_15",
+      "op": "call_function",
+      "process_stage": "mlp",
+      "target": "aten.view.default",
+      "users": [
+        "mm_default_5"
+      ]
+    },
+    {
+      "args": [],
+      "index": 99,
+      "meta": {
+        "dtype": "float16",
+        "shape": [
+          4096,
+          11008
+        ],
+        "val": {
+          "device": "cpu",
+          "dtype": "float16",
+          "shape": [
+            4096,
+            11008
+          ],
+          "type": "FakeTensor"
+        }
+      },
+      "name": "_tensor_constant300",
+      "op": "get_attr",
+      "process_stage": "mlp",
+      "target": "_tensor_constant300",
+      "users": [
+        "mm_default_5"
+      ]
+    },
+    {
+      "args": [
+        "view_default_15",
+        "_tensor_constant300"
+      ],
+      "index": 100,
+      "meta": {},
+      "name": "mm_default_5",
+      "op": "call_function",
+      "process_stage": "mlp",
+      "target": "aten.mm.default",
+      "users": [
+        "_unsafe_view_default_5"
+      ]
+    },
+    {
+      "args": [
+        "mm_default_5"
+      ],
+      "index": 101,
+      "meta": {},
+      "name": "_unsafe_view_default_5",
+      "op": "call_function",
+      "process_stage": "mlp",
+      "target": "aten._unsafe_view.default",
+      "users": [
+        "mul_tensor_8"
+      ]
+    },
+    {
+      "args": [
+        "silu_default",
+        "_unsafe_view_default_5"
+      ],
+      "index": 102,
+      "meta": {},
+      "name": "mul_tensor_8",
+      "op": "call_function",
+      "process_stage": "mlp",
+      "target": "aten.mul.Tensor",
+      "users": [
+        "view_default_16"
+      ]
+    },
+    {
+      "args": [
+        "mul_tensor_8"
+      ],
+      "index": 103,
+      "meta": {},
+      "name": "view_default_16",
+      "op": "call_function",
+      "process_stage": "mlp",
+      "target": "aten.view.default",
+      "users": [
+        "mm_default_6"
+      ]
+    },
+    {
+      "args": [],
+      "index": 104,
+      "meta": {
+        "dtype": "float16",
+        "shape": [
+          11008,
+          4096
+        ],
+        "val": {
+          "device": "cpu",
+          "dtype": "float16",
+          "shape": [
+            11008,
+            4096
+          ],
+          "type": "FakeTensor"
+        }
+      },
+      "name": "_tensor_constant301",
+      "op": "get_attr",
+      "process_stage": "mlp",
+      "target": "_tensor_constant301",
+      "users": [
+        "mm_default_6"
+      ]
+    },
+    {
+      "args": [
+        "view_default_16",
+        "_tensor_constant301"
+      ],
+      "index": 105,
+      "meta": {},
+      "name": "mm_default_6",
+      "op": "call_function",
+      "process_stage": "mlp",
+      "target": "aten.mm.default",
+      "users": [
+        "_unsafe_view_default_6"
+      ]
+    },
+    {
+      "args": [
+        "mm_default_6"
+      ],
+      "index": 106,
+      "meta": {},
+      "name": "_unsafe_view_default_6",
+      "op": "call_function",
+      "process_stage": "mlp",
+      "target": "aten._unsafe_view.default",
+      "users": [
+        "add_tensor_6"
+      ]
+    },
+    {
+      "args": [
+        "add_tensor_4",
+        "_unsafe_view_default_6"
+      ],
+      "index": 107,
+      "meta": {},
+      "name": "add_tensor_6",
+      "op": "call_function",
+      "process_stage": "mlp",
+      "target": "aten.add.Tensor",
+      "users": [
+        "output"
+      ]
+    },
+    {
+      "args": [
+        "add_tensor_6",
+        "cat_default_2",
+        "cat_default_3"
+      ],
+      "index": 108,
+      "meta": {},
+      "name": "output",
+      "op": "output",
+      "process_stage": "layer_output",
+      "target": "output",
+      "users": []
+    }
+  ],
+  "source": "GraphModule.graph",
+  "stage_count": 10,
+  "stages": [
+    {
+      "end_index": 7,
+      "external_inputs": [],
+      "external_outputs": [
+        "arg0_1",
+        "arg1_1",
+        "arg2_1"
+      ],
+      "node_count": 8,
+      "nodes": [
+        "arg0_1",
+        "arg1_1",
+        "arg2_1",
+        "arg3_1",
+        "arg4_1",
+        "arg5_1",
+        "arg6_1",
+        "arg7_1"
+      ],
+      "stage": "inputs",
+      "start_index": 0,
+      "title": "Runtime FX inputs"
+    },
+    {
+      "end_index": 15,
+      "external_inputs": [
+        "arg0_1"
+      ],
+      "external_outputs": [
+        "_param_constant0",
+        "_to_copy_default_1"
+      ],
+      "node_count": 8,
+      "nodes": [
+        "_to_copy_default",
+        "pow_tensor_scalar",
+        "mean_dim",
+        "add_tensor",
+        "rsqrt_default",
+        "mul_tensor",
+        "_to_copy_default_1",
+        "_param_constant0"
+      ],
+      "stage": "input_rmsnorm",
+      "start_index": 8,
+      "title": "Input RMSNorm"
+    },
+    {
+      "end_index": 34,
+      "external_inputs": [
+        "_param_constant0",
+        "_to_copy_default_1"
+      ],
+      "external_outputs": [
+        "transpose_int",
+        "transpose_int_1",
+        "transpose_int_2"
+      ],
+      "node_count": 19,
+      "nodes": [
+        "mul_tensor_1",
+        "view_default",
+        "_tensor_constant293",
+        "mm_default",
+        "_unsafe_view_default",
+        "view_default_1",
+        "_tensor_constant294",
+        "mm_default_1",
+        "_unsafe_view_default_1",
+        "view_default_2",
+        "_tensor_constant295",
+        "mm_default_2",
+        "_unsafe_view_default_2",
+        "view_default_3",
+        "transpose_int",
+        "view_default_4",
+        "transpose_int_1",
+        "view_default_5",
+        "transpose_int_2"
+      ],
+      "stage": "qkv_projection",
+      "start_index": 16,
+      "title": "Q/K/V projection and head reshape"
+    },
+    {
+      "end_index": 54,
+      "external_inputs": [
+        "arg2_1",
+        "transpose_int",
+        "transpose_int_1"
+      ],
+      "external_outputs": [
+        "add_tensor_1",
+        "add_tensor_2"
+      ],
+      "node_count": 20,
+      "nodes": [
+        "_tensor_constant296",
+        "index_tensor",
+        "unsqueeze_default",
+        "_tensor_constant297",
+        "index_tensor_1",
+        "unsqueeze_default_1",
+        "mul_tensor_2",
+        "slice_tensor",
+        "slice_tensor_1",
+        "neg_default",
+        "cat_default",
+        "mul_tensor_3",
+        "add_tensor_1",
+        "mul_tensor_4",
+        "slice_tensor_2",
+        "slice_tensor_3",
+        "neg_default_1",
+        "cat_default_1",
+        "mul_tensor_5",
+        "add_tensor_2"
+      ],
+      "stage": "rope",
+      "start_index": 35,
+      "title": "RoPE position embedding"
+    },
+    {
+      "end_index": 70,
+      "external_inputs": [
+        "add_tensor_1",
+        "add_tensor_2",
+        "arg1_1",
+        "transpose_int_2"
+      ],
+      "external_outputs": [
+        "cat_default_2",
+        "cat_default_3",
+        "clone_default"
+      ],
+      "node_count": 16,
+      "nodes": [
+        "_tensor_constant2",
+        "cat_default_2",
+        "_tensor_constant3",
+        "cat_default_3",
+        "transpose_int_3",
+        "expand_default",
+        "view_default_6",
+        "expand_default_1",
+        "view_default_7",
+        "bmm_default",
+        "view_default_8",
+        "div_tensor",
+        "add_tensor_3",
+        "_softmax_default",
+        "_to_copy_default_2",
+        "clone_default"
+      ],
+      "stage": "attention_scores",
+      "start_index": 55,
+      "title": "QK scores, mask, softmax"
+    },
+    {
+      "end_index": 78,
+      "external_inputs": [
+        "cat_default_3",
+        "clone_default"
+      ],
+      "external_outputs": [
+        "view_default_12"
+      ],
+      "node_count": 8,
+      "nodes": [
+        "expand_default_2",
+        "view_default_9",
+        "expand_default_3",
+        "view_default_10",
+        "bmm_default_1",
+        "view_default_11",
+        "transpose_int_4",
+        "view_default_12"
+      ],
+      "stage": "attention_output",
+      "start_index": 71,
+      "title": "Attention-weighted V and hidden reshape"
+    },
+    {
+      "end_index": 83,
+      "external_inputs": [
+        "arg0_1",
+        "view_default_12"
+      ],
+      "external_outputs": [
+        "add_tensor_4"
+      ],
+      "node_count": 5,
+      "nodes": [
+        "view_default_13",
+        "_tensor_constant298",
+        "mm_default_3",
+        "_unsafe_view_default_3",
+        "add_tensor_4"
+      ],
+      "stage": "output_projection",
+      "start_index": 79,
+      "title": "Attention output projection and residual"
+    },
+    {
+      "end_index": 93,
+      "external_inputs": [
+        "add_tensor_4"
+      ],
+      "external_outputs": [
+        "mul_tensor_7",
+        "view_default_14"
+      ],
+      "node_count": 10,
+      "nodes": [
+        "_to_copy_default_3",
+        "pow_tensor_scalar_1",
+        "mean_dim_1",
+        "add_tensor_5",
+        "rsqrt_default_1",
+        "mul_tensor_6",
+        "_to_copy_default_4",
+        "_param_constant5",
+        "mul_tensor_7",
+        "view_default_14"
+      ],
+      "stage": "post_attention_rmsnorm",
+      "start_index": 84,
+      "title": "Post-attention RMSNorm"
+    },
+    {
+      "end_index": 107,
+      "external_inputs": [
+        "add_tensor_4",
+        "mul_tensor_7",
+        "view_default_14"
+      ],
+      "external_outputs": [
+        "add_tensor_6"
+      ],
+      "node_count": 14,
+      "nodes": [
+        "_tensor_constant299",
+        "mm_default_4",
+        "_unsafe_view_default_4",
+        "silu_default",
+        "view_default_15",
+        "_tensor_constant300",
+        "mm_default_5",
+        "_unsafe_view_default_5",
+        "mul_tensor_8",
+        "view_default_16",
+        "_tensor_constant301",
+        "mm_default_6",
+        "_unsafe_view_default_6",
+        "add_tensor_6"
+      ],
+      "stage": "mlp",
+      "start_index": 94,
+      "title": "MLP and final residual"
+    },
+    {
+      "end_index": 108,
+      "external_inputs": [
+        "add_tensor_6",
+        "cat_default_2",
+        "cat_default_3"
+      ],
+      "external_outputs": [],
+      "node_count": 1,
+      "nodes": [
+        "output"
+      ],
+      "stage": "layer_output",
+      "start_index": 108,
+      "title": "Layer output"
+    }
+  ],
+  "trace_dir": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input32_layer19"
+}

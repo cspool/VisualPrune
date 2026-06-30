@@ -1,0 +1,355 @@
+{
+  "processed": 35,
+  "results": [
+    {
+      "csv": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer0/fx_process_nodes.csv",
+      "graph_module_pt": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer0/fx_graph_module.pt",
+      "json": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer0/fx_process_reconstruction.json",
+      "markdown": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer0/fx_process_reconstruction.md",
+      "node_count": 116,
+      "stage_count": 10,
+      "status": "ok",
+      "trace_dir": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer0"
+    },
+    {
+      "csv": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer10/fx_process_nodes.csv",
+      "graph_module_pt": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer10/fx_graph_module.pt",
+      "json": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer10/fx_process_reconstruction.json",
+      "markdown": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer10/fx_process_reconstruction.md",
+      "node_count": 116,
+      "stage_count": 11,
+      "status": "ok",
+      "trace_dir": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer10"
+    },
+    {
+      "csv": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer11/fx_process_nodes.csv",
+      "graph_module_pt": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer11/fx_graph_module.pt",
+      "json": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer11/fx_process_reconstruction.json",
+      "markdown": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer11/fx_process_reconstruction.md",
+      "node_count": 116,
+      "stage_count": 11,
+      "status": "ok",
+      "trace_dir": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer11"
+    },
+    {
+      "csv": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer12/fx_process_nodes.csv",
+      "graph_module_pt": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer12/fx_graph_module.pt",
+      "json": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer12/fx_process_reconstruction.json",
+      "markdown": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer12/fx_process_reconstruction.md",
+      "node_count": 116,
+      "stage_count": 11,
+      "status": "ok",
+      "trace_dir": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer12"
+    },
+    {
+      "csv": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer13/fx_process_nodes.csv",
+      "graph_module_pt": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer13/fx_graph_module.pt",
+      "json": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer13/fx_process_reconstruction.json",
+      "markdown": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer13/fx_process_reconstruction.md",
+      "node_count": 116,
+      "stage_count": 11,
+      "status": "ok",
+      "trace_dir": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer13"
+    },
+    {
+      "csv": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer14/fx_process_nodes.csv",
+      "graph_module_pt": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer14/fx_graph_module.pt",
+      "json": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer14/fx_process_reconstruction.json",
+      "markdown": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer14/fx_process_reconstruction.md",
+      "node_count": 116,
+      "stage_count": 11,
+      "status": "ok",
+      "trace_dir": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer14"
+    },
+    {
+      "csv": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer15/fx_process_nodes.csv",
+      "graph_module_pt": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer15/fx_graph_module.pt",
+      "json": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer15/fx_process_reconstruction.json",
+      "markdown": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer15/fx_process_reconstruction.md",
+      "node_count": 116,
+      "stage_count": 11,
+      "status": "ok",
+      "trace_dir": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer15"
+    },
+    {
+      "csv": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer16/fx_process_nodes.csv",
+      "graph_module_pt": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer16/fx_graph_module.pt",
+      "json": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer16/fx_process_reconstruction.json",
+      "markdown": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer16/fx_process_reconstruction.md",
+      "node_count": 116,
+      "stage_count": 11,
+      "status": "ok",
+      "trace_dir": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer16"
+    },
+    {
+      "csv": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer17/fx_process_nodes.csv",
+      "graph_module_pt": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer17/fx_graph_module.pt",
+      "json": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer17/fx_process_reconstruction.json",
+      "markdown": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer17/fx_process_reconstruction.md",
+      "node_count": 116,
+      "stage_count": 11,
+      "status": "ok",
+      "trace_dir": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer17"
+    },
+    {
+      "csv": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer18/fx_process_nodes.csv",
+      "graph_module_pt": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer18/fx_graph_module.pt",
+      "json": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer18/fx_process_reconstruction.json",
+      "markdown": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer18/fx_process_reconstruction.md",
+      "node_count": 125,
+      "stage_count": 11,
+      "status": "ok",
+      "trace_dir": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer18"
+    },
+    {
+      "csv": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer19/fx_process_nodes.csv",
+      "graph_module_pt": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer19/fx_graph_module.pt",
+      "json": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer19/fx_process_reconstruction.json",
+      "markdown": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer19/fx_process_reconstruction.md",
+      "node_count": 117,
+      "stage_count": 11,
+      "status": "ok",
+      "trace_dir": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer19"
+    },
+    {
+      "csv": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer20/fx_process_nodes.csv",
+      "graph_module_pt": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer20/fx_graph_module.pt",
+      "json": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer20/fx_process_reconstruction.json",
+      "markdown": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer20/fx_process_reconstruction.md",
+      "node_count": 117,
+      "stage_count": 11,
+      "status": "ok",
+      "trace_dir": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer20"
+    },
+    {
+      "csv": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer21/fx_process_nodes.csv",
+      "graph_module_pt": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer21/fx_graph_module.pt",
+      "json": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer21/fx_process_reconstruction.json",
+      "markdown": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer21/fx_process_reconstruction.md",
+      "node_count": 117,
+      "stage_count": 11,
+      "status": "ok",
+      "trace_dir": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer21"
+    },
+    {
+      "csv": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer22/fx_process_nodes.csv",
+      "graph_module_pt": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer22/fx_graph_module.pt",
+      "json": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer22/fx_process_reconstruction.json",
+      "markdown": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer22/fx_process_reconstruction.md",
+      "node_count": 117,
+      "stage_count": 11,
+      "status": "ok",
+      "trace_dir": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer22"
+    },
+    {
+      "csv": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer23/fx_process_nodes.csv",
+      "graph_module_pt": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer23/fx_graph_module.pt",
+      "json": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer23/fx_process_reconstruction.json",
+      "markdown": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer23/fx_process_reconstruction.md",
+      "node_count": 117,
+      "stage_count": 11,
+      "status": "ok",
+      "trace_dir": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer23"
+    },
+    {
+      "csv": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer24/fx_process_nodes.csv",
+      "graph_module_pt": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer24/fx_graph_module.pt",
+      "json": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer24/fx_process_reconstruction.json",
+      "markdown": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer24/fx_process_reconstruction.md",
+      "node_count": 117,
+      "stage_count": 11,
+      "status": "ok",
+      "trace_dir": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer24"
+    },
+    {
+      "csv": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer25/fx_process_nodes.csv",
+      "graph_module_pt": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer25/fx_graph_module.pt",
+      "json": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer25/fx_process_reconstruction.json",
+      "markdown": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer25/fx_process_reconstruction.md",
+      "node_count": 117,
+      "stage_count": 11,
+      "status": "ok",
+      "trace_dir": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer25"
+    },
+    {
+      "csv": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer26/fx_process_nodes.csv",
+      "graph_module_pt": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer26/fx_graph_module.pt",
+      "json": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer26/fx_process_reconstruction.json",
+      "markdown": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer26/fx_process_reconstruction.md",
+      "node_count": 117,
+      "stage_count": 11,
+      "status": "ok",
+      "trace_dir": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer26"
+    },
+    {
+      "csv": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer27/fx_process_nodes.csv",
+      "graph_module_pt": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer27/fx_graph_module.pt",
+      "json": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer27/fx_process_reconstruction.json",
+      "markdown": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer27/fx_process_reconstruction.md",
+      "node_count": 117,
+      "stage_count": 11,
+      "status": "ok",
+      "trace_dir": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer27"
+    },
+    {
+      "csv": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer28/fx_process_nodes.csv",
+      "graph_module_pt": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer28/fx_graph_module.pt",
+      "json": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer28/fx_process_reconstruction.json",
+      "markdown": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer28/fx_process_reconstruction.md",
+      "node_count": 106,
+      "stage_count": 10,
+      "status": "ok",
+      "trace_dir": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer28"
+    },
+    {
+      "csv": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer5/fx_process_nodes.csv",
+      "graph_module_pt": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer5/fx_graph_module.pt",
+      "json": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer5/fx_process_reconstruction.json",
+      "markdown": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer5/fx_process_reconstruction.md",
+      "node_count": 110,
+      "stage_count": 10,
+      "status": "ok",
+      "trace_dir": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer5"
+    },
+    {
+      "csv": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer6/fx_process_nodes.csv",
+      "graph_module_pt": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer6/fx_graph_module.pt",
+      "json": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer6/fx_process_reconstruction.json",
+      "markdown": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer6/fx_process_reconstruction.md",
+      "node_count": 106,
+      "stage_count": 10,
+      "status": "ok",
+      "trace_dir": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer6"
+    },
+    {
+      "csv": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer7/fx_process_nodes.csv",
+      "graph_module_pt": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer7/fx_graph_module.pt",
+      "json": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer7/fx_process_reconstruction.json",
+      "markdown": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer7/fx_process_reconstruction.md",
+      "node_count": 116,
+      "stage_count": 11,
+      "status": "ok",
+      "trace_dir": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer7"
+    },
+    {
+      "csv": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer8/fx_process_nodes.csv",
+      "graph_module_pt": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer8/fx_graph_module.pt",
+      "json": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer8/fx_process_reconstruction.json",
+      "markdown": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer8/fx_process_reconstruction.md",
+      "node_count": 116,
+      "stage_count": 11,
+      "status": "ok",
+      "trace_dir": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer8"
+    },
+    {
+      "csv": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer9/fx_process_nodes.csv",
+      "graph_module_pt": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer9/fx_graph_module.pt",
+      "json": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer9/fx_process_reconstruction.json",
+      "markdown": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer9/fx_process_reconstruction.md",
+      "node_count": 116,
+      "stage_count": 11,
+      "status": "ok",
+      "trace_dir": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input1_layer9"
+    },
+    {
+      "csv": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input2_layer18/fx_process_nodes.csv",
+      "graph_module_pt": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input2_layer18/fx_graph_module.pt",
+      "json": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input2_layer18/fx_process_reconstruction.json",
+      "markdown": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input2_layer18/fx_process_reconstruction.md",
+      "node_count": 109,
+      "stage_count": 10,
+      "status": "ok",
+      "trace_dir": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input2_layer18"
+    },
+    {
+      "csv": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input2_layer19/fx_process_nodes.csv",
+      "graph_module_pt": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input2_layer19/fx_graph_module.pt",
+      "json": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input2_layer19/fx_process_reconstruction.json",
+      "markdown": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input2_layer19/fx_process_reconstruction.md",
+      "node_count": 109,
+      "stage_count": 10,
+      "status": "ok",
+      "trace_dir": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input2_layer19"
+    },
+    {
+      "csv": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input2_layer27/fx_process_nodes.csv",
+      "graph_module_pt": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input2_layer27/fx_graph_module.pt",
+      "json": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input2_layer27/fx_process_reconstruction.json",
+      "markdown": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input2_layer27/fx_process_reconstruction.md",
+      "node_count": 109,
+      "stage_count": 10,
+      "status": "ok",
+      "trace_dir": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input2_layer27"
+    },
+    {
+      "csv": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input2_layer28/fx_process_nodes.csv",
+      "graph_module_pt": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input2_layer28/fx_graph_module.pt",
+      "json": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input2_layer28/fx_process_reconstruction.json",
+      "markdown": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input2_layer28/fx_process_reconstruction.md",
+      "node_count": 109,
+      "stage_count": 10,
+      "status": "ok",
+      "trace_dir": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input2_layer28"
+    },
+    {
+      "csv": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input2_layer31/fx_process_nodes.csv",
+      "graph_module_pt": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input2_layer31/fx_graph_module.pt",
+      "json": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input2_layer31/fx_process_reconstruction.json",
+      "markdown": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input2_layer31/fx_process_reconstruction.md",
+      "node_count": 109,
+      "stage_count": 10,
+      "status": "ok",
+      "trace_dir": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input2_layer31"
+    },
+    {
+      "csv": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input32_layer18/fx_process_nodes.csv",
+      "graph_module_pt": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input32_layer18/fx_graph_module.pt",
+      "json": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input32_layer18/fx_process_reconstruction.json",
+      "markdown": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input32_layer18/fx_process_reconstruction.md",
+      "node_count": 109,
+      "stage_count": 10,
+      "status": "ok",
+      "trace_dir": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input32_layer18"
+    },
+    {
+      "csv": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input32_layer19/fx_process_nodes.csv",
+      "graph_module_pt": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input32_layer19/fx_graph_module.pt",
+      "json": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input32_layer19/fx_process_reconstruction.json",
+      "markdown": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input32_layer19/fx_process_reconstruction.md",
+      "node_count": 109,
+      "stage_count": 10,
+      "status": "ok",
+      "trace_dir": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input32_layer19"
+    },
+    {
+      "csv": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input32_layer27/fx_process_nodes.csv",
+      "graph_module_pt": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input32_layer27/fx_graph_module.pt",
+      "json": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input32_layer27/fx_process_reconstruction.json",
+      "markdown": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input32_layer27/fx_process_reconstruction.md",
+      "node_count": 109,
+      "stage_count": 10,
+      "status": "ok",
+      "trace_dir": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input32_layer27"
+    },
+    {
+      "csv": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input32_layer28/fx_process_nodes.csv",
+      "graph_module_pt": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input32_layer28/fx_graph_module.pt",
+      "json": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input32_layer28/fx_process_reconstruction.json",
+      "markdown": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input32_layer28/fx_process_reconstruction.md",
+      "node_count": 109,
+      "stage_count": 10,
+      "status": "ok",
+      "trace_dir": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input32_layer28"
+    },
+    {
+      "csv": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input32_layer31/fx_process_nodes.csv",
+      "graph_module_pt": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input32_layer31/fx_graph_module.pt",
+      "json": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input32_layer31/fx_process_reconstruction.json",
+      "markdown": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input32_layer31/fx_process_reconstruction.md",
+      "node_count": 109,
+      "stage_count": 10,
+      "status": "ok",
+      "trace_dir": "workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input32_layer31"
+    }
+  ]
+}

@@ -1,0 +1,143 @@
+{
+  "allow_non_fake_inputs": false,
+  "input_binding": {
+    "flat_inputs": [
+      {
+        "flat_index": 0,
+        "source": "arg",
+        "source_index": 0
+      },
+      {
+        "flat_index": 1,
+        "source": "kwarg",
+        "source_name": "attention_mask"
+      },
+      {
+        "flat_index": 2,
+        "source": "kwarg",
+        "source_name": "position_ids"
+      },
+      {
+        "flat_index": 3,
+        "source": "kwarg",
+        "source_name": "past_key_value"
+      },
+      {
+        "flat_index": 4,
+        "source": "kwarg",
+        "source_name": "output_attentions"
+      },
+      {
+        "flat_index": 5,
+        "source": "kwarg",
+        "source_name": "use_cache"
+      },
+      {
+        "flat_index": 6,
+        "source": "kwarg",
+        "source_name": "important_vis_tokens"
+      },
+      {
+        "flat_index": 7,
+        "source": "kwarg",
+        "source_name": "exit_indicator"
+      }
+    ],
+    "keyword_names": [
+      "attention_mask",
+      "position_ids",
+      "past_key_value",
+      "output_attentions",
+      "use_cache",
+      "important_vis_tokens",
+      "exit_indicator"
+    ],
+    "positional_arg_count": 1
+  },
+  "input_spec": {
+    "args": {
+      "tuple": [
+        {
+          "device": "cuda:0",
+          "dtype": "float16",
+          "requires_grad": false,
+          "shape": [
+            1,
+            1,
+            4096
+          ],
+          "type": "Tensor"
+        }
+      ]
+    },
+    "kwargs": {
+      "attention_mask": {
+        "device": "cuda:0",
+        "dtype": "float16",
+        "requires_grad": false,
+        "shape": [
+          1,
+          1,
+          1,
+          59
+        ],
+        "type": "Tensor"
+      },
+      "exit_indicator": 0,
+      "important_vis_tokens": null,
+      "output_attentions": false,
+      "past_key_value": "DynamicCache",
+      "position_ids": {
+        "device": "cuda:0",
+        "dtype": "int64",
+        "requires_grad": false,
+        "shape": [
+          1,
+          1
+        ],
+        "type": "Tensor"
+      },
+      "use_cache": true
+    }
+  },
+  "node_count": 118,
+  "outputs": {
+    "fx_graph_module_dir": "/workspace/VisiPrune/workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input2_layer27/fx_graph_module",
+    "fx_graph_module_pt": "/workspace/VisiPrune/workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input2_layer27/fx_graph_module.pt",
+    "fx_graph_py": "/workspace/VisiPrune/workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input2_layer27/fx_graph.py",
+    "fx_graph_txt": "/workspace/VisiPrune/workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input2_layer27/fx_graph.txt",
+    "fx_nodes_json": "/workspace/VisiPrune/workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/input2_layer27/fx_nodes.json"
+  },
+  "pre_dispatch": false,
+  "record_module_stack": true,
+  "record_stack_traces": false,
+  "specialization": {
+    "attention_forward": {
+      "enabled": true,
+      "fixed_shape_values": {
+        "batch_size": 1,
+        "q_len": 1
+      },
+      "kind": "position_ids_last_plus_one",
+      "position_last_plus_one": 625,
+      "replacement_count": 4,
+      "source_function": "llava.model.language_model.custom_modeling_llama.VisiPrunerLlamaAttention.forward"
+    },
+    "constant_module_attrs": {
+      "num_images": 1,
+      "vis_end_index": 611
+    },
+    "output_normalization": {
+      "dynamic_cache": "return_current_layer_key_value_tensors",
+      "enabled": true
+    },
+    "strategy": "analysis_only_runtime_input_specialization",
+    "value_aware_token_selection": {
+      "mode": "record",
+      "record_count": 0,
+      "records": []
+    }
+  },
+  "target": "input2_layer27:layer27.forward",
+  "tracing_mode": "real"
+}
