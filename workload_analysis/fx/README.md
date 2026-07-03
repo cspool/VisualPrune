@@ -49,6 +49,68 @@ data-dependency view. Dispatch traces remain more reliable for "what actually
 ran"; both FX and dispatch need additional evidence or manual interpretation
 for high-level process/module semantics.
 
+## FX vs DispatchMode Ops Trace
+
+Both the FX path and the DispatchMode path observe operations for a fixed input,
+but they collect and structure that evidence differently.
+
+The FX path is a graph-capture / tracing-style workflow:
+
+- the real `generate()` call runs first in normal eager mode;
+- selected layer inputs are cloned from that eager run;
+- those fixed inputs are replayed offline through `make_fx(...)`;
+- the result is a `GraphModule` with `GraphModule.graph.nodes`;
+- FX nodes carry official PyTorch graph structure such as `op`, `target`,
+  `args`, `kwargs`, `users`, and available tensor metadata.
+
+This gives the FX path a useful tensor-dependency DAG: if node B consumes node A,
+that edge is visible in `args` / `users`. The limitation is that `make_fx` must
+successfully trace the Python function into a graph. Tensor-dependent Python
+control flow, `.item()` branches, Python object inputs or outputs, mutating
+cache state, and unsupported kwargs can block or distort graph capture. The
+current FX tooling therefore applies analysis-only fixed-input specialization:
+it constants known scalar guards, flattens kwargs, replays recorded `.item()`
+branches, clones `DynamicCache` tensors, and normalizes cache outputs to tensor
+data.
+
+This should not be described as fully compiled execution. It is closer to
+compile-style graph capture: the traced function is executed once to build an
+ATen graph, but no backend compiler is required for the recorded evidence.
+
+The DispatchMode + hook path is an eager runtime interception workflow:
+
+- the model remains in normal eager execution;
+- `TorchDispatchMode` intercepts dispatcher calls as they happen;
+- hooks add runtime context such as layer/module event boundaries;
+- the profiler records an ordered op event log with observed args, outputs,
+  shapes, dtypes, tensor ids, and any hook-derived context.
+
+The intercepted `func` values are also official PyTorch dispatcher operations,
+for example `aten.mm.default` or `aten.slice.Tensor`. However, the persisted
+CSV/JSON metadata is analysis-tool output: op indices, tensor ids, shape
+summaries, module/hook association, and later process grouping are custom
+records. DispatchMode does not produce a graph by itself. Dependencies,
+processes, and module ownership must be reconstructed after the eager run from
+the event log, tensor ids, source understanding, and hook context.
+
+In short:
+
+```text
+FX / make_fx:
+  fixed-input replay -> structured ATen GraphModule
+  strong node dependency evidence
+  limited by graph-capture support for Python control flow and Python objects
+
+DispatchMode + hooks:
+  eager execution -> ordered runtime op event log
+  strong "what actually ran" evidence
+  no built-in graph; dependencies and processes are reconstructed later
+```
+
+In both paths, high-level process labels such as `rope`, `attention_scores`,
+`visual_process`, or `mlp` are not official PyTorch metadata. They are readable
+analysis labels assigned by VisiPrune reconstruction rules.
+
 ## Dynamic FX Trace
 
 `fx_dynamic_trace.py` can run PyTorch `make_fx` in two modes.

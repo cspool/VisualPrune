@@ -16,7 +16,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 
-EXP_DIR = Path("/workspace/VisPrune/autoresearch/experiments/e2_single_request_latency")
+EXP_DIR = Path("/workspace/VisiPrune/autoresearch/experiments/e2_single_request_latency")
 OUTPUT_DIR = EXP_DIR / "output"
 VIS_DIR = OUTPUT_DIR / "visualizations"
 

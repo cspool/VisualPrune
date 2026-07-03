@@ -3,6 +3,12 @@ venv/
 venv_*/
 models/
 model/
+!repo/llava/model/
+!repo/llava/model/language_model/
+!repo/llava/model/language_model/decode_optimization.py
+!repo/llava/model/language_model/custom_modeling_llama_decode_optimized.py
+!repo/llava/model/language_model/llava_llama_decode_optimized.py
+!repo/llava/model/language_model/vp_flash_attention.py
 checkpoints/
 *.safetensors
 *.ckpt

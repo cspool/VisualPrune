@@ -37,6 +37,45 @@ FX provides the graph DAG and node metadata; the process labels below are recons
 # placeholder arg7_1
 ```
 
+**解释与可视化**
+
+是什么：这一段是固定输入样本的 FX placeholder；8 个 placeholder 中，后续计算实际使用 `arg0_1`、`arg1_1`、`arg2_1`。
+
+为什么需要：这个 layer 的后续 ATen DAG 需要从 placeholder 取得 hidden states、attention mask 和 position ids；其余 placeholder 在这个固定 DAG 中没有 users。
+
+怎么做/计算：placeholder 不做数值计算。`arg0_1` 作为 `[B=1,S=624,H=4096]` hidden 输入，进入 `_to_copy_default` 做 RMSNorm，也在 output projection 后参与残差 `add_tensor_4`；`arg1_1` 是 `[Q=624,K=624]` mask，后面被 `add_tensor_3 = div_tensor + arg1_1` 加到 QK logits；`arg2_1` 是 token position id 向量，后面作为 `aten.index.Tensor` 的 index 从 RoPE cos/sin 表取行。
+
+```text
+Runtime inputs
+
+Tensor: Input hidden H_in [B=1, S=624, H=4096]
+Formula: H_in = sampled layer hidden input; H_norm and H_attn both derive from this same tensor
+S axis: 0 .. 623, H axis: 0 .. 4095 (H width compressed)
+          H=0                                  H=4095
+S=0       +----------------------------------------+
+          | hidden row 0, H examples 0 and 4095    |
+          | token rows 1 .. 622                    |
+S=623     | hidden row 623, H examples 0 and 4095  |
+          +----------------------------------------+
+
+Tensor: Attention mask M [Q=624, K=624]
+Formula: masked logits use L_masked[q,k] = L_scaled[q,k] + M[q,k]
+Q axis: 0 .. 623, K axis: 0 .. 623 (square compressed)
+          K=0                                  K=623
+Q=0       +----------------------------------------+
+          | mask row 0                             |
+          | mask rows 1 .. 622                     |
+Q=623     | mask row 623                           |
+          +----------------------------------------+
+
+Tensor: Position ids P [S=624]
+Formula: P[s] selects the RoPE cos/sin table row for token coordinate s
+S axis: 0 .. 623
+S=0       [pos0 | pos1 | ... | pos622 | pos623]
+
+examples: H_in[0,0,0], M[623,623], P[35].
+```
+
 ### Input RMSNorm
 
 ```python
@@ -48,6 +87,49 @@ rsqrt_default = aten.rsqrt.default(add_tensor)
 mul_tensor = aten.mul.Tensor(_to_copy_default, rsqrt_default)
 _to_copy_default_1 = aten._to_copy.default(mul_tensor, dtype=torch.float16)
 _param_constant0 = self._param_constant0
+```
+
+**解释与可视化**
+
+是什么：这一段对输入 hidden states 做 RMSNorm，输出 fp16 normalized hidden 并读取 input norm 权重。
+
+为什么需要：Q/K/V 投影前要按 token 行的 Hidden RMS 尺度归一化。
+
+怎么做/计算：`_to_copy_default` 把 `arg0_1` 转 fp32；`pow_tensor_scalar` 对每个 token row 的 Hidden 元素平方；`mean_dim` 沿最后一维 Hidden 求均值并保留维度；`add_tensor` 加 `1e-05`；`rsqrt_default` 得到 `1/sqrt(mean(x^2)+eps)`；`mul_tensor` 把原 fp32 hidden 逐元素乘该缩放；`_to_copy_default_1` 转回 fp16；`_param_constant0` 是下一段投影前使用的 RMSNorm weight。
+
+```text
+Input RMSNorm [S=624, H=4096]
+
+Tensor: Squared hidden H_sq [S=624, H=4096]
+Formula: H_sq[s,h] = float32(H_in[s,h])^2
+S axis: 0 .. 623, H axis: 0 .. 4095 (H width compressed)
+          H=0                                  H=4095      RMS
+S=0       +----------------------------------------+       +----+
+          | hidden row 0 squared over H            | ----> | r0 |
+          | token rows 1 .. 622                    |       | .. |
+S=623     | hidden row 623 squared over H          | ----> | r623 |
+          +----------------------------------------+       +----+
+
+Tensor: Row RMS scale R_in [S=624, 1]
+Formula: R_in[s] = 1 / sqrt(mean_h(H_sq[s,h]) + 1e-05)
+S axis: 0 .. 623
+S=0       +------+
+          | r0   |
+          | ..   |
+S=623     | r623 |
+          +------+
+
+Tensor: Normalized hidden H_norm [S=624, H=4096]
+Formula: H_norm[s,h] = fp16(float32(H_in[s,h]) * R_in[s])
+S axis: 0 .. 623, H axis: 0 .. 4095 (H width compressed)
+          H=0                                  H=4095
+S=0       +----------------------------------------+
+          | normalized row 0                       |
+          | normalized rows 1 .. 622               |
+S=623     | normalized row 623                     |
+          +----------------------------------------+
+
+examples: H_norm[0,0], H_norm[35,2048], H_norm[623,4095].
 ```
 
 ### Q/K/V projection and head reshape
@@ -72,6 +154,50 @@ view_default_4 = aten.view.default(_unsafe_view_default_1, [1, 624, 32, 128])
 transpose_int_1 = aten.transpose.int(view_default_4, 1, 2)
 view_default_5 = aten.view.default(_unsafe_view_default_2, [1, 624, 32, 128])
 transpose_int_2 = aten.transpose.int(view_default_5, 1, 2)
+```
+
+**解释与可视化**
+
+是什么：这一段从 normalized hidden 生成 Q、K、V，并把 hidden 维拆成 32 个 128 维 head。
+
+为什么需要：后续 attention 用 Q/K 做分数，用 V 提供被权重汇聚的 value 内容。
+
+怎么做/计算：`mul_tensor_1` 用 `_param_constant0` 对 `_to_copy_default_1` 做 Hidden 维逐元素缩放；Q/K/V 三个分支分别把 `mul_tensor_1` `view` 成 `[624,4096]`，再用 `_tensor_constant212/213/214` 做 `mm` 得到 `[624,4096]` 投影，随后 `_unsafe_view` 恢复 batch 维；`view_default_3/4/5` 把 Hidden 维拆成 `[Heads=32,Dh=128]`；`transpose_int/1/2` 把布局从 `[B,S,Heads,Dh]` 转为 `[B,Heads,S,Dh]`，供 attention 使用。
+
+```text
+Q/K/V projection
+
+Tensor: Norm-weighted hidden H_proj [S=624, H=4096]
+Formula: H_proj[s,h] = H_norm[s,h] * gamma_in[h]
+S axis: 0 .. 623, H axis: 0 .. 4095 (H width compressed)
+          H=0                                  H=4095
+S=0       +----------------------------------------+
+          | norm-weighted hidden row 0             |
+          | norm-weighted rows 1 .. 622            |
+S=623     | norm-weighted hidden row 623           |
+          +----------------------------------------+
+
+Tensor: Dense Q/K/V rows Q_dense, K_dense, V_dense [S=624, H=4096]
+Formula: Q_dense=H_proj W_Q; K_dense=H_proj W_K; V_dense=H_proj W_V
+S axis: 0 .. 623, H axis: 0 .. 4095 (H width compressed)
+          H=0                                  H=4095
+S=0       +----------------------------------------+
+          | Q/K/V projected row 0                  |
+          | projected rows 1 .. 622                |
+S=623     | Q/K/V projected row 623                |
+          +----------------------------------------+
+
+Tensor: Head-split Q/K/V Q_h, K_h, V_h [Heads=32, S=624, Dh=128]
+Formula: Q_h[h,s,d]=Q_dense[s,h*128+d]; K_h/V_h use the same head split
+S axis: 0 .. 623, Dh axis: 0 .. 127 for each head h (S height compressed)
+          Dh=0                                 Dh=127
+S=0       +----------------------------------------+
+          | head h token row 0                     |
+          | head h token rows 1 .. 622             |
+S=623     | head h token row 623                   |
+          +----------------------------------------+
+
+examples: Q_h[0,0,0], K_h[31,611,127], V_h[7,623,64].
 ```
 
 ### RoPE position embedding
@@ -99,6 +225,46 @@ mul_tensor_5 = aten.mul.Tensor(cat_default_1, unsqueeze_default_1)
 add_tensor_2 = aten.add.Tensor(mul_tensor_4, mul_tensor_5)
 ```
 
+**解释与可视化**
+
+是什么：这一段给 Q/K 应用 RoPE，得到带位置旋转的 Q `add_tensor_1` 和 K `add_tensor_2`。
+
+为什么需要：QK 点积要包含 token 位置信息，RoPE 用 cos/sin 表按 position ids 旋转每个 head 向量。
+
+怎么做/计算：`index_tensor/index_tensor_1` 用 `arg2_1` 从 `_tensor_constant215/216` 取 cos/sin 行，并 `unsqueeze` 到可广播到 head 维；Q 分支用 `mul_tensor_2 = transpose_int * cos`，再通过 `slice_tensor` 取 Dh `0..63`、`slice_tensor_1` 取 Dh `64..127`，`neg_default` 对右半取负，`cat_default` 拼成 rotate-half，`mul_tensor_3 = rotate_half(Q) * sin`，最后 `add_tensor_1 = mul_tensor_2 + mul_tensor_3`；K 分支对 `transpose_int_1` 执行同一计算，得到 `add_tensor_2`。
+
+```text
+RoPE Dh regions
+
+Tensor: Pre-rotation Q/K half regions X_qk [Heads=32, S=624, Dh=128]
+Formula: X_qk is Q_h or K_h; LEFT=X_qk[...,0:64], RIGHT=X_qk[...,64:128]
+Dh axis: 0 .. 127, split at 64
+          Dh=0              Dh=63 Dh=64             Dh=127
+Q/K       +---------------------+-----------------------+
+          | LEFT_HALF           | RIGHT_HALF            |
+          +---------------------+-----------------------+
+
+Tensor: Rotate-half Q/K Rot(X_qk) [Heads=32, S=624, Dh=128]
+Formula: Rot(X_qk) = concat(-RIGHT, LEFT)
+Dh axis: 0 .. 127, split at 64
+          Dh=0              Dh=63 Dh=64             Dh=127
+          +---------------------+-----------------------+
+          | -RIGHT_HALF         | LEFT_HALF             |
+          +---------------------+-----------------------+
+
+Tensor: RoPE Q/K Q_rope, K_rope [Heads=32, S=624, Dh=128]
+Formula: X_rope[h,s,d] = X_qk[h,s,d] * cos[P[s],d] + Rot(X_qk)[h,s,d] * sin[P[s],d]
+Dh axis: 0 .. 127, S axis: 0 .. 623 (S height compressed)
+          Dh=0                                  Dh=127
+S=0       +----------------------------------------+
+          | RoPE output row 0                      |
+          | rows 1 .. 622                          |
+S=623     | RoPE output row 623                    |
+          +----------------------------------------+
+
+examples: Q_rope[0,0,0], K_rope[12,35,64], K_rope[31,623,127].
+```
+
 ### QK scores, mask, softmax
 
 ```python
@@ -116,6 +282,40 @@ _to_copy_default_2 = aten._to_copy.default(_softmax_default, dtype=torch.float16
 clone_default = aten.clone.default(_to_copy_default_2)
 ```
 
+**解释与可视化**
+
+是什么：这一段是标准 QK score、mask、softmax 计算，没有 `fill_`、`sum` 或 `copy_` 的区域改写。
+
+为什么需要：下一段 attention-weighted V 需要 `[Q,K]` 权重。
+
+怎么做/计算：`transpose_int_3` 把 rotated K `add_tensor_2` 的最后两维转成 `[Dh,K]`；`add_tensor_1` 和 `transpose_int_3` 经 `expand/view` 成 `[32,624,128]` 与 `[32,128,624]`；`bmm_default` 对每个 head 计算 `Q @ K^T` 得到 `[32,624,624]`；`view_default_8` 恢复 `[B,Heads,Q,K]`；`div_tensor` 除以 `sqrt(128)`；`add_tensor_3` 加 `arg1_1` mask；`_softmax_default` 沿 K 维归一化；`_to_copy_default_2` 转 fp16；`clone_default` 复制出后续 attention output 和 visual process 共用的权重。
+
+```text
+Plain attention weights [Heads=32, Q=624, K=624]
+
+Tensor: QK logits L_raw [Heads=32, Q=624, K=624]
+Formula: L_raw[h,q,k] = dot(Q_rope[h,q,:], K_rope[h,k,:])
+Q axis: 0 .. 623, K axis: 0 .. 623 (square compressed)
+          K=0                                  K=623
+Q=0       +----------------------------------------+
+          | raw QK logits row 0                    |
+          | raw QK rows 1 .. 622                   |
+Q=623     | raw QK logits row 623                  |
+          +----------------------------------------+
+
+Tensor: Attention weights A [Heads=32, Q=624, K=624]
+Formula: A[h,q,k] = softmax_k(L_raw[h,q,k] / sqrt(128) + M[q,k])
+Q axis: 0 .. 623, K axis: 0 .. 623 (square compressed)
+          K=0                                  K=623
+Q=0       +----------------------------------------+
+          | softmax weights row 0                  |
+          | softmax rows 1 .. 622                  |
+Q=623     | softmax weights row 623                |
+          +----------------------------------------+
+
+examples: A[0,0,0], A[0,611,35], A[31,623,623].
+```
+
 ### Attention-weighted V and hidden reshape
 
 ```python
@@ -128,6 +328,60 @@ view_default_11 = aten.view.default(bmm_default_1, [1, 32, 624, 128])
 transpose_int_4 = aten.transpose.int(view_default_11, 1, 2)
 clone_default_1 = aten.clone.default(transpose_int_4, memory_format=torch.contiguous_format)
 view_default_12 = aten.view.default(clone_default_1, [1, 624, 4096])
+```
+
+**解释与可视化**
+
+是什么：这一段用 attention weights 对 V 做加权求和，并合并多头 context。
+
+为什么需要：attention 输出是权重对 value 内容的汇聚，不只是 QK 权重本身。
+
+怎么做/计算：`clone_default` 经 `expand_default_2/view_default_9` 变成 `[32,624,624]` 权重矩阵；V `transpose_int_2` 经 `expand_default_3/view_default_10` 变成 `[32,624,128]` value rows；`bmm_default_1` 对每个 head 计算 `[Q,K] @ [K,Dh] -> [Q,Dh]`；`view_default_11` 恢复 batch/head；`transpose_int_4` 把 layout 转成 `[B,Q,Heads,Dh]`；`clone_default_1` 连续化；`view_default_12` 把 `Heads*Dh` 合并成 `[1,624,4096]` attention context。
+
+```text
+Attention-weighted V
+
+Tensor: Attention weights A [Heads=32, Q=624, K=624]
+Formula: A[h,q,k] = softmax_k(L_raw[h,q,k] / sqrt(128) + M[q,k])
+Q axis: 0 .. 623, K axis: 0 .. 623 (square compressed)
+          K=0                                  K=623
+Q=0       +----------------------------------------+
+          | attention weight row 0                 |
+          | rows 1 .. 622                          |
+Q=623     | attention weight row 623               |
+          +----------------------------------------+
+
+Tensor: Value rows V_h [Heads=32, K=624, Dh=128]
+Formula: V_h[h,k,d] = V_dense[k,h*128+d]
+K axis: 0 .. 623, Dh axis: 0 .. 127 (K height compressed)
+          Dh=0                                 Dh=127
+K=0       +----------------------------------------+
+          | V row 0                                |
+          | V rows 1 .. 622                        |
+K=623     | V row 623                              |
+          +----------------------------------------+
+
+Tensor: Per-head context C [Heads=32, Q=624, Dh=128]
+Formula: C[h,q,d] = sum_k A[h,q,k] * V_h[h,k,d]
+Q axis: 0 .. 623, Dh axis: 0 .. 127 (Q height compressed)
+          Dh=0                                 Dh=127
+Q=0       +----------------------------------------+
+          | context row 0                          |
+          | context rows 1 .. 622                  |
+Q=623     | context row 623                        |
+          +----------------------------------------+
+
+Tensor: Merged attention hidden C_merge [B=1, S=624, H=4096]
+Formula: C_merge[0,q,h*128+d] = C[h,q,d]
+S axis: 0 .. 623, H axis: 0 .. 4095 (H width compressed)
+          H=0                                  H=4095
+S=0       +----------------------------------------+
+          | merged attention row 0                 |
+          | merged rows 1 .. 622                   |
+S=623     | merged attention row 623               |
+          +----------------------------------------+
+
+examples: C[0,0,0], C[31,623,127], C_merge[0,623,4095].
 ```
 
 ### Visual-related value-aware process
@@ -145,6 +399,69 @@ unsqueeze_default_3 = aten.unsqueeze.default(select_int, 1)
 sub_tensor = aten.sub.Tensor(unsqueeze_default_3, slice_tensor_4)
 ```
 
+**解释与可视化**
+
+是什么：这一段从最后一个 query 的 attention weights 和 V 中重建每个 source token 对 last-query output 的 value contribution，并截取 Visual span `S=35..610`，最后与 last output row 做差。
+
+为什么需要：该固定 FX DAG 需要构造 Visual token contribution 与最后 token attention output 的差值张量；这里没有后续 `nonzero`、threshold 或 index 输出，所以 `sub_tensor` 是未返回的中间结果。
+
+怎么做/计算：`select_int` 从 `view_default_12` 的 sequence 维选 `-1`，得到 last output row `[B=1,H=4096]`；`select_int_1` 从 `clone_default` 的 Q 维选 `-1`，得到最后 query 对所有 K 的 attention weights `[B=1,Heads=32,K=624]`；`unsqueeze_default_2` 在最后加一维，使权重可与 `transpose_int_2` 的 V `[B,Heads,K,Dh]` 相乘；`mul_tensor_6` 逐 K/Dh 得到 last-query value contribution；`permute_default` 转成 token-major `[B,K,Heads,Dh]`；`clone_default_2` 连续化；`view_default_13` 把 head/Dh 合并为 `[1,624,4096]` contribution rows；`slice_tensor_4` 取 sequence `35..610`，得到 576 行 Visual contribution；`unsqueeze_default_3` 把 last output row 变成 `[1,1,4096]` reference；`sub_tensor` 对每个 Visual row 计算 `reference - contribution`。
+
+```text
+Visual delta construction
+
+Visual token axis V=576 maps to sequence S=35 .. 610.
+Hidden axis H=0 .. 4095 (H width compressed)
+
+Tensor: Last output reference R_last [B=1, H=4096]
+Formula: R_last[h] = C_merge[0,623,h]
+H axis: 0 .. 4095 (H width compressed)
+          H=0                                  H=4095
+ref       +----------------------------------------+
+          | C_merge last row, examples H0/H4095    |
+          +----------------------------------------+
+
+Tensor: Last-query attention A_last [Heads=32, K=624]
+Formula: A_last[h,k] = A[h,623,k]
+K axis: 0 .. 623, Heads axis: 0 .. 31 (K width compressed)
+          K=0                                  K=623
+head 0    +----------------------------------------+
+          | last-query weights for head 0          |
+          | heads 1 .. 30                          |
+head 31   | last-query weights for head 31         |
+          +----------------------------------------+
+
+Tensor: Token contribution T_contrib [S=624, H=4096]
+Formula: T_contrib[k,h*128+d] = A_last[h,k] * V_h[h,k,d]
+S axis: 0 .. 623, H axis: 0 .. 4095 (H width compressed)
+          H=0                                  H=4095
+S=0       +----------------------------------------+
+          | weighted V contribution row 0          |
+          | contribution rows 1 .. 622             |
+S=623     | weighted V contribution row 623        |
+          +----------------------------------------+
+
+Tensor: Visual contribution V_contrib [V=576, H=4096]
+Formula: V_contrib[v,h] = T_contrib[v+35,h]
+V axis: 0 .. 575 maps S=35 .. 610, H axis: 0 .. 4095
+          H=0                                  H=4095
+V=0/S=35  +----------------------------------------+
+          | contribution from attn[Q=623,K=35]     |
+          | Visual rows S=36 .. 609                |
+V=575     | contribution from attn[Q=623,K=610]    |
+          +----------------------------------------+
+
+Tensor: Visual delta D_visual [V=576, H=4096]
+Formula: D_visual[v,h] = R_last[h] - V_contrib[v,h]
+V axis: 0 .. 575, H axis: 0 .. 4095 (H width compressed)
+          H=0                                  H=4095
+V=0       +----------------------------------------+
+          | D_visual[0,H] examples H0/H4095        |
+          | Visual delta rows 1 .. 574             |
+V=575     | D_visual[575,H] examples H0/H4095      |
+          +----------------------------------------+
+```
+
 ### Attention output projection and residual
 
 ```python
@@ -153,6 +470,48 @@ _tensor_constant217 = self._tensor_constant217
 mm_default_3 = aten.mm.default(view_default_14, _tensor_constant217)
 _unsafe_view_default_3 = aten._unsafe_view.default(mm_default_3, [1, 624, 4096])
 add_tensor_4 = aten.add.Tensor(arg0_1, _unsafe_view_default_3)
+```
+
+**解释与可视化**
+
+是什么：这一段把 attention context 过输出投影，并与原始 hidden 做残差加法。
+
+为什么需要：输出投影把多头 context 映射回 hidden space，残差连接保留层输入。
+
+怎么做/计算：`view_default_14` 把 `view_default_12` 展平为 `[624,4096]`；`mm_default_3` 与 `_tensor_constant217` 做输出投影，仍是 `[624,4096]`；`_unsafe_view_default_3` 恢复 `[1,624,4096]`；`add_tensor_4` 在相同 S/H 坐标上执行 `arg0_1 + projected_context`，形成 post-attention residual。
+
+```text
+Output projection + residual [S=624, H=4096]
+S axis 0 .. 623, H axis 0 .. 4095
+
+Tensor: Attention hidden C_merge [S=624, H=4096]
+Formula: C_merge[0,q,h*128+d] = C[h,q,d]
+          H=0                                  H=4095
+S=0       +----------------------------------------+
+          | attention context row 0                |
+          | context rows 1 .. 622                  |
+S=623     | attention context row 623              |
+          +----------------------------------------+
+
+Tensor: Projected attention O_attn [S=624, H=4096]
+Formula: O_attn = C_merge W_O
+          H=0                                  H=4095
+S=0       +----------------------------------------+
+          | projected context rows 0 .. 623        |
+          | projected rows 1 .. 622                |
+S=623     | projected context row 623              |
+          +----------------------------------------+
+
+Tensor: Post-attention residual H_attn [S=624, H=4096]
+Formula: H_attn[s,h] = H_in[s,h] + O_attn[s,h]
+          H=0                                  H=4095
+S=0       +----------------------------------------+
+          | H_in rows 0 .. 623                     |
+          | + O_attn on same S/H coords            |
+S=623     | residual row 623                       |
+          +----------------------------------------+
+
+examples: H_attn[0,0], H_attn[611,2048], H_attn[623,4095].
 ```
 
 ### Post-attention RMSNorm
@@ -168,6 +527,49 @@ _to_copy_default_4 = aten._to_copy.default(mul_tensor_7, dtype=torch.float16)
 _param_constant5 = self._param_constant5
 mul_tensor_8 = aten.mul.Tensor(_param_constant5, _to_copy_default_4)
 view_default_15 = aten.view.default(mul_tensor_8, [624, 4096])
+```
+
+**解释与可视化**
+
+是什么：这一段对 post-attention residual 做 RMSNorm，并生成 MLP 输入。
+
+为什么需要：MLP projection 前需要归一化 token rows。
+
+怎么做/计算：`_to_copy_default_3` 把 `add_tensor_4` 转 fp32；`pow_tensor_scalar_1` 对 Hidden 元素平方；`mean_dim_1` 沿 Hidden 维求均值；`add_tensor_5` 加 `1e-05`；`rsqrt_default_1` 得到行级 scale；`mul_tensor_7` 把 fp32 residual 乘 scale；`_to_copy_default_4` 转 fp16；`mul_tensor_8` 应用 `_param_constant5` norm weight；`view_default_15` 把结果展平成 `[624,4096]` 作为 MLP gate 分支输入，`mul_tensor_8` 还被 `view_default_16` 用作 up 分支输入。
+
+```text
+Post-attention RMSNorm [S=624, H=4096]
+
+Tensor: Squared residual H_attn_sq [S=624, H=4096]
+Formula: H_attn_sq[s,h] = float32(H_attn[s,h])^2
+S axis: 0 .. 623, H axis: 0 .. 4095 (H width compressed)
+          H=0                                  H=4095      RMS
+S=0       +----------------------------------------+       +----+
+          | H_attn row 0 squared                   | ----> | r0 |
+          | rows 1 .. 622                          |       | .. |
+S=623     | H_attn row 623 squared                 | ----> | r623 |
+          +----------------------------------------+       +----+
+
+Tensor: Post-attention RMS scale R_post [S=624, 1]
+Formula: R_post[s] = 1 / sqrt(mean_h(H_attn_sq[s,h]) + 1e-05)
+S axis: 0 .. 623
+S=0       +------+
+          | r0   |
+          | ..   |
+S=623     | r623 |
+          +------+
+
+Tensor: MLP input H_mlp [S=624, H=4096]
+Formula: H_mlp[s,h] = fp16(float32(H_attn[s,h]) * R_post[s]) * gamma_post[h]
+S axis: 0 .. 623, H axis: 0 .. 4095 (H width compressed)
+          H=0                                  H=4095
+S=0       +----------------------------------------+
+          | normalized residual row 0              |
+          | normalized rows 1 .. 622               |
+S=623     | normalized residual row 623            |
+          +----------------------------------------+
+
+examples: H_mlp[0,0], H_mlp[35,1024], H_mlp[623,4095].
 ```
 
 ### MLP and final residual
@@ -189,10 +591,98 @@ _unsafe_view_default_6 = aten._unsafe_view.default(mm_default_6, [1, 624, 4096])
 add_tensor_6 = aten.add.Tensor(add_tensor_4, _unsafe_view_default_6)
 ```
 
+**解释与可视化**
+
+是什么：这一段执行 gated MLP，并把 down projection 结果加回 attention residual。
+
+为什么需要：MLP 为每个 token 做非线性通道变换，residual add 保持主干 hidden 传递。
+
+怎么做/计算：`mm_default_4` 使用 `view_default_15` 和 `_tensor_constant218` 产生 gate projection `[624,11008]`，`_unsafe_view_default_4` 恢复 batch 维，`silu_default` 对 gate 做 SiLU；`view_default_16` 从同一个 `mul_tensor_8` 得到 up 分支输入，`mm_default_5` 与 `_tensor_constant219` 产生 up projection `[624,11008]`；`mul_tensor_9` 在同一 S/I 坐标上计算 `silu(gate) * up`；`view_default_17` 展平后，`mm_default_6` 与 `_tensor_constant220` down project 回 `[624,4096]`；`_unsafe_view_default_6` 恢复 batch 维；`add_tensor_6` 与 `add_tensor_4` 在同一 S/H 坐标上做最终 residual add。
+
+```text
+MLP [S=624, H=4096] -> [S=624, I=11008] -> [S=624, H=4096]
+
+Tensor: MLP input H_mlp [S=624, H=4096]
+Formula: H_mlp[s,h] = fp16(float32(H_attn[s,h]) * R_post[s]) * gamma_post[h]
+S axis: 0 .. 623, H axis: 0 .. 4095 (H width compressed)
+          H=0                                  H=4095
+S=0       +----------------------------------------+
+          | MLP input row 0                        |
+          | MLP input rows 1 .. 622                |
+S=623     | MLP input row 623                      |
+          +----------------------------------------+
+
+Tensor: Gated intermediate G [S=624, I=11008]
+Formula: G[s,i] = silu((H_mlp W_gate)[s,i]) * (H_mlp W_up)[s,i]
+S axis: 0 .. 623, I axis: 0 .. 11007 (I width compressed)
+          I=0                                  I=11007
+S=0       +----------------------------------------+
+          | gated intermediate row 0               |
+          | gated rows 1 .. 622                    |
+S=623     | gated intermediate row 623             |
+          +----------------------------------------+
+
+Tensor: Layer hidden H_out [S=624, H=4096]
+Formula: H_out[s,h] = H_attn[s,h] + (G W_down)[s,h]
+S axis: 0 .. 623, H axis: 0 .. 4095 (H width compressed)
+          H=0                                  H=4095
+S=0       +----------------------------------------+
+          | final residual row 0                   |
+          | final rows 1 .. 622                    |
+S=623     | final residual row 623                 |
+          +----------------------------------------+
+
+examples: G[0,0], G[623,11007], H_out[623,4095].
+```
+
 ### Layer output
 
 ```python
 return (add_tensor_6, {'dynamic_cache_layer': (add_tensor_2, transpose_int_2)}, None, 0)
+```
+
+**解释与可视化**
+
+是什么：这一段返回 final hidden、当前层 K/V cache、Visual 输出占位 `None` 和控制标量 `0`。
+
+为什么需要：`add_tensor_6` 供下一层继续计算；K/V cache 供后续解码复用。该层 Visual process 只构造了未返回的 `sub_tensor` 中间量，所以返回 tuple 的第三项仍是 `None`。
+
+怎么做/计算：`return` 不创建新 tensor，只把 `add_tensor_6` 作为 hidden output，把 `add_tensor_2` 作为当前 layer 的 K cache，把 `transpose_int_2` 作为当前 layer 的 V cache 打包到 `dynamic_cache_layer`，再返回 `None` 和 `0`。`sub_tensor` 在 visual process 中被构造但无 users，所以不进入这个 tuple。
+
+```text
+Layer output
+
+Tensor: Layer hidden output H_out [B=1, S=624, H=4096]
+Formula: tuple[0] = H_out
+S axis: 0 .. 623, H axis: 0 .. 4095 (H width compressed)
+          H=0                                  H=4095
+S=0       +----------------------------------------+
+          | final hidden row 0                     |
+          | rows 1 .. 622                          |
+S=623     | final hidden row 623                   |
+          +----------------------------------------+
+
+Tensor: Cache key K_cache [Heads=32, S=624, Dh=128]
+Formula: K_cache = K_rope, returned in dynamic_cache_layer[0]
+S axis: 0 .. 623, Dh axis: 0 .. 127 for each head h
+          Dh=0                                 Dh=127
+S=0       +----------------------------------------+
+          | rotated K row 0                        |
+          | rotated K rows 1 .. 622                |
+S=623     | rotated K row 623                      |
+          +----------------------------------------+
+
+Tensor: Cache value V_cache [Heads=32, S=624, Dh=128]
+Formula: V_cache = V_h, returned in dynamic_cache_layer[1]
+S axis: 0 .. 623, Dh axis: 0 .. 127 for each head h
+          Dh=0                                 Dh=127
+S=0       +----------------------------------------+
+          | V row 0                                |
+          | V rows 1 .. 622                        |
+S=623     | V row 623                              |
+          +----------------------------------------+
+
+examples: K_cache[0,0,0], K_cache[31,623,127], V_cache[7,611,64].
 ```
 
 ## Node Table

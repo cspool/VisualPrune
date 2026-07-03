@@ -7,7 +7,7 @@ The script is intentionally single-request oriented:
   - wall-clock timing with CUDA synchronization for clock runs
   - NVTX ranges for Nsight Systems runs
 
-Use `/workspace/VisPrune/venv_profiling/bin/python` for this checkout.
+Use `/workspace/VisiPrune/venv_profiling/bin/python` for this checkout.
 """
 
 from __future__ import annotations
@@ -23,35 +23,31 @@ from contextlib import contextmanager
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 
 DEFAULT_GPU = 1
 DEFAULT_MODEL_PATH = "liuhaotian/llava-v1.5-7b"
 DEFAULT_IMAGE_PATH = (
-    "/workspace/VisPrune/autoresearch/data/benchmark_images/002901d9d194c4fb.jpg"
+    "/workspace/VisiPrune/autoresearch/data/benchmark_images/002901d9d194c4fb.jpg"
 )
 DEFAULT_PROMPT = "Describe the image briefly."
 DEFAULT_OUTPUT_DIR = (
-    "/workspace/VisPrune/autoresearch/experiments/e2_single_request_latency/output"
+    "/workspace/VisiPrune/autoresearch/experiments/e2_single_request_latency/output"
 )
 
 VISIPRUNER_CONFIGS: dict[str, dict[str, Any]] = {
-    "dense-fa": {
-        "use_flash_attn": False,
-        "use_visipruner": False,
-        "pruning_config": None,
-        "description": "Dense full-attention LLaVA reference; no VisPrune pruning.",
-    },
     "dense-fa2": {
         "use_flash_attn": True,
         "use_visipruner": False,
+        "visipruner_decode_backend": "off",
         "pruning_config": None,
         "description": "Dense LLaVA reference with FlashAttention2; no VisPrune pruning.",
     },
     "visipruner-full": {
         "use_flash_attn": False,
         "use_visipruner": True,
+        "visipruner_decode_backend": "eager",
         "pruning_config": {
             "mode": ["shallow", "middle", "deep"],
             "shallow_mid_layer": 6,
@@ -60,22 +56,29 @@ VISIPRUNER_CONFIGS: dict[str, dict[str, Any]] = {
         },
         "description": "Native VisPrune full path: shallow + middle + deep.",
     },
-    "visipruner-middle-deep": {
-        "use_flash_attn": False,
+    "visipruner-full-fa2": {
+        "use_flash_attn": True,
         "use_visipruner": True,
+        "visipruner_decode_backend": "auto",
         "pruning_config": {
-            "mode": ["middle", "deep"],
+            "mode": ["shallow", "middle", "deep"],
             "shallow_mid_layer": 6,
             "layer_threshold": 0.995,
             "tokens_threshold": 0.2,
         },
-        "description": "Native VisPrune middle + deep path.",
+        "description": "VisPrune full path with optimized backend auto-selection; currently Triton VP-FA prefill when available.",
     },
-    "dense-eager": {
-        "use_flash_attn": False,
-        "use_visipruner": False,
-        "pruning_config": None,
-        "description": "Alias for dense-fa; dense eager full attention.",
+    "visipruner-full-vp-fa": {
+        "use_flash_attn": True,
+        "use_visipruner": True,
+        "visipruner_decode_backend": "vp-fa",
+        "pruning_config": {
+            "mode": ["shallow", "middle", "deep"],
+            "shallow_mid_layer": 6,
+            "layer_threshold": 0.995,
+            "tokens_threshold": 0.2,
+        },
+        "description": "VisPrune full path with Triton VP-FA prefill and existing optimized decode path.",
     },
 }
 
@@ -111,7 +114,7 @@ def _parse_gpu_early(argv: list[str]) -> int:
 os.environ.setdefault("CUDA_VISIBLE_DEVICES", str(_parse_gpu_early(sys.argv)))
 os.environ.setdefault("HF_HUB_OFFLINE", "1")
 os.environ.setdefault("TRANSFORMERS_OFFLINE", "1")
-os.environ.setdefault("HF_HOME", "/workspace/VisPrune/models")
+os.environ.setdefault("HF_HOME", "/workspace/VisiPrune/models")
 
 REPO_DIR = Path(__file__).resolve().parents[4] / "repo"
 if str(REPO_DIR) not in sys.path:
@@ -174,6 +177,122 @@ class LatencyRecorder:
         return {name: stats.as_dict() for name, stats in sorted(self.ranges.items())}
 
 
+def infer_kv_len(
+    *,
+    q_len: int,
+    attention_mask: Any,
+    past_key_value: Any,
+    layer_idx: int,
+) -> int:
+    if torch.is_tensor(attention_mask) and attention_mask.dim() >= 4:
+        return int(attention_mask.shape[-1])
+    if past_key_value is not None:
+        if hasattr(past_key_value, "get_usable_length"):
+            try:
+                return int(q_len + past_key_value.get_usable_length(q_len, layer_idx))
+            except Exception:
+                pass
+        if hasattr(past_key_value, "get_seq_length"):
+            try:
+                return int(q_len + past_key_value.get_seq_length(layer_idx))
+            except Exception:
+                pass
+    return int(q_len)
+
+
+def pruning_modes(pruning_config: dict[str, Any] | None) -> set[str]:
+    if not pruning_config:
+        return set()
+    mode = pruning_config.get("mode", [])
+    if isinstance(mode, str):
+        return {mode}
+    return set(mode)
+
+
+def classify_layer_workload(
+    *,
+    config_name: str,
+    use_flash_attn: bool,
+    pruning_config: dict[str, Any] | None,
+    layer_idx: int,
+    phase: str,
+    q_len: int,
+    kv_len: int,
+) -> str:
+    modes = pruning_modes(pruning_config)
+    is_vp_fa = "vp-fa" in config_name
+    dense_backend = "fa2" if use_flash_attn else "eager"
+    if not modes:
+        if phase == "prefill":
+            return f"dense_{dense_backend}_full_prefill"
+        return f"dense_{dense_backend}_decode_full_kv_cache"
+
+    if phase == "prefill":
+        prefix = "triton_vpfa" if is_vp_fa else "eager_visipruner"
+        if "shallow" in modes and layer_idx == 0:
+            return f"{prefix}_prefill_shallow_layer0_mass_fold"
+        if "shallow" in modes and 1 <= layer_idx <= 5:
+            return f"{prefix}_prefill_shallow_text_to_vision_mask"
+        if {"middle", "deep"} & modes:
+            if q_len >= 600 and layer_idx <= 18:
+                return f"{prefix}_prefill_last_query_proxy_or_selection"
+            if 50 <= q_len < 150 and layer_idx <= 27:
+                return f"{prefix}_middle_pruned_compact_prefill"
+            if "deep" in modes and q_len < 80 and layer_idx >= 28:
+                return f"{prefix}_deep_removed_prefill"
+        if modes == {"shallow"}:
+            return f"{prefix}_shallow_only_dense_prefill"
+        return f"{prefix}_prefill_other"
+
+    prefix = "triton_vpfa" if is_vp_fa else "eager_visipruner"
+    if {"middle", "deep"} & modes:
+        if kv_len >= 600 and layer_idx <= 18:
+            return f"{prefix}_decode_full_kv_cache"
+        if 50 <= kv_len < 150 and layer_idx <= 27:
+            return f"{prefix}_decode_middle_pruned_kv_cache"
+        if "deep" in modes and kv_len < 120 and layer_idx >= 28:
+            return f"{prefix}_decode_deep_removed_kv_cache"
+    if modes == {"shallow"}:
+        return f"{prefix}_shallow_only_decode_full_kv_cache"
+    return f"{prefix}_decode_other"
+
+
+def describe_operator_path(
+    *,
+    config_name: str,
+    use_flash_attn: bool,
+    pruning_config: dict[str, Any] | None,
+    layer_idx: int,
+    phase: str,
+    q_len: int,
+) -> str:
+    modes = pruning_modes(pruning_config)
+    is_vp_fa = "vp-fa" in config_name
+    if not modes:
+        attention = "FlashAttention2" if use_flash_attn else "eager QK^T/softmax/AV"
+        if phase == "prefill":
+            return f"{attention} dense full attention; o_proj GEMM; MLP GEMMs"
+        return f"{attention} q_len=1 attention over dense KV cache; o_proj GEMV; MLP GEMV"
+
+    if phase == "prefill":
+        if is_vp_fa:
+            parts = ["Triton causal VP-FA prefill attention"]
+            if "shallow" in modes and layer_idx <= 5:
+                parts.append("shallow VisiPruner post-softmax edits in-kernel")
+            if {"middle", "deep"} & modes and layer_idx >= 7:
+                parts.append("Triton last-query pruning proxy where needed")
+        else:
+            parts = ["eager QK^T/softmax/AV attention"]
+            if "shallow" in modes and layer_idx <= 5:
+                parts.append("shallow VisiPruner post-softmax edits")
+            if {"middle", "deep"} & modes and layer_idx >= 7:
+                parts.append("last-query pruning proxy/score computation")
+        parts.append("o_proj GEMM")
+        parts.append("MLP GEMMs")
+        return "; ".join(parts)
+    return "eager q_len=1 QK^T/softmax/AV over KV cache; o_proj GEMV; MLP GEMV"
+
+
 def build_prompt(raw_prompt: str, conv_mode: str) -> str:
     prompt = raw_prompt
     if DEFAULT_IMAGE_TOKEN not in prompt:
@@ -184,7 +303,13 @@ def build_prompt(raw_prompt: str, conv_mode: str) -> str:
     return conv.get_prompt()
 
 
-def patch_model_for_ranges(model, recorder: LatencyRecorder, tracker: dict[str, Any]) -> None:
+def patch_model_for_ranges(
+    model,
+    recorder: LatencyRecorder,
+    tracker: dict[str, Any],
+    *,
+    layer_profile: bool = False,
+) -> None:
     tracker["active_prefix"] = "visprune"
     model._visprune_profile_tracker = tracker
 
@@ -257,6 +382,108 @@ def patch_model_for_ranges(model, recorder: LatencyRecorder, tracker: dict[str, 
 
         attn.value_aware_token_selection = make_wrapped_select(original_select, layer_idx)
 
+    if not layer_profile:
+        return
+
+    def event_context_from_hidden(
+        idx: int,
+        hidden_states: torch.Tensor | None,
+        attention_mask: Any = None,
+        past_key_value: Any = None,
+    ) -> dict[str, Any]:
+        q_len = int(hidden_states.shape[1]) if torch.is_tensor(hidden_states) else -1
+        phase = "prefill" if q_len > 1 else "decode"
+        kv_len = infer_kv_len(
+            q_len=max(q_len, 0),
+            attention_mask=attention_mask,
+            past_key_value=past_key_value,
+            layer_idx=idx,
+        )
+        return {
+            "layer_idx": idx,
+            "phase": phase,
+            "q_len": q_len,
+            "kv_len": kv_len,
+            "workload_type": classify_layer_workload(
+                config_name=tracker.get("config_name", ""),
+                use_flash_attn=bool(tracker.get("use_flash_attn", False)),
+                pruning_config=tracker.get("pruning_config"),
+                layer_idx=idx,
+                phase=phase,
+                q_len=q_len,
+                kv_len=kv_len,
+            ),
+            "operator_path": describe_operator_path(
+                config_name=tracker.get("config_name", ""),
+                use_flash_attn=bool(tracker.get("use_flash_attn", False)),
+                pruning_config=tracker.get("pruning_config"),
+                layer_idx=idx,
+                phase=phase,
+                q_len=q_len,
+            ),
+        }
+
+    for layer_idx, layer in enumerate(base_model.layers):
+        original_layer_forward = layer.forward
+        original_attn_forward = layer.self_attn.forward
+        original_mlp_forward = layer.mlp.forward
+
+        def make_layer_forward(orig: Callable, idx: int) -> Callable:
+            def wrapped_layer_forward(*args, **kwargs):
+                hidden_states = kwargs.get("hidden_states")
+                if hidden_states is None and args:
+                    hidden_states = args[0]
+                attention_mask = kwargs.get("attention_mask")
+                if attention_mask is None and len(args) > 1:
+                    attention_mask = args[1]
+                past_key_value = kwargs.get("past_key_value")
+                if past_key_value is None and len(args) > 3:
+                    past_key_value = args[3]
+
+                ctx = event_context_from_hidden(
+                    idx,
+                    hidden_states,
+                    attention_mask=attention_mask,
+                    past_key_value=past_key_value,
+                )
+                prefix = tracker.get("active_prefix", "visprune")
+                range_name = f"{prefix}.layer{idx:02d}.{ctx['phase']}"
+                if prefix == "visprune":
+                    tracker.setdefault("layer_events", []).append(
+                        {
+                            "event_id": len(tracker.setdefault("layer_events", [])),
+                            "range": range_name,
+                            **ctx,
+                        }
+                    )
+                with recorder.range(range_name):
+                    return orig(*args, **kwargs)
+
+            return wrapped_layer_forward
+
+        def make_submodule_forward(orig: Callable, idx: int, component: str) -> Callable:
+            def wrapped_submodule_forward(*args, **kwargs):
+                hidden_states = args[0] if args else kwargs.get("hidden_states")
+                ctx = event_context_from_hidden(idx, hidden_states)
+                prefix = tracker.get("active_prefix", "visprune")
+                range_name = f"{prefix}.layer{idx:02d}.{ctx['phase']}.{component}"
+                with recorder.range(range_name):
+                    return orig(*args, **kwargs)
+
+            return wrapped_submodule_forward
+
+        layer.forward = make_layer_forward(original_layer_forward, layer_idx)
+        layer.self_attn.forward = make_submodule_forward(
+            original_attn_forward,
+            layer_idx,
+            "attn",
+        )
+        layer.mlp.forward = make_submodule_forward(
+            original_mlp_forward,
+            layer_idx,
+            "mlp",
+        )
+
 
 def load_model(config: dict[str, Any], model_path: str, model_base: str | None):
     disable_torch_init()
@@ -268,6 +495,7 @@ def load_model(config: dict[str, Any], model_path: str, model_base: str | None):
         device_map="cuda:0",
         use_flash_attn=config["use_flash_attn"],
         use_visipruner=config["use_visipruner"],
+        visipruner_decode_backend=config["visipruner_decode_backend"],
     )
     model.eval()
     return tokenizer, model, image_processor, context_len
@@ -423,6 +651,25 @@ def write_outputs(payload: dict[str, Any], output_dir: str, tag: str) -> tuple[P
     latest_csv = out_dir / "clock_latest_ranges.csv"
     latest_json.write_text(json_path.read_text(encoding="utf-8"), encoding="utf-8")
     latest_csv.write_text(csv_path.read_text(encoding="utf-8"), encoding="utf-8")
+
+    layer_events = payload.get("tracker", {}).get("layer_events") or []
+    if layer_events:
+        layer_csv_path = out_dir / f"{tag}_layer_events.csv"
+        with layer_csv_path.open("w", encoding="utf-8", newline="") as f:
+            fieldnames = [
+                "event_id",
+                "range",
+                "layer_idx",
+                "phase",
+                "q_len",
+                "kv_len",
+                "workload_type",
+                "operator_path",
+            ]
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            writer.writeheader()
+            for row in layer_events:
+                writer.writerow({name: row.get(name) for name in fieldnames})
     return json_path, csv_path
 
 
@@ -447,6 +694,11 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Call torch.cuda.profiler.start/stop around the measured request.",
     )
+    parser.add_argument(
+        "--layer-profile",
+        action="store_true",
+        help="Record per-decoder-layer total/attention/MLP timing and NVTX ranges.",
+    )
     return parser.parse_args()
 
 
@@ -458,11 +710,16 @@ def main() -> None:
         enable_nvtx=args.nvtx == "on",
     )
     tracker: dict[str, Any] = {
+        "config_name": args.config,
+        "use_flash_attn": config["use_flash_attn"],
+        "pruning_config": config["pruning_config"],
+        "visipruner_decode_backend": config["visipruner_decode_backend"],
         "prefill_seq_lens": [],
         "decode_seq_lens": [],
         "value_select_tensor_layers": [],
         "selected_visual_token_counts": [],
         "deep_exit_checks": [],
+        "layer_events": [],
     }
 
     timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
@@ -472,7 +729,7 @@ def main() -> None:
         tokenizer, model, image_processor, context_len = load_model(
             config, args.model_path, args.model_base
         )
-    patch_model_for_ranges(model, recorder, tracker)
+    patch_model_for_ranges(model, recorder, tracker, layer_profile=args.layer_profile)
 
     for _ in range(args.warmup_iters):
         run_request(
@@ -523,6 +780,15 @@ def main() -> None:
         "description": config["description"],
         "use_visipruner": config["use_visipruner"],
         "use_flash_attn": config["use_flash_attn"],
+        "visipruner_decode_backend": config["visipruner_decode_backend"],
+        "resolved_visipruner_decode_backend": getattr(
+            model.config, "visipruner_decode_backend", None
+        ),
+        "loaded_model_class": model.__class__.__name__,
+        "loaded_base_model_class": model.get_model().__class__.__name__,
+        "runtime_visipruner_decode_patch": getattr(
+            model.get_model(), "_visipruner_fa2_decode_patch", None
+        ),
         "pruning_config": config["pruning_config"],
         "model_path": args.model_path,
         "model_base": args.model_base,
@@ -535,6 +801,7 @@ def main() -> None:
         "sync_timing": args.sync_timing,
         "nvtx": args.nvtx,
         "cuda_profiler_api": args.cuda_profiler_api,
+        "layer_profile": args.layer_profile,
         "context_len": context_len,
         "environment": {
             "python": sys.executable,

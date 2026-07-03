@@ -1,22 +1,43 @@
-# VisiPruner FA2-Accelerated Inference — Research State
+# VisiPruner Triton VP-FA Inference — Research State
 # Updated 2026-06-17: Cancelled unfair eager-vs-FA2 comparison.
-# New direction: FA2-accelerated VisiPruner with lightweight pruning proxy.
+# Updated 2026-07-01: Cancelled patched FlashAttention VP-FA source/build plan.
+# Updated 2026-07-02: Completed Triton VP-FA single-request clock/Nsight layer profile.
+# Updated 2026-07-03: Completed same-input three-way layer retest; audit ok=true.
+# Current direction: full VP-FA prefill uses Triton kernels, not flash_attn_2_cuda.vp_fwd.
 
-project: VisiPruner FA2
-question: "VisiPruner 的 token pruning 能否在 FA2 backend 上实现真正的墙钟加速？"
+project: VisiPruner Triton VP-FA
+question: "VisiPruner 的 token pruning 能否通过高效 attention/kernel backend 实现真正的墙钟加速？"
 
 methodology:
   tier1: "nsys (sampling, non-invasive) → full GPU timeline → locate hottest kernels"
   tier2: "ncu (replay, deep counters) → targeted analysis on hotspots identified by nsys"
   forbidden: ["Python wall-time (time.time/CUDATimer/torch.cuda.Event)", "CUPTI (torch.profiler)"]
   adopted: "2026-06-16 — nsys→ncu two-tier method"
-  revision: "2026-06-17 — FA2 acceleration: use flash_attn_func() for dense attention, compute Q_last@K^T (O(L×d)) as lightweight pruning proxy"
+  revision: "2026-07-01 — VP-FA full prefill uses Triton kernels; source-level patched FlashAttention build and flash_attn_2_cuda.vp_fwd path are cancelled"
+
+current_direction:
+  backend_name: visipruner-full-vp-fa
+  implementation: "Triton VP-FA prefill inside copied optimized VisiPruner modeling"
+  active_code:
+    - repo/llava/model/language_model/vp_flash_attention.py
+    - repo/llava/model/language_model/custom_modeling_llama_decode_optimized.py
+    - repo/llava/model/language_model/decode_optimization.py
+  cancelled:
+    - "source-level patched FlashAttention build"
+    - "flash_attn_2_cuda.vp_fwd runtime dependency"
+    - "third_party/flash-attention-v2.8.3.post1-vpfa as active experiment path"
+  scope:
+    prefill: "Triton causal attention for shallow/middle/deep; shallow applies VisiPruner edits in-kernel"
+    selection_proxy: "Triton last-query weights/output where shape allows; torch reference fallback for unsupported masks/shapes"
+    decode: "not solved by current prefill cleanup; E3 covers single-request decode kernels"
 
 key_insight: |
   value_aware_token_selection() only needs attn_weights[:, :, -1, :] — the LAST
   query token's attention weights. This is O(L×d) to compute, NOT O(L²×d).
-  Therefore we can use FA2 for the full attention (fast, tiled) and separately
-  compute Q_last @ K^T (cheap) for pruning decisions. Never materialize full S=QK^T.
+  Therefore the optimized path should keep full prefill attention inside a
+  fused kernel and compute only the last-query proxy for pruning decisions.
+  The current experiment implements this with Triton rather than a patched FA2
+  extension. Never materialize full S=QK^T for the pruning proxy.
 
 findings_20260616:
   nsys_e1:
@@ -28,21 +49,105 @@ findings_20260616:
     conclusion: "Eager attention is 19× slower than FA2. VisiPruner vs Dense-FA2 comparison is dominated by attention backend, not pruning. UNFAIR."
     action: "Cancel eager-vs-FA2 comparison. Redesign with FA2 backend for VisiPruner."
 
+findings_20260702:
+  triton_vpfa_layer_profile:
+    status: done
+    report: experiments/e2_single_request_latency/TRITON_VPFA_LAYER_PERFORMANCE_REPORT.md
+    status_doc: experiments/e2_single_request_latency/TRITON_VPFA_LAYER_PERFORMANCE_STATUS.md
+    clock_request_total_ms: 1859.271
+    clock_generate_total_ms: 1813.852
+    clock_forward_prefill_ms: 112.241
+    clock_forward_decode_sum_ms: 1658.759
+    clock_value_aware_token_selection_ms: 8.801
+    nsys_layer_ranges: 3072
+    nsys_cuda_kernel_count: 54598
+    prefill_attention_kernel_total_ms: 16.010
+    prefill_attention_triton_vpfa_ms: 2.277
+    decode_attention_kernel_total_ms: 179.318
+    decode_attention_gemv_cublas_ms: 137.028
+    workload:
+      prefill_0_to_18: "q_len=624, kv_len=624"
+      prefill_19_to_27: "q_len=58, kv_len=58"
+      prefill_28_to_31: "q_len=48, kv_len=48"
+      decode_0_to_18: "kv_len 625 -> 655"
+      decode_19_to_27: "kv_len 59 -> 89"
+      decode_28_to_31: "kv_len 49 -> 79"
+    conclusion: "Triton VP-FA prefill is now measured; the 32-token single-request path remains decode dominated, mainly by repeated small GEMV/cuBLAS work."
+  focused_e2_layer_profiles:
+    status: done
+    status_doc: experiments/e2_single_request_latency/OTHER_EXPERIMENTS_LAYER_PERFORMANCE_STATUS.md
+    reports:
+      - experiments/e2_single_request_latency/E2_DENSE_FA2_LAYER_PERFORMANCE_REPORT.md
+      - experiments/e2_single_request_latency/E2_VISIPRUNER_FULL_EAGER_LAYER_PERFORMANCE_REPORT.md
+      - experiments/e2_single_request_latency/E2_VISIPRUNER_FULL_FA2_LAYER_PERFORMANCE_REPORT.md
+    e2_32tok_request_ms:
+      dense_fa2: 1352.631
+      visipruner_full_eager: 1544.539
+      visipruner_full_fa2: 1755.986
+    retained_configs:
+      - dense-fa2
+      - visipruner-full
+      - visipruner-full-fa2
+    removed_from_scope:
+      - dense-fa
+      - visipruner-shallow-only
+      - E1 layer-profile reports and clock_e1/nsys_e1 artifacts
+    conclusion: "Focused E2 layer-profile state now retains only dense-FA2, eager VisiPruner full, and VisiPruner-FA2 reports. Decode remains the dominant end-to-end cost in the retained reports."
+
+findings_20260703:
+  same_input_three_way_layer_retest:
+    status: done
+    status_doc: experiments/e2_single_request_latency/SAME_INPUT_THREE_WAY_RETEST_STATUS.md
+    audit: experiments/e2_single_request_latency/output/same_input_three_way_audit.json
+    audit_ok: true
+    fixed_input:
+      image_path: autoresearch/data/benchmark_images/002901d9d194c4fb.jpg
+      prompt: "Describe the image briefly."
+      max_new_tokens: 32
+      warmup_iters: 1
+      gpu: 1
+    reports:
+      - experiments/e2_single_request_latency/SAME_INPUT_DENSE_FA2_LAYER_PERFORMANCE_REPORT.md
+      - experiments/e2_single_request_latency/SAME_INPUT_VISIPRUNER_FULL_EAGER_LAYER_PERFORMANCE_REPORT.md
+      - experiments/e2_single_request_latency/SAME_INPUT_VISIPRUNER_FULL_FA2_LAYER_PERFORMANCE_REPORT.md
+    request_total_ms:
+      dense_fa2: 1552.875
+      visipruner_full_eager: 1596.428
+      visipruner_full_fa2: 1762.533
+    forward_prefill_ms:
+      dense_fa2: 85.092
+      visipruner_full_eager: 87.377
+      visipruner_full_fa2: 113.206
+    forward_decode_sum_ms:
+      dense_fa2: 1385.150
+      visipruner_full_eager: 1433.784
+      visipruner_full_fa2: 1554.962
+    value_aware_token_selection_ms:
+      dense_fa2: 0.000
+      visipruner_full_eager: 6.138
+      visipruner_full_fa2: 9.545
+    layer_coverage:
+      prefill_layers_per_variant: 32
+      decode_layers_per_variant: 32
+      layer_events_per_variant: 1024
+      nsys_layer_ranges_per_variant: 3072
+    conclusion: "The same-input retest completed successfully. On this 32-token single-request workload, neither eager VisiPruner full nor VisiPruner-FA2 beats dense-FA2 end-to-end; decode still dominates and motivates E3 decode/kernel-launch work."
+
 hypotheses:
   H1:
-    label: "FA2-VisiPruner 接近 FA2-Dense 的速度"
-    description: "使用 FA2 + lightweight pruning proxy 后，VisiPruner 的 GPU 时间应接近 dense-fa2 (79ms)，而非 dense-eager (1490ms)"
-    status: untested
+    label: "Triton VP-FA full prefill removes eager attention from VisiPruner prefill"
+    description: "使用 Triton causal prefill + last-query proxy 后，full VP-FA prefill 不再依赖完整 eager QK^T/softmax/AV 主路径，也不依赖 patched FA2 extension"
+    status: supported_by_20260702_layer_profile
     priority: P0
   H2:
     label: "Token pruning 在 FA2 backend 上仍有加速效果"
-    description: "Middle/deep pruning 物理移除 token 后，后续层 FA2 处理更短序列，T_total < dense-fa2"
-    status: untested
+    description: "Middle/deep pruning 物理移除 token 后，后续层处理更短序列；单请求端到端收益仍需 decode kernel/launch 优化配合"
+    status: not_supported_by_20260703_32tok_same_input_single_request
     priority: P0
   H3:
-    label: "移除 shallow pruning 对输出质量影响可接受"
-    description: "Shallow pruning 的 per-cell attention masking 与 FA2 不兼容，移除后的输出质量下降应在可接受范围"
-    status: untested
+    label: "Triton shallow in-kernel edits preserve official VisiPruner semantics"
+    description: "Shallow pruning 的 post-softmax weight edits 在 Triton prefill kernel 内实现，应与 eager reference 数值对齐"
+    status: in_progress
     priority: P1
 
 experiments:
@@ -72,6 +177,26 @@ experiments:
       - Kernel category distribution
     priority: P0
 
+  e2_single_request_latency:
+    status: done
+    description: "Single-request end-to-end Triton VP-FA clock timing, Nsight CUDA/NVTX profile, and per-layer workload/operator/latency report."
+    artifacts:
+      - experiments/e2_single_request_latency/output/clock_triton_vpfa_layer_32tok.json
+      - experiments/e2_single_request_latency/output/clock_triton_vpfa_layer_32tok_ranges.csv
+      - experiments/e2_single_request_latency/output/clock_triton_vpfa_layer_32tok_layer_events.csv
+      - experiments/e2_single_request_latency/output/nsys_triton_vpfa_layer_32tok.nsys-rep
+      - experiments/e2_single_request_latency/output/nsys_triton_vpfa_layer_32tok.sqlite
+      - experiments/e2_single_request_latency/output/nsys_triton_vpfa_layer_32tok_layer_kernel_breakdown.csv
+      - experiments/e2_single_request_latency/TRITON_VPFA_LAYER_PERFORMANCE_REPORT.md
+    results:
+      clock_request_total_ms: 1859.271
+      clock_forward_prefill_ms: 112.241
+      clock_forward_decode_sum_ms: 1658.759
+      nsys_layer_ranges: 3072
+      nsys_cuda_kernel_count: 54598
+      decode_attention_gemv_cublas_ms: 137.028
+    conclusion: "Prefill is instrumented and no longer the dominant end-to-end issue; E3 should focus on decode GEMV/kernel-launch reduction for single-request speedup."
+
   e2_output_quality:
     status: designed
     description: "FA2-VisiPruner vs Eager-VisiPruner 输出质量对比"
@@ -84,6 +209,59 @@ experiments:
       - Perplexity on benchmark
     priority: P1
 
+  e2_same_input_three_way_layer_retest:
+    status: done
+    description: "Retest dense-FA2, eager VisiPruner full, and VisiPruner-FA2 with one fixed image/prompt/token setting, then regenerate three layer-performance reports."
+    fixed_input:
+      image_path: autoresearch/data/benchmark_images/002901d9d194c4fb.jpg
+      prompt: "Describe the image briefly."
+      max_new_tokens: 32
+      warmup_iters: 1
+      gpu: 1
+    command: experiments/e2_single_request_latency/code/run_same_input_three_way_layer_retest.sh
+    status_doc: experiments/e2_single_request_latency/SAME_INPUT_THREE_WAY_RETEST_STATUS.md
+    audit_script: experiments/e2_single_request_latency/code/audit_same_input_three_way_layer_retest.py
+    audit: experiments/e2_single_request_latency/output/same_input_three_way_audit.json
+    audit_ok: true
+    reports:
+      - experiments/e2_single_request_latency/SAME_INPUT_DENSE_FA2_LAYER_PERFORMANCE_REPORT.md
+      - experiments/e2_single_request_latency/SAME_INPUT_VISIPRUNER_FULL_EAGER_LAYER_PERFORMANCE_REPORT.md
+      - experiments/e2_single_request_latency/SAME_INPUT_VISIPRUNER_FULL_FA2_LAYER_PERFORMANCE_REPORT.md
+    artifacts:
+      - experiments/e2_single_request_latency/output/clock_sameinput_dense_fa2_32tok.json
+      - experiments/e2_single_request_latency/output/clock_sameinput_dense_fa2_32tok_ranges.csv
+      - experiments/e2_single_request_latency/output/clock_sameinput_dense_fa2_32tok_layer_events.csv
+      - experiments/e2_single_request_latency/output/nsys_sameinput_dense_fa2_32tok.nsys-rep
+      - experiments/e2_single_request_latency/output/nsys_sameinput_dense_fa2_32tok.sqlite
+      - experiments/e2_single_request_latency/output/nsys_sameinput_dense_fa2_32tok_layer_kernel_breakdown.csv
+      - experiments/e2_single_request_latency/output/clock_sameinput_visipruner_full_eager_32tok.json
+      - experiments/e2_single_request_latency/output/clock_sameinput_visipruner_full_eager_32tok_ranges.csv
+      - experiments/e2_single_request_latency/output/clock_sameinput_visipruner_full_eager_32tok_layer_events.csv
+      - experiments/e2_single_request_latency/output/nsys_sameinput_visipruner_full_eager_32tok.nsys-rep
+      - experiments/e2_single_request_latency/output/nsys_sameinput_visipruner_full_eager_32tok.sqlite
+      - experiments/e2_single_request_latency/output/nsys_sameinput_visipruner_full_eager_32tok_layer_kernel_breakdown.csv
+      - experiments/e2_single_request_latency/output/clock_sameinput_visipruner_full_fa2_32tok.json
+      - experiments/e2_single_request_latency/output/clock_sameinput_visipruner_full_fa2_32tok_ranges.csv
+      - experiments/e2_single_request_latency/output/clock_sameinput_visipruner_full_fa2_32tok_layer_events.csv
+      - experiments/e2_single_request_latency/output/nsys_sameinput_visipruner_full_fa2_32tok.nsys-rep
+      - experiments/e2_single_request_latency/output/nsys_sameinput_visipruner_full_fa2_32tok.sqlite
+      - experiments/e2_single_request_latency/output/nsys_sameinput_visipruner_full_fa2_32tok_layer_kernel_breakdown.csv
+    results:
+      request_total_ms:
+        dense_fa2: 1552.875
+        visipruner_full_eager: 1596.428
+        visipruner_full_fa2: 1762.533
+      forward_prefill_ms:
+        dense_fa2: 85.092
+        visipruner_full_eager: 87.377
+        visipruner_full_fa2: 113.206
+      forward_decode_sum_ms:
+        dense_fa2: 1385.150
+        visipruner_full_eager: 1433.784
+        visipruner_full_fa2: 1554.962
+    completion_gate: "passed: same_input_three_way_audit.json reports ok=true."
+    priority: P0
+
   e3_scaling:
     status: designed
     description: "Batch size / sequence length scaling for FA2-VisiPruner"
@@ -95,14 +273,40 @@ experiments:
       - prompt_length: [256, 512, 1024]
     priority: P2
 
+  e3_single_request_kernel_acceleration:
+    status: designed
+    protocol: experiments/e3_single_request_kernel_acceleration/protocol.md
+    description: "Single-request exact-greedy kernel plan for exposing VisiPrune token/KV-cache pruning benefits without cross-request batching."
+    scope:
+      - batch_size: 1
+      - decode: exact_greedy
+      - batching: no_cross_request_batching
+    kernel_targets:
+      - ragged_single_query_attention_for_compact_kv
+      - prefill_selection_and_compaction_fusion
+      - fused_single_token_decode_block
+      - cuda_graph_or_persistent_decode_executor
+    primary_metrics:
+      - request_total_ms
+      - forward_decode_sum_ms
+      - decode_kernel_total_ms
+      - cuda_kernel_launch_count
+      - kernel_family_breakdown
+      - token_or_logit_parity
+    priority: P0
+
 implementation:
   files:
-    - path: repo/llava/model/language_model/custom_modeling_llama.py
-      change: "Add FA2VisiPrunerLlamaAttention class; modify LlamaDecoderLayer for dynamic attention selection"
+    - path: repo/llava/model/language_model/vp_flash_attention.py
+      change: "Triton VP-FA full prefill helper; patched flash_attn_2_cuda.vp_fwd path removed"
+    - path: repo/llava/model/language_model/custom_modeling_llama_decode_optimized.py
+      change: "FA2VisiPrunerLlamaAttention routes prefill through vp_flash_attn_prefill()"
+    - path: repo/llava/model/language_model/decode_optimization.py
+      change: "vp-fa backend name now means copied optimized modeling with Triton VP-FA prefill"
     - path: autoresearch/experiments/e1_baseline/code/bench_fa2_visipruner.py
       change: "Standalone inference + profiling script (nsys/ncu compatible)"
 
 issues:
   - "Eager attention is 19× slower than FA2 — unfair baseline comparison"
-  - "Shallow pruning (post-softmax weight masking) incompatible with FA2 — removed in FA2 version"
-  - "Need to verify flash_attn library is installed and compatible with CUDA 13.2"
+  - "Source-level patched FlashAttention VP-FA build is cancelled; do not require flash_attn_2_cuda.vp_fwd"
+  - "Triton prefill cleanup alone does not solve single-request decode GEMV bottleneck"

@@ -749,11 +749,10 @@ class FA2VisiPrunerLlamaAttention(VisiPrunerLlamaAttention):
     """
     VP-FA accelerated VisiPruner attention.
 
-    The prefill path routes through vp_flash_attn_prefill(), where the native
-    shallow VP-FA kernel applies the deterministic VisiPruner drop pattern as a
-    pre-softmax FA2 mask and skips full visual QK/PV tiles when possible. It also
-    returns the last-query weights needed by value-aware middle/deep pruning
-    without materialising full attention weights for the FA2-compatible layers.
+    The prefill path routes through vp_flash_attn_prefill(), which now uses
+    Triton kernels for full prefill attention: shallow layers apply the
+    VisiPruner shallow edits in-kernel, and middle/deep layers use a dense
+    causal Triton attention path plus a Triton last-query pruning proxy.
     """
 
     def forward(
@@ -840,9 +839,9 @@ class FA2VisiPrunerLlamaAttention(VisiPrunerLlamaAttention):
         )
 
         # A 4D attention_mask is bookkeeping for VisiPruner cropping and proxy
-        # logic. The VP-FA helper consumes it for official shallow semantics and
-        # last-query pruning weights while keeping FA2-compatible layers on the
-        # maskless causal kernel.
+        # logic. The Triton VP-FA helper uses the causal structure in-kernel and
+        # only needs the explicit mask for last-query pruning weights when the
+        # final query has nontrivial masking.
         is_causal = self.is_causal and (
             attention_mask is None or attention_mask.dim() == 4
         )

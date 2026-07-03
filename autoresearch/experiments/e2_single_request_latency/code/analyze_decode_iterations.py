@@ -11,11 +11,11 @@ from pathlib import Path
 
 
 DEFAULT_SQLITE = (
-    "/workspace/VisPrune/autoresearch/experiments/e2_single_request_latency/output/"
+    "/workspace/VisiPrune/autoresearch/experiments/e2_single_request_latency/output/"
     "nsys_visprune_full_32tok.sqlite"
 )
 DEFAULT_OUTPUT = (
-    "/workspace/VisPrune/autoresearch/experiments/e2_single_request_latency/output/"
+    "/workspace/VisiPrune/autoresearch/experiments/e2_single_request_latency/output/"
     "decode_iteration_kernel_breakdown.json"
 )
 

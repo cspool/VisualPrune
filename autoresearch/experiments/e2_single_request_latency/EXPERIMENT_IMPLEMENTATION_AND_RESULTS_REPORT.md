@@ -14,9 +14,15 @@
 |---|---|---|
 | `dense-fa2` | no pruning, `use_flash_attn=true` | LLaVA dense baseline + FlashAttention2 |
 | `visipruner-full` | shallow + middle + deep pruning | native VisiPruner attention, `use_flash_attn=false` |
+| `visipruner-full-vp-fa` | shallow + middle + deep pruning | copied optimized VisiPruner modeling + Triton VP-FA prefill |
 
 注意: 代码中存在 `FA2VisiPrunerLlamaAttention`，但本次已记录的
 `visipruner-full` 结果来自 native VisiPruner eager attention 路径。
+
+2026-07-01 更新: source-level patched FlashAttention VP-FA build 计划已取消。
+当前 `visipruner-full-vp-fa` 的含义是 Triton VP-FA prefill，不要求、不调用
+`flash_attn_2_cuda.vp_fwd`。旧的 VP-FA 测量结果只能作为历史进度；最终
+Triton-only full VP-FA 结论需要在当前代码上重新跑 clock/Nsight。
 
 ## 2. 环境
 
@@ -223,8 +229,8 @@ tokenizer, model, image_processor, context_len = load_pretrained_model(
 VisiPrune 后端在 attention 中执行 value-aware token selection，并在后续层
 根据 selected visual tokens 压缩 hidden states。
 
-FA2-capable VisiPruner attention 的代码结构如下，展示 QKV、pruning proxy、
-FA2 attention 和 token selection 的关系:
+当前 VP-FA full prefill 的代码结构如下，展示 QKV、Triton prefill、
+pruning proxy 和 token selection 的关系:
 
 ```python
 query_states = self.q_proj(hidden_states)
@@ -238,32 +244,32 @@ need_pruning_proxy = (
     and ("middle" in pruning_mode or "deep" in pruning_mode)
 )
 
-if need_pruning_proxy:
-    key_states_for_pruning = repeat_kv(key_states, self.num_key_value_groups)
-    q_last = query_states[:, :, -1:, :]
-    pruning_weights = torch.matmul(
-        q_last, key_states_for_pruning.transpose(2, 3)
-    ) / math.sqrt(self.head_dim)
-    pruning_weights = nn.functional.softmax(
-        pruning_weights, dim=-1, dtype=torch.float32
-    ).to(query_states.dtype)
-
-attn_output = flash_attn_func(
-    query_states_fa2,
-    key_states_fa2,
-    value_states_fa2,
+attn_output, pruning_weights, selection_attn_output_last = vp_flash_attn_prefill(
+    query_states,
+    key_states,
+    value_states,
+    attention_mask=attention_mask,
     dropout_p=self.attention_dropout if self.training else 0.0,
-    softmax_scale=1.0 / math.sqrt(self.head_dim),
-    causal=is_causal,
-    window_size=(-1, -1),
+    training=self.training,
+    layer_idx=self.layer_idx,
+    model_size=self.model_size,
+    pruning_mode=pruning_mode,
+    shallow_mid_layer=shallow_mid,
+    num_images=self.num_images,
+    vis_end_index=self.vis_end_index,
+    vis_half_index=self.vis_half_index,
+    num_key_value_groups=self.num_key_value_groups,
+    need_pruning_weights=need_pruning_proxy,
+    is_causal=is_causal,
 )
 
 if need_pruning_proxy and pruning_weights is not None:
     important_vis_tokens = self.value_aware_token_selection(
-        value_states_full, attn_output_for_selection, pw_full)
+        value_states_full, selection_attn_output_last, pruning_weights)
 ```
 
-当前 `visipruner-full` 实测路径未启用 FA2，但 token compaction 逻辑相同:
+当前 Triton VP-FA prefill 替代的是 prefill attention 主路径和 last-query
+proxy；token compaction 逻辑仍与 native VisiPruner 相同:
 
 ```python
 if important_vision_tokens != None:

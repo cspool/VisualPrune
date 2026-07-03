@@ -1,8 +1,9 @@
 """Decode backend selection for VisiPruner.
 
-The optimized FA2 path is implemented in
-custom_modeling_llama_decode_optimized.py. This module deliberately contains no
-runtime model monkey-patching.
+The optimized VP-FA path is implemented in
+custom_modeling_llama_decode_optimized.py. Its full prefill experiment path is
+Triton-based and does not require a patched FlashAttention build. This module
+deliberately contains no runtime model monkey-patching.
 """
 
 from __future__ import annotations
@@ -103,7 +104,7 @@ def resolve_visipruner_decode_backend(
             selected="vp_fa",
             use_flash_attn=True,
             use_optimized_modeling=True,
-            reason="Using copied optimized VisiPruner modeling with VP-FA prefill/decode.",
+            reason="Using copied optimized VisiPruner modeling with Triton VP-FA prefill/decode.",
         )
 
     if requested in {"fa2", "auto"} and bool(is_flash_attn_2_available()):
@@ -112,7 +113,7 @@ def resolve_visipruner_decode_backend(
             selected="vp_fa" if requested == "auto" else "fa2",
             use_flash_attn=True,
             use_optimized_modeling=True,
-            reason="Using copied optimized VisiPruner modeling with VP-FA/FA2 decode.",
+            reason="Using copied optimized VisiPruner modeling with Triton VP-FA/FA2 decode.",
         )
 
     warnings.warn(

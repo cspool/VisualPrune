@@ -22,7 +22,7 @@ import torch.nn.functional as F
 
 
 DEFAULT_OUTPUT = (
-    "/workspace/VisPrune/autoresearch/experiments/e2_single_request_latency/output/"
+    "/workspace/VisiPrune/autoresearch/experiments/e2_single_request_latency/output/"
     "gemv_concurrency_bench.json"
 )
 

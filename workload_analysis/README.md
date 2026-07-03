@@ -1,278 +1,230 @@
 # VisiPrune Workload Analysis
 
-`workload_analysis` 是一个独立的负载分析工作区。这里的目标不是测量
-Nsight/CUDA kernel 级运行时结果，而是生成 **algorithmic / theoretical
-workload trace**：用真实 forward 暴露 VisiPrune 的动态 token schedule，再用
-公式统计理论 FLOPs；同时用开源工具生成 dense LLM 的参考分析。
+## `torch.profiler` 与当前 `workload_analysis` 的区别
 
-本文现在按实际功能组织目录，不再使用旧的抽象方案目录名。
+`torch.profiler` 和当前 `workload_analysis` 都可以观察一次真实运行，但它们的目标不同。
 
-## 一级目录
+- `torch.profiler` 面向性能分析。
+- `workload_analysis` 面向算法执行理解、动态 workload 建模和 layer process 证据重建。
 
-- `env/`
-  运行环境 glue code。当前只有 `run_with_analysis_env.sh`，它复用已有
-  `/workspace/VisiPrune/venv_profiling/bin/python`，设置 `HF_HOME`、
-  offline HF 变量、`PYTHONPATH` 和本目录 pip cache。这里不重新安装解释器
-  或包管理器。
+因此，两者记录的“op flow”不能按同一种语义解释。
 
-- `external/`
-  下载的开源工具源码，只放在本目录下。当前包括：
-  `llm-analysis`、`llm-viewer`、`calculate-flops.pytorch`。
+## `torch.profiler`: 性能事件 profiler
 
-- `logs/`
-  环境准备日志，例如轻量包安装日志。用于确认没有重复安装 Torch/CUDA
-  这类通用运行环境。
+`torch.profiler` 的主要目标是回答：
 
-- `algorithmic_trace/`
-  端到端 algorithmic workload trace 的工具和产物。`tools/` 放 fresh-forward trace 与 trace 对比脚本；
-  `runners/` 放一键入口；`traces/` 和 `comparisons/` 放对应输出；
-  `verification/` 放 trace wrapper 等价性验证。
-
-- `open_tool_dense_baseline/`
-  Open-tool dense baseline 的工具和产物。`tools/` 放对照脚本；
-  `dense_baseline/` 放 `llm-analysis`、`LLM-Viewer` 和比较报告。
-
-- `dispatch/`
-  Dispatch 相关工具和产物。`profiles/` 放 filtered TorchDispatch profile；
-  `visualize/`、`layer_pipeline/`、`templates/` 放后续 layer reconstruction/ONNX 工作。
-
-- `vendor/`
-  少量缺失 Python 包的本地安装目录，使用 `pip --target ... --no-deps`。
-  它只补 `tabulate/fvcore/calflops/fire/termcolor` 等轻量分析包，不放重复
-  Torch/CUDA 环境。
-
-## Algorithmic Trace
-
-`algorithmic_trace/` 是 VisiPrune 的权威 workload trace 来源。
-
-它做两件事：
-
-1. 获取 VisiPrune 的动态 token schedule。
-2. 按 LLaVA/LLaMA/CLIP/projector 结构用公式计算理论 FLOPs。
-
-输出文件格式：
-
-- `algorithmic_trace.json`: 完整 JSON，包括请求、模型维度、forward/layer/
-  selection 事件和 FLOP summary。
-- `layer_trace.csv`: 每个 forward、每层的 `q_len/kv_len/past_len`。
-- `selection_trace.csv`: `value_aware_token_selection` 事件，包括 middle 选择
-  和 deep exit。
-- `operator_flops.csv`: 展开的理论 operator FLOPs。
-
-## Filtered Dispatch Profile
-
-Filtered dispatch profile 用于深入查看 VisiPrune 强相关 layer 内真实发生的
-ATen operator 和输入/输出 shape。它不是全量 profiler：脚本先根据
-`selection_trace.csv + layer_trace.csv` 生成 manifest，然后只在选中的
-`(forward_id, layer_id)` 进入 `TorchDispatchMode`。
-
-过滤规则：
-
-`DISPATCH_FILTER_RULES.md`
-
-脚本：
-
-```bash
-/workspace/VisiPrune/workload_analysis/env/run_with_analysis_env.sh \
-  /workspace/VisiPrune/workload_analysis/dispatch/tools/visipruner_filtered_dispatch_profile.py \
-  --gpu 1 \
-  --tag filtered_dispatch_visipruner_full_32tok
+```text
+一次真实运行中，哪些 PyTorch op / CUDA kernel / CPU activity 消耗了时间和显存？
 ```
 
-当前输出：
+它关注的数据通常包括：
 
-`dispatch/profiles/filtered_dispatch_visipruner_full_32tok/`
+- PyTorch op 名称
+- CPU time / CUDA time
+- CUDA kernel timeline
+- op 调用次数
+- memory allocation
+- tensor shape
+- Python stack
+- Chrome trace
 
-当前运行从 1024 个 layer events 中选择 35 个 dispatch target events，捕获
-3163 条 ATen dispatch op。`observed_layer_events.csv` 记录全部 layer 调用只作
-编号校验，不代表全量 dispatch profile。
+启用示例：
 
-Algorithmic Trace 排除：
-
-- model loading
-- image file I/O
-- CPU preprocessing
-- host-device transfer
-- CUDA kernel launch overhead
-- runtime/compiler fusion
-- memory traffic
-- communication
-
-## Fresh Forward
-
-Fresh forward 是 Algorithmic Trace 的首选路径：真实加载 LLaVA/VisiPrune 模型，实际跑
-一次 `generate()`，通过 hook 记录动态 schedule，然后离线用公式计数。
-
-脚本：
-
-```bash
-/workspace/VisiPrune/workload_analysis/env/run_with_analysis_env.sh \
-  /workspace/VisiPrune/workload_analysis/algorithmic_trace/tools/visipruner_algorithmic_trace.py \
-  --config visipruner-full \
-  --max-new-tokens 32 \
-  --gpu 1 \
-  --tag fresh_forward_visipruner_full_32tok
+```python
+with torch.profiler.profile(
+    activities=[
+        torch.profiler.ProfilerActivity.CPU,
+        torch.profiler.ProfilerActivity.CUDA,
+    ],
+    record_shapes=True,
+    profile_memory=True,
+    with_stack=True,
+) as prof:
+    model.generate(...)
 ```
 
-当前 fresh VisiPrune 输出：
+`torch.profiler` 的 shape、时间和显存数据对性能分析重要，但它不天然理解
+VisiPrune 的算法语义。例如，它不会自动提供：
 
-`algorithmic_trace/traces/fresh_forward_visipruner_full_32tok/`
+- `forward_id`
+- prefill / decode phase
+- 每层 `q_len / kv_len / past_len`
+- VisiPrune token selection 事件
+- deep exit 事件
+- layer 在 pruning schedule 中的角色
+- token 数变化边界，例如 `624 -> 58 -> 48`
 
-当前 fresh dense-eager 输出：
+`torch.profiler` 也不是严格的数据依赖图工具。它可以显示真实运行中发生过哪些
+op，并提供时间线和统计表，但它的核心目标不是把这些 op 重建成一个可审计的
+layer tensor process。
 
-`algorithmic_trace/traces/fresh_forward_dense_eager_32tok/`
+`with_flops=True` 只能对部分算子，例如 matmul / conv，给出有限 FLOPs 估计。
+它不会自动推导 VisiPrune 这种动态 token pruning 算法的理论复杂度。
 
-完整 fresh-forward 一键入口：
+因此，`torch.profiler` 适合做：
 
-```bash
-GPU=1 TOKENS=32 /workspace/VisiPrune/workload_analysis/algorithmic_trace/runners/run_full_forward.sh
+- 新算法早期的通用热点初筛
+- CPU/CUDA 时间线观察
+- shape / memory / stack 辅助定位
+- 判断哪些区域值得进一步做 nsys/ncu 或 dispatch 取证
+
+但它不适合作为当前项目的算法 trace 或 layer process 重建主证据。
+
+## `workload_analysis`: 算法行为与证据重建
+
+当前 `workload_analysis` 分为两个核心层次：
+
+1. `algorithmic_trace`
+2. filtered dispatch profile
+
+这两层都基于真实 `generate()` 或真实 eager forward 运行，但它们不以执行时间为核心。
+
+### `algorithmic_trace`
+
+`algorithmic_trace` 的目标是回答：
+
+```text
+VisiPrune 在一次真实 generate() 中如何改变 token schedule 和理论 workload？
 ```
 
-这个入口会依次生成：
+它通过 wrapper / hook 记录上层动态执行 flow，包括：
 
-- fresh VisiPrune trace
-- 基于 fresh VisiPrune trace 的 open-tool dense baseline
-- fresh dense-eager trace
-- VisiPrune vs dense-eager 理论 FLOPs 对比
+- `forward_id`
+- prefill / decode phase
+- 每层 `q_len`
+- 每层 `kv_len`
+- 每层 `past_len`
+- hidden state shape
+- VisiPrune selection 事件
+- deep exit 事件
+- 每层动态 token schedule
+- 理论 FLOPs
 
-Wrapper 等价性验证：
+重要输出包括：
 
-```bash
-CUDA_VISIBLE_DEVICES=1 /workspace/VisiPrune/workload_analysis/env/run_with_analysis_env.sh \
-  /workspace/VisiPrune/workload_analysis/algorithmic_trace/verification/tools/verify_wrapper_equivalence.py \
-  --config visipruner-full \
-  --max-new-tokens 32
+```text
+algorithmic_trace.json
+layer_trace.csv
+selection_trace.csv
+operator_flops.csv
 ```
 
-这个验证会先运行未包裹的 `model.generate()`，再打 wrapper 运行同一请求，
-比较两次 `output_ids` 是否完全一致。
+这里的重点不是 wall-clock latency，也不是 CUDA kernel timeline，而是：
 
-## Reconstruct
-
-当前工作区没有可运行的 e2 reconstruction 脚本；algorithmic trace 的权威入口是
-`algorithmic_trace/tools/visipruner_algorithmic_trace.py` 的 fresh forward。保留
-`algorithmic_trace/runners/run_all.sh` 作为旧入口占位，但它会在缺少 reconstruction
-脚本时显式报错。
-
-## Open-Tool Dense Baseline
-
-`open_tool_dense_baseline/` 不是 VisiPrune trace 的来源。它用于把 algorithmic trace 的输入规模转换成
-dense language-backbone 配置，然后用开源工具生成参考分析。
-
-脚本：
-
-```bash
-/workspace/VisiPrune/workload_analysis/env/run_with_analysis_env.sh \
-  /workspace/VisiPrune/workload_analysis/open_tool_dense_baseline/tools/open_tool_compare.py \
-  --trace /workspace/VisiPrune/workload_analysis/algorithmic_trace/traces/fresh_forward_visipruner_full_32tok/algorithmic_trace.json
+```text
+算法在真实请求中走了哪条动态路径，以及这条路径对应什么理论 workload。
 ```
 
-输出目录：
+因此，`algorithmic_trace` 是 VisiPrune 动态 schedule 的权威来源。
 
-`open_tool_dense_baseline/dense_baseline/`
+### Filtered Dispatch Profile
 
-主要输出：
+filtered dispatch profile 的目标是回答：
 
-- `dense_equivalent_config.json`: 从 algorithmic trace 派生出的 dense LLaMA 配置。
-- `llm_analysis_dense_summary.json`: `llm-analysis` 的 dense baseline 输出。
-- `llm_viewer_dense_summary.json`: `LLM-Viewer` 的 dense operator/roofline 输出。
-- `dense_tool_comparison.csv`: algorithmic trace 和 dense open-tool 结果的简表。
-- `open_tool_fit_report.json`: 工具适配边界说明。
+```text
+在选中的 layer / forward 事件内，真实 eager 执行时发生了哪些 ATen op？
+这些 op 的 tensor shape、数据依赖、alias、inplace 行为是什么？
+```
 
-## llm-analysis
+它使用：
 
-本地源码：
+```text
+torch.utils._python_dispatch.TorchDispatchMode
+__torch_dispatch__
+```
 
-`external/llm-analysis/`
+这不是编译时 trace，也不是 `torch.compile` / FX / export IR。它是运行时 eager
+执行过程中观察到的 ATen dispatch op 流。
 
-用途：
+它记录的数据包括：
 
-- 理论分析 dense Transformer/LLM 的 inference latency/memory。
-- 当前在本工作区中用于 dense LLaMA language-backbone baseline。
+- selected `event_id`
+- `forward_id`
+- `layer_id`
+- prefill / decode phase
+- `q_len / kv_len / past_len`
+- op schema
+- input tensor ids
+- output tensor ids
+- tensor shape / dtype / device
+- alias / storage / inplace mutation 信息
+- sampled module stack
+- op count summary
 
-边界：
+重要输出包括：
 
-- 不原生表达 VisiPrune 的逐层动态视觉 token pruning。
-- 不包含 LLaVA 的 CLIP vision tower 和 multimodal projector，除非手工扩展。
-- 因此它是 open-tool dense baseline 的参考工具，不是 algorithmic trace 的权威计数器。
+```text
+dispatch_manifest.csv
+dispatch_ops.csv
+dispatch_op_summary.csv
+observed_layer_events.csv
+run_metadata.json
+```
 
-## LLM-Viewer
+其中：
 
-本地源码：
+- `dispatch_manifest.csv` 说明为什么选这些 layer / forward 事件。
+- `dispatch_ops.csv` 是选中 layer 内真实 ATen dispatch op 的主要证据。
+- `observed_layer_events.csv` 用于校验全局 layer 事件编号，不代表全量 dispatch profile。
 
-`external/llm-viewer/`
+filtered dispatch profile 的重点不是执行时间，而是：
 
-用途：
+```text
+用真实运行时 op、tensor id、shape、alias 和 inplace 证据，反推出 layer 的实际 tensor process。
+```
 
-- 给 dense LLaMA backbone 生成 operator/roofline 风格分析。
-- 输出 prefill/decode 的 OPs、memory access、bound、inference time 等。
+这些数据后续可以被 `dispatch-layer-reconstruct-onnx` 等流程消费，用来生成更可读的
+process 表达、small-shape Torch flow 或 ONNX stage。
 
-边界：
+## 关键区别
 
-- 默认假设 dense transformer 层和全局 sequence length。
-- 不能直接表示 layer 18 后 `624 -> 58 -> 48` 这类 VisiPrune 动态长度变化。
-- 因此它用于理解 dense baseline 的结构，不替代 VisiPrune trace。
+| 维度 | `torch.profiler` | `workload_analysis` |
+| --- | --- | --- |
+| 主要目标 | 性能分析 | 算法理解与执行证据重建 |
+| 运行方式 | profile 真实运行的 op/kernel/activity | wrapper 记录算法 schedule，dispatch mode 记录选中 layer ATen op |
+| 时间数据 | 核心数据 | 非核心数据 |
+| shape 数据 | 性能辅助信息 | process 重建证据 |
+| FLOPs | 有限 op 级估计 | 基于算法 schedule 的理论 FLOPs |
+| layer 语义 | 不天然提供 | 显式记录 `forward_id/layer_id/phase/q_len/kv_len` |
+| VisiPrune selection | 不天然提供 | 显式记录 |
+| 数据依赖 | 不是主要目标 | 通过 tensor ids / input-output ids / alias 信息重建 |
+| 归因目标 | 找热点 | 解释 selected layer 实际执行过程 |
+| 适合作为性能结论吗 | 可辅助，但本项目正式性能仍用 nsys/ncu | 不适合，主要不是性能工具 |
 
-## calculate-flops.pytorch / calflops
+## 推荐使用方式
 
-本地源码：
+当分析一个还没有明确关注过程的新算法时，可以先用 `torch.profiler` 做通用初筛：
 
-`external/calculate-flops.pytorch/`
+1. 跑一次真实 `generate()`。
+2. 查看 op / CUDA kernel / memory / shape 热点。
+3. 判断哪些模块或阶段值得重点分析。
+4. 不把 `torch.profiler` 的结果直接作为 VisiPrune 算法语义证据。
 
-用途：
+然后进入 `workload_analysis` 主线：
 
-- 可作为后续 module-level FLOP sanity check 工具。
-- 当前完整分析主要依赖自定义公式和 `llm-analysis`/`LLM-Viewer` 对照。
+1. 用 `algorithmic_trace` 记录真实动态 schedule。
+2. 从 `selection_trace.csv + layer_trace.csv` 中选择重要 layer / forward 事件。
+3. 用 filtered dispatch profile 捕获这些事件内的真实 ATen op 与 tensor 依赖。
+4. 如需进一步重建 layer process，再进入 dispatch reconstruction / ONNX / small-shape flow。
 
-边界：
+## 结论
 
-- 通用 FLOP counter 通常不理解 VisiPrune 的数据相关 token 删除语义。
-- 如果用于 VisiPrune，需要额外定制 hook 或输入 shape schedule。
+更准确的表述是：
 
-## open_tool_compare.py
+```text
+torch.profiler 是性能 profiler：
+它记录真实运行中的 op/kernel 时间线，重点是时间、次数、shape、memory 和热点。
 
-脚本：
+workload_analysis 是算法执行与证据重建工具：
+algorithmic_trace 记录上层动态 schedule；
+filtered dispatch profile 记录选中 layer 的运行时 ATen op、shape、tensor ids、
+alias 和 inplace 关系；
+这些数据用于理解 VisiPrune 实际执行过程，而不是做 wall-clock 性能结论。
+```
 
-`open_tool_dense_baseline/tools/open_tool_compare.py`
+需要特别注意：
 
-作用：
-
-1. 读取 Algorithmic Trace 的 `algorithmic_trace.json`。
-2. 提取 dense-equivalent language-backbone 配置。
-3. 调用 `llm-analysis` 和 `LLM-Viewer`。
-4. 写出 Open-Tool Dense Baseline 报告。
-
-这个脚本中的 `open_tool` 指的是“开源/官方分析工具对照层”，不是
-VisiPrune 本身的实现。
-
-## Fresh Result Summary
-
-当前 fresh-forward 32-token 结果：
-
-- VisiPrune trace: `algorithmic_trace/traces/fresh_forward_visipruner_full_32tok/`
-- Dense trace: `algorithmic_trace/traces/fresh_forward_dense_eager_32tok/`
-- VisiPrune vs dense 对比:
-  `algorithmic_trace/comparisons/fresh_visipruner_vs_dense_32tok.json`
-
-关键 schedule：
-
-- prompt tokens before image expansion: `49`
-- visual tokens: `576`
-- prefill length: `624`
-- middle selection layer: `18`
-- selected visual tokens: `10`
-- layers `0-18`: `624`
-- layers `19-27`: `58`
-- layers `28-31`: `48`
-- decode forwards: `31`
-
-理论 FLOPs：
-
-- dense-eager full VLM actual model path: `9.275895808000e12`
-- VisiPrune full VLM actual model path: `6.044742909952e12`
-- saved FLOPs: `3.231152898048e12`
-- saved percentage: `34.83%`
-
-更详细的结果见：
-
-`ANALYSIS_SUMMARY.md`
+```text
+filtered dispatch profile 不是编译时 trace。
+它是运行时 eager dispatch trace。
+```
