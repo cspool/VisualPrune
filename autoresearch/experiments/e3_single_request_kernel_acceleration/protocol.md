@@ -209,8 +209,9 @@ Use E2 artifacts and rerun if code has changed:
 - `dense-fa`: dense eager no pruning;
 - `dense-fa2`: dense FlashAttention2 no pruning;
 - `visipruner-full`: native/eager VisiPrune path;
-- `visipruner-full-fa2` or `visipruner-full-vp-fa`: optimized VisiPrune path
-  where available and correctness-verified.
+- `visipruner-full-vp-fa`: optimized VisiPrune path where available and
+  correctness-verified. `visipruner-full-fa2` is only a legacy alias in older
+  E2 artifacts.
 
 Do not mix images or prompts when comparing latency. If a later run uses
 `repo/images/v1_73.jpg`, rerun all baselines with that same image.

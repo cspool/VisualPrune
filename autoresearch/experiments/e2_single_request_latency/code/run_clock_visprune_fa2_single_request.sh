@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
+# 被抛弃或不需要使用: legacy FA2-named wrapper kept for compatibility.
+# Prefer the VP-FA config/tag for new runs.
+
 ROOT_DIR="${ROOT_DIR:-/workspace/VisiPrune}"
 PYTHON_BIN="${PYTHON_BIN:-${ROOT_DIR}/venv_profiling/bin/python}"
 SCRIPT="${ROOT_DIR}/autoresearch/experiments/e2_single_request_latency/code/profile_visprune_single_request.py"
@@ -13,11 +16,11 @@ export TRANSFORMERS_OFFLINE="${TRANSFORMERS_OFFLINE:-1}"
 cd "${ROOT_DIR}"
 
 exec "${PYTHON_BIN}" "${SCRIPT}" \
-  --config "${CONFIG:-visipruner-full-fa2}" \
+  --config "${CONFIG:-visipruner-full-vp-fa}" \
   --image-path "${IMAGE_PATH:-${ROOT_DIR}/repo/images/v1_73.jpg}" \
   --max-new-tokens "${MAX_NEW_TOKENS:-32}" \
   --warmup-iters "${WARMUP_ITERS:-1}" \
   --gpu "${GPU:-1}" \
   --sync-timing on \
   --nvtx on \
-  --tag "${TAG:-clock_visprune_full_fa2_32tok}"
+  --tag "${TAG:-clock_visprune_full_vpfa_32tok}"

@@ -90,7 +90,7 @@ def mean_field(rows: list[dict[str, str]], field: str) -> float | None:
 
 
 def dominant_family(rows: list[dict[str, str]]) -> str:
-    totals: dict[str, float] = defaultdict(float)
+    values_by_family: dict[str, list[float]] = defaultdict(list)
     for row in rows:
         for key, value in row.items():
             if not key.endswith("_ms"):
@@ -99,13 +99,69 @@ def dominant_family(rows: list[dict[str, str]]) -> str:
             if family in {"range", "kernel_total", "pct_request", "pct_generate"}:
                 continue
             try:
-                totals[family] += float(value)
+                values_by_family[family].append(float(value))
             except Exception:
                 pass
-    if not totals:
+    if not values_by_family:
         return "-"
-    family, value = max(totals.items(), key=lambda item: item[1])
+    means = {
+        family: sum(values) / len(values)
+        for family, values in values_by_family.items()
+        if values
+    }
+    if not means:
+        return "-"
+    family, value = max(means.items(), key=lambda item: item[1])
     return f"{family} ({value:.3f} ms)"
+
+
+def resolved_backend_name(clock: dict[str, Any]) -> str:
+    backend = clock.get("resolved_visipruner_decode_backend") or {}
+    if isinstance(backend, dict):
+        return str(backend.get("selected") or "")
+    return ""
+
+
+def display_config_name(clock: dict[str, Any], resolved_backend: str) -> str:
+    config = str(clock.get("config", "-"))
+    if config == "visipruner-full-fa2" and resolved_backend == "vp_fa":
+        return "visipruner-full-vp-fa (legacy output config: visipruner-full-fa2)"
+    return config
+
+
+def display_requested_backend(clock: dict[str, Any], resolved_backend: str) -> str:
+    requested = str(clock.get("visipruner_decode_backend", "-"))
+    if requested == "auto" and resolved_backend == "vp_fa":
+        return "vp-fa (legacy output backend request: auto)"
+    if requested == "fa2" and resolved_backend == "vp_fa":
+        return "vp-fa (legacy output backend request: fa2)"
+    return requested
+
+
+def display_workload(row: dict[str, str], resolved_backend: str) -> str:
+    workload = row.get("workload_type", "-")
+    if resolved_backend == "vp_fa" and workload.startswith("eager_visipruner_"):
+        return workload.replace("eager_visipruner_", "triton_vpfa_", 1)
+    return workload
+
+
+def display_operator(row: dict[str, str], resolved_backend: str) -> str:
+    operator = row.get("operator_path", "-")
+    if resolved_backend != "vp_fa" or row.get("phase") != "prefill":
+        return operator
+    operator = operator.replace(
+        "eager QK^T/softmax/AV attention",
+        "Triton causal VP-FA prefill attention",
+    )
+    operator = operator.replace(
+        "shallow VisiPruner post-softmax edits",
+        "shallow VisiPruner post-softmax edits in-kernel",
+    )
+    operator = operator.replace(
+        "last-query pruning proxy/score computation",
+        "Triton last-query pruning proxy where needed",
+    )
+    return operator
 
 
 def clock_value(
@@ -125,7 +181,7 @@ def last_row(meta: dict[tuple[int, str], list[dict[str, str]]], layer: int, phas
     return (meta.get((layer, phase)) or [{}])[-1]
 
 
-def grouped_layer_lines(rows: list[dict[str, str]]) -> list[str]:
+def grouped_layer_lines(rows: list[dict[str, str]], resolved_backend: str) -> list[str]:
     groups: dict[tuple[str, str, str, str], list[int]] = defaultdict(list)
     for row in rows:
         try:
@@ -135,8 +191,8 @@ def grouped_layer_lines(rows: list[dict[str, str]]) -> list[str]:
         key = (
             row.get("q_len", "-"),
             row.get("kv_len", "-"),
-            row.get("workload_type", "-"),
-            row.get("operator_path", "-"),
+            display_workload(row, resolved_backend),
+            display_operator(row, resolved_backend),
         )
         groups[key].append(layer)
     lines = []
@@ -158,6 +214,7 @@ def decode_forward_count(meta: dict[tuple[int, str], list[dict[str, str]]]) -> i
 def write_human_draft_style_summary(
     out: list[str],
     meta: dict[tuple[int, str], list[dict[str, str]]],
+    resolved_backend: str,
 ) -> None:
     out.append("## Human-draft-style workload reading")
     out.append("")
@@ -165,14 +222,14 @@ def write_human_draft_style_summary(
     prefill_rows = [row for row in prefill_rows if row]
     out.append("forward 1")
     out.append("")
-    out.extend(grouped_layer_lines(prefill_rows) or ["- no prefill layer events found."])
+    out.extend(grouped_layer_lines(prefill_rows, resolved_backend) or ["- no prefill layer events found."])
     out.append("")
 
     decode_first = [first_row(meta, layer, "decode") for layer in range(32)]
     decode_first = [row for row in decode_first if row]
     out.append("forward 2")
     out.append("")
-    out.extend(grouped_layer_lines(decode_first) or ["- no decode layer events found."])
+    out.extend(grouped_layer_lines(decode_first, resolved_backend) or ["- no decode layer events found."])
     out.append("")
 
     last_forward = decode_forward_count(meta)
@@ -180,7 +237,7 @@ def write_human_draft_style_summary(
     decode_last = [row for row in decode_last if row]
     out.append(f"forward {last_forward}")
     out.append("")
-    out.extend(grouped_layer_lines(decode_last) or ["- no decode layer events found."])
+    out.extend(grouped_layer_lines(decode_last, resolved_backend) or ["- no decode layer events found."])
     out.append("")
 
 
@@ -189,10 +246,11 @@ def write_prefill_table(
     ranges: dict[str, dict[str, str]],
     meta: dict[tuple[int, str], list[dict[str, str]]],
     nsys: dict[tuple[int, str, str], list[dict[str, str]]],
+    resolved_backend: str,
 ) -> None:
     out.append("## Forward 1: Prefill layer workload and latency")
     out.append("")
-    out.append("| layer | q_len | kv_len | workload type | operator path | clock total ms | attn ms | mlp ms | nsys range ms | nsys kernel ms | dominant kernel family |")
+    out.append("| layer | q_len | kv_len | workload type | operator path | clock total ms | attn ms | mlp ms | NVTX CPU range ms | CUPTI launch-owned kernel sum ms | dominant kernel family |")
     out.append("|---:|---:|---:|---|---|---:|---:|---:|---:|---:|---|")
     for layer in range(32):
         row = first_row(meta, layer, "prefill")
@@ -202,8 +260,8 @@ def write_prefill_table(
                 layer=layer,
                 q=row.get("q_len", "-"),
                 kv=row.get("kv_len", "-"),
-                workload=row.get("workload_type", "-"),
-                operator=row.get("operator_path", "-"),
+                workload=display_workload(row, resolved_backend),
+                operator=display_operator(row, resolved_backend),
                 total=clock_value(ranges, f"visprune.layer{layer:02d}.prefill"),
                 attn=clock_value(ranges, f"visprune.layer{layer:02d}.prefill.attn"),
                 mlp=clock_value(ranges, f"visprune.layer{layer:02d}.prefill.mlp"),
@@ -227,10 +285,11 @@ def write_decode_table(
     ranges: dict[str, dict[str, str]],
     meta: dict[tuple[int, str], list[dict[str, str]]],
     nsys: dict[tuple[int, str, str], list[dict[str, str]]],
+    resolved_backend: str,
 ) -> None:
     out.append("## Decode forwards: per-layer repeated-token workload and latency")
     out.append("")
-    out.append("| layer | decode kv_len first -> last | workload type | operator path | clock total mean ms | attn mean ms | mlp mean ms | nsys range mean ms | nsys kernel mean ms | dominant kernel family |")
+    out.append("| layer | decode kv_len first -> last | workload type | operator path | clock total mean ms | attn mean ms | mlp mean ms | NVTX CPU range mean ms | CUPTI launch-owned kernel sum mean ms | dominant kernel family |")
     out.append("|---:|---|---|---|---:|---:|---:|---:|---:|---|")
     for layer in range(32):
         row = first_row(meta, layer, "decode")
@@ -239,8 +298,8 @@ def write_decode_table(
             "| {layer} | {kv} | {workload} | {operator} | {total} | {attn} | {mlp} | {nsys_range} | {nsys_kernel} | {family} |".format(
                 layer=layer,
                 kv=decode_kv_summary(meta, layer),
-                workload=row.get("workload_type", "-"),
-                operator=row.get("operator_path", "-"),
+                workload=display_workload(row, resolved_backend),
+                operator=display_operator(row, resolved_backend),
                 total=clock_value(ranges, f"visprune.layer{layer:02d}.decode", "mean_ms"),
                 attn=clock_value(ranges, f"visprune.layer{layer:02d}.decode.attn", "mean_ms"),
                 mlp=clock_value(ranges, f"visprune.layer{layer:02d}.decode.mlp", "mean_ms"),
@@ -269,6 +328,7 @@ def main() -> None:
     nsys_rows = read_csv(args.nsys_layer_csv)
     meta = layer_meta(events)
     nsys = nsys_by_key(nsys_rows)
+    resolved_backend = resolved_backend_name(clock)
 
     title = args.title or f"{clock.get('config', 'unknown')} Layer Performance Report"
     out: list[str] = []
@@ -278,12 +338,13 @@ def main() -> None:
     out.append("")
     out.append("## Run metadata")
     out.append("")
-    out.append(f"- config: `{clock.get('config', '-')}`")
+    out.append(f"- config: `{display_config_name(clock, resolved_backend)}`")
     out.append(f"- description: {clock.get('description', '-')}")
     out.append(f"- max_new_tokens: `{clock.get('max_new_tokens', '-')}`")
     out.append(f"- use_flash_attn: `{clock.get('use_flash_attn', '-')}`")
     out.append(f"- use_visipruner: `{clock.get('use_visipruner', '-')}`")
-    out.append(f"- visipruner_decode_backend: `{clock.get('visipruner_decode_backend', '-')}`")
+    out.append(f"- visipruner_decode_backend: `{display_requested_backend(clock, resolved_backend)}`")
+    out.append(f"- resolved_visipruner_decode_backend: `{resolved_backend or '-'}`")
     out.append("")
     out.append("## Data sources")
     out.append("")
@@ -291,6 +352,7 @@ def main() -> None:
     out.append(f"- clock ranges: `{args.clock_ranges}`")
     out.append(f"- layer events: `{args.layer_events}`")
     out.append(f"- Nsight layer kernels: `{args.nsys_layer_csv}`")
+    out.append("- Nsight/CUPTI kernel attribution: CUDA Runtime API `correlationId` -> CUPTI GPU kernel `correlationId`; the runtime API call start must fall inside the NVTX CPU range. This is CUPTI launch-owned kernel attribution, not kernel-vs-range execution overlap.")
     out.append(f"- human draft reference: `{args.human_draft}`")
     out.append("")
     out.append("## End-to-end clock summary")
@@ -309,13 +371,13 @@ def main() -> None:
     ]:
         out.append(f"| {key} | {fmt_ms(derived.get(key))} |")
     out.append("")
-    write_human_draft_style_summary(out, meta)
-    write_prefill_table(out, ranges, meta, nsys)
-    write_decode_table(out, ranges, meta, nsys)
+    write_human_draft_style_summary(out, meta, resolved_backend)
+    write_prefill_table(out, ranges, meta, nsys, resolved_backend)
+    write_decode_table(out, ranges, meta, nsys, resolved_backend)
 
     output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text("\n".join(out) + "\n", encoding="utf-8")
+    output.write_text("\n".join(out).rstrip() + "\n", encoding="utf-8")
     print(f"REPORT: {output}")
 
 

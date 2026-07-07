@@ -36,9 +36,11 @@ Gap 多大？L1 占比多少？即 VisiPruner 的理论加速比（2.17×）与�
 
 ### 测量方法（统一两层）
 
-**禁止使用**：Python `time.time()` / `CUDATimer` wall-clock 计时、CUPTI / `torch.profiler`。
+**禁止使用**：Python `time.time()` / `CUDATimer` wall-clock 计时、直接 CUPTI collector / `torch.profiler`。
 
 所有性能数据来源：nsys（时间维度）+ ncu（硬件计数器维度）。
+其中 nsys SQLite 中的 `CUPTI_ACTIVITY_KIND_*` 表是 nsys 导出的采集结果，可以用于
+`T_kernel_sum`、GPU span、CUDA Runtime span 和 NVTX `e1_inference` range 摘要。
 
 ### 主要 Metrics
 

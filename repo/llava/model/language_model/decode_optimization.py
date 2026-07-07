@@ -15,7 +15,18 @@ import warnings
 from transformers.utils import is_flash_attn_2_available
 
 
-VALID_VISIPRUNER_DECODE_BACKENDS = ("off", "eager", "fa2", "flash_attention_2", "vp_fa", "vp-fa", "auto")
+VALID_VISIPRUNER_DECODE_BACKENDS = (
+    "off",
+    "eager",
+    "vp_fa",
+    "vp-fa",
+    "auto",
+    # 被抛弃或不需要使用: legacy aliases. The current E2 optimized
+    # VisiPruner backend has no separate FA2 selection; these resolve to the
+    # Triton VP-FA path.
+    "fa2",
+    "flash_attention_2",
+)
 
 
 @dataclass(frozen=True)
@@ -41,11 +52,12 @@ def _normalize_backend(backend: Optional[str]) -> Optional[str]:
         return None
     normalized = backend.strip().lower().replace("-", "_")
     aliases = {
-        "flash_attention_2": "fa2",
-        "flash_attention2": "fa2",
-        "flash_attn_2": "fa2",
-        "flash_attn2": "fa2",
-        "dense_fa2": "fa2",
+        "fa2": "vp_fa",
+        "flash_attention_2": "vp_fa",
+        "flash_attention2": "vp_fa",
+        "flash_attn_2": "vp_fa",
+        "flash_attn2": "vp_fa",
+        "dense_fa2": "vp_fa",
         "vp-fa": "vp_fa",
         "vp_flash_attention": "vp_fa",
         "vp_flash_attn": "vp_fa",
@@ -78,7 +90,7 @@ def resolve_visipruner_decode_backend(
         )
 
     if requested is None:
-        requested = "fa2" if use_flash_attn else "eager"
+        requested = "vp_fa" if use_flash_attn else "eager"
 
     if requested == "off":
         return VisiPrunerDecodeBackend(
@@ -98,22 +110,13 @@ def resolve_visipruner_decode_backend(
             reason="Using the original eager VisiPruner implementation.",
         )
 
-    if requested == "vp_fa" and bool(is_flash_attn_2_available()):
+    if requested in {"vp_fa", "auto"} and bool(is_flash_attn_2_available()):
         return VisiPrunerDecodeBackend(
             requested=requested,
             selected="vp_fa",
             use_flash_attn=True,
             use_optimized_modeling=True,
             reason="Using copied optimized VisiPruner modeling with Triton VP-FA prefill/decode.",
-        )
-
-    if requested in {"fa2", "auto"} and bool(is_flash_attn_2_available()):
-        return VisiPrunerDecodeBackend(
-            requested=requested,
-            selected="vp_fa" if requested == "auto" else "fa2",
-            use_flash_attn=True,
-            use_optimized_modeling=True,
-            reason="Using copied optimized VisiPruner modeling with Triton VP-FA/FA2 decode.",
         )
 
     warnings.warn(

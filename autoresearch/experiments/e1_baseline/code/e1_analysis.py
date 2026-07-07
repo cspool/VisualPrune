@@ -2,7 +2,9 @@
 """
 E1: Analysis module — parse nsys/ncu output, classify kernels, compute metrics.
 
-All performance data comes from nsys/ncu CSV exports. No wall-time, no CUPTI.
+All performance data comes from nsys/ncu exports. The timing summary may read
+nsys-exported CUPTI activity tables from SQLite, but E1 does not use Python
+wall-time timers or a direct CUPTI collector.
 """
 
 import csv

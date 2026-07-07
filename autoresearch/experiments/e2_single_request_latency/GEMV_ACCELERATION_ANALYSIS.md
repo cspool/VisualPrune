@@ -73,7 +73,7 @@ repo/llava/model/language_model/llava_llama.py
   LlavaLlamaModel.set_num_images(): last_image_token_index = 35 + 576 * images
 
 repo/llava/model/language_model/custom_modeling_llama.py
-  FA2VisiPrunerLlamaAttention.forward()
+  VisiPrunerLlamaAttention.forward()
   LlamaModel.forward()
 ```
 
@@ -137,23 +137,25 @@ Key observations:
 
 ## Decode Iteration Breakdown
 
-`analyze_decode_iterations.py` attributes CUDA kernels overlapping each
-`:visprune.forward_decode` NVTX range from the VisiPrune Nsight SQLite trace.
+`analyze_decode_iterations.py` attributes CUDA kernels to each
+`:visprune.forward_decode` NVTX CPU range by CUPTI launch ownership: a CUDA
+Runtime API call must start inside the NVTX CPU range, and the Runtime
+`correlationId` must match the CUPTI GPU kernel `correlationId`.
 
 Across the 31 decode iterations:
 
 | metric | mean ms | min ms | max ms | stdev ms |
 |---|---:|---:|---:|---:|
 | forward_decode NVTX range | 50.96 | 49.44 | 56.94 | 1.40 |
-| CUDA kernel total inside range | 17.23 | 17.10 | 17.62 | 0.10 |
+| CUPTI launch-owned CUDA kernel total | 17.45 | 17.32 | 17.84 | 0.11 |
 
 Mean kernel composition per decode iteration:
 
 | family | mean ms / iter | pct of kernel time |
 |---|---:|---:|
-| GEMV decode cuBLAS | 14.86 | 86.2% |
-| elementwise/norm/activation | 1.28 | 7.5% |
-| copy/gather/cat | 0.82 | 4.8% |
+| GEMV decode cuBLAS | 15.08 | 86.4% |
+| elementwise/norm/activation | 1.28 | 7.4% |
+| copy/gather/cat | 0.83 | 4.7% |
 | selection/reduce/scan | 0.15 | 0.9% |
 | softmax | 0.07 | 0.4% |
 

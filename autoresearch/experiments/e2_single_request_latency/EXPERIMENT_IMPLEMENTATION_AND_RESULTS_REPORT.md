@@ -452,16 +452,18 @@ Kernel family breakdown:
 
 ### 6.4 Decode iteration breakdown
 
-逐 decode iteration 归因来自 `decode_iteration_kernel_breakdown.json`，按 CUDA
-kernel 与 `visprune.forward_decode` NVTX range 的重叠时间统计:
+逐 decode iteration 归因来自 `decode_iteration_kernel_breakdown.json`。统计规则是：
+先找 `start` 落在 `visprune.forward_decode` NVTX range 内的 CUDA Runtime API
+调用，再用 Runtime `correlationId` 匹配 GPU kernel `correlationId`，并累加匹配
+kernel 的完整 duration。
 
 | metric | mean ms | min ms | max ms | stdev ms |
 |---|---:|---:|---:|---:|
 | forward_decode NVTX range | 50.96 | 49.44 | 56.94 | 1.40 |
-| CUDA kernel total inside range | 17.23 | 17.10 | 17.62 | 0.10 |
-| GEMV kernels | 14.86 | 14.69 | 15.04 | 0.09 |
+| CUPTI launch-owned CUDA kernel total | 17.45 | 17.32 | 17.84 | 0.11 |
+| GEMV kernels | 15.08 | 14.92 | 15.26 | 0.09 |
 
-每个 decode iteration 的 GEMV 占 kernel 时间约 `86.2%`。这说明不是某个
+每个 decode iteration 的 GEMV 占 CUPTI launch-owned kernel 时间约 `86.4%`。这说明不是某个
 异常 token 拖慢，而是每个生成 token 都重复稳定的小 GEMV 计算链。
 
 ## 7. 可视化

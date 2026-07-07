@@ -74,7 +74,7 @@ def mean_field(rows: list[dict[str, str]], field: str) -> float | None:
 
 
 def dominant_family(rows: list[dict[str, str]]) -> str:
-    totals: dict[str, float] = defaultdict(float)
+    values_by_family: dict[str, list[float]] = defaultdict(list)
     for row in rows:
         for key, value in row.items():
             if not key.endswith("_ms"):
@@ -83,12 +83,19 @@ def dominant_family(rows: list[dict[str, str]]) -> str:
             if family in {"range", "kernel_total", "pct_request", "pct_generate"}:
                 continue
             try:
-                totals[family] += float(value)
+                values_by_family[family].append(float(value))
             except Exception:
                 pass
-    if not totals:
+    if not values_by_family:
         return "-"
-    family, value = max(totals.items(), key=lambda item: item[1])
+    means = {
+        family: sum(values) / len(values)
+        for family, values in values_by_family.items()
+        if values
+    }
+    if not means:
+        return "-"
+    family, value = max(means.items(), key=lambda item: item[1])
     return f"{family} ({value:.3f} ms)"
 
 
@@ -114,7 +121,7 @@ def write_prefill_table(
 ) -> None:
     out.append("## Forward 1: Prefill layer workload and latency")
     out.append("")
-    out.append("| layer | q_len | kv_len | workload type | clock total ms | attn ms | mlp ms | nsys range ms | nsys kernel ms | dominant kernel family |")
+    out.append("| layer | q_len | kv_len | workload type | clock total ms | attn ms | mlp ms | NVTX CPU range ms | CUPTI launch-owned kernel sum ms | dominant kernel family |")
     out.append("|---:|---:|---:|---|---:|---:|---:|---:|---:|---|")
     for layer in range(32):
         rows = meta.get((layer, "prefill"), [])
@@ -145,7 +152,7 @@ def write_decode_table(
 ) -> None:
     out.append("## Decode forwards: per-layer repeated-token workload and latency")
     out.append("")
-    out.append("| layer | decode kv_len first -> last | workload type | clock total mean ms | attn mean ms | mlp mean ms | nsys range mean ms | nsys kernel mean ms | dominant kernel family |")
+    out.append("| layer | decode kv_len first -> last | workload type | clock total mean ms | attn mean ms | mlp mean ms | NVTX CPU range mean ms | CUPTI launch-owned kernel sum mean ms | dominant kernel family |")
     out.append("|---:|---|---|---:|---:|---:|---:|---:|---|")
     for layer in range(32):
         rows = meta.get((layer, "decode"), [])
@@ -239,6 +246,7 @@ def main() -> None:
     out.append(f"- clock ranges: `{args.clock_ranges}`")
     out.append(f"- layer events: `{args.layer_events}`")
     out.append(f"- Nsight layer kernels: `{args.nsys_layer_csv}`")
+    out.append("- Nsight/CUPTI kernel attribution: CUDA Runtime API `correlationId` -> CUPTI GPU kernel `correlationId`; the runtime API call start must fall inside the NVTX CPU range. This is CUPTI launch-owned kernel attribution, not kernel-vs-range execution overlap.")
     out.append(f"- human draft reference: `{args.human_draft}`")
     out.append("")
     out.append("## End-to-end clock summary")
@@ -263,7 +271,7 @@ def main() -> None:
 
     output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text("\n".join(out) + "\n", encoding="utf-8")
+    output.write_text("\n".join(out).rstrip() + "\n", encoding="utf-8")
     print(f"REPORT: {output}")
 
 

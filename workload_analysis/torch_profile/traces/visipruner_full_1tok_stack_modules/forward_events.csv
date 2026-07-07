@@ -1,0 +1,2 @@
+forward_id,input_ids_shape,input_seq_len,inputs_embeds_shape,logits_shape,phase,prefix
+1,,624,"[1, 624, 4096]","[1, 48, 32000]",prefill,profile

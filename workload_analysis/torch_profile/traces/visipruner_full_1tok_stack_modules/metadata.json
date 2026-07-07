@@ -1,0 +1,49 @@
+{
+  "timestamp_utc": "2026-07-03T10:19:12.503466+00:00",
+  "tag": "visipruner_full_1tok_stack_modules",
+  "config": "visipruner-full",
+  "description": "Native VisiPrune full path: shallow + middle + deep.",
+  "model_path": "liuhaotian/llava-v1.5-7b",
+  "model_base": null,
+  "image_path": "/workspace/VisiPrune/autoresearch/data/benchmark_images/002901d9d194c4fb.jpg",
+  "prompt": "Describe the image briefly.",
+  "conv_mode": "llava_v1",
+  "max_new_tokens": 1,
+  "temperature": 0.0,
+  "warmup_iters": 0,
+  "layer_profile": true,
+  "target_layer": 0,
+  "profiler_options": {
+    "record_shapes": true,
+    "profile_memory": false,
+    "with_stack": true,
+    "with_modules": true,
+    "with_flops": false,
+    "acc_events": true
+  },
+  "context_len": 2048,
+  "loaded_model_class": "LlavaLlamaForCausalLM",
+  "loaded_base_model_class": "LlavaLlamaModel",
+  "request": {
+    "prompt_token_count": 49,
+    "image_size": [
+      1024,
+      768
+    ],
+    "output_token_count": 2,
+    "output_text": "The"
+  },
+  "environment": {
+    "python": "/workspace/VisiPrune/venv_profiling/bin/python",
+    "torch": "2.12.0+cu132",
+    "cuda": "13.2",
+    "cuda_available": true,
+    "gpu_name": "NVIDIA GeForce RTX 4090",
+    "cuda_visible_devices": "1",
+    "hf_home": "/data3/docker_cache/VisiPrune/huggingface",
+    "pythonpath": "/workspace/VisiPrune/workload_analysis/vendor/python:/workspace/VisiPrune/workload_analysis/external/llm-analysis:/workspace/VisiPrune/workload_analysis/external/llm-viewer:"
+  },
+  "artifacts": {
+    "chrome_trace": "/workspace/VisiPrune/workload_analysis/torch_profile/traces/visipruner_full_1tok_stack_modules/chrome_trace.json"
+  }
+}

@@ -1,12 +1,15 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
+# 被抛弃或不需要使用: legacy FA2-named wrapper kept for compatibility.
+# Prefer the VP-FA config/tag for new runs.
+
 ROOT_DIR="${ROOT_DIR:-/workspace/VisiPrune}"
 PYTHON_BIN="${PYTHON_BIN:-${ROOT_DIR}/venv_profiling/bin/python}"
 SCRIPT="${ROOT_DIR}/autoresearch/experiments/e2_single_request_latency/code/profile_visprune_single_request.py"
 OUTPUT_DIR="${OUTPUT_DIR:-${ROOT_DIR}/autoresearch/experiments/e2_single_request_latency/output}"
 NSYS_BIN="${NSYS_BIN:-/opt/nvidia/nsight-systems/2026.3.1/bin/nsys}"
-TAG="${TAG:-nsys_visprune_full_fa2_32tok}"
+TAG="${TAG:-nsys_visprune_full_vpfa_32tok}"
 
 export HF_HOME="${VISPRUNE_HF_HOME:-${ROOT_DIR}/models}"
 export HUGGINGFACE_HUB_CACHE="${VISPRUNE_HUB_CACHE:-${HF_HOME}/hub}"
@@ -24,7 +27,7 @@ cd "${ROOT_DIR}"
   --stats=true \
   --output "${OUTPUT_DIR}/${TAG}" \
   "${PYTHON_BIN}" "${SCRIPT}" \
-    --config "${CONFIG:-visipruner-full-fa2}" \
+    --config "${CONFIG:-visipruner-full-vp-fa}" \
     --image-path "${IMAGE_PATH:-${ROOT_DIR}/repo/images/v1_73.jpg}" \
     --max-new-tokens "${MAX_NEW_TOKENS:-32}" \
     --warmup-iters "${WARMUP_ITERS:-1}" \

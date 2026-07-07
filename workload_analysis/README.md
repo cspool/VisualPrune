@@ -61,6 +61,64 @@ layer tensor process。
 `with_flops=True` 只能对部分算子，例如 matmul / conv，给出有限 FLOPs 估计。
 它不会自动推导 VisiPrune 这种动态 token pruning 算法的理论复杂度。
 
+### `with_stack=True` / `with_modules=True` 的 eager 实测含义
+
+在当前 eager VisiPrune 路径中，已经运行过一次真实 GPU `torch.profiler`
+实验，并同时开启：
+
+```text
+record_shapes=True
+with_stack=True
+with_modules=True
+```
+
+该次运行捕获到：
+
+```text
+真实 profiler events: 58269
+FunctionEvent.stack 非空行数: 0
+module_hierarchy 非空行数: 0
+```
+
+这说明两点：
+
+- profiler 确实观察到了真实执行的 CPU / CUDA / ATen event flow。
+- 但本次 eager 路径下，自动 Python stack 和 module hierarchy 元数据没有被有效填充。
+
+因此，`with_stack=True` 和 `with_modules=True` 在这里不能被理解为“已经获得了
+源码级或模块级算法 trace”。它们只是请求 profiler 尝试记录这些归因信息；对于
+普通 eager model，尤其是复杂 `generate()` 路径，这些字段可能为空或不稳定。
+
+这也是 `torch.profiler` 不适合作为依赖分析主工具的直接原因之一。依赖分析需要的
+不是简单的事件列表，而是可重建数据流的元数据，例如：
+
+- op 的输入 tensor id
+- op 的输出 tensor id
+- producer-consumer edge
+- view / alias / storage 关系
+- inplace mutation 证据
+- layer / phase / schedule 语义标签
+
+`torch.profiler` 主要回答：
+
+```text
+哪些事件发生了，什么时候发生，用了多久，输入 shape 大概是什么？
+```
+
+它通常不直接回答：
+
+```text
+哪个 op 产出的 tensor 被后续哪个 op 消费？
+这个 view / reshape / slice 是否共享 storage？
+这个 inplace op 修改了哪条后续数据路径？
+这个 op 属于 VisiPrune 的哪个 layer、phase 或 selection process？
+```
+
+即使某些环境下 `with_stack` 或 `with_modules` 能产生非空结果，它们也主要提供
+源码归因和模块归因，不等价于 tensor 级 producer-consumer 依赖。因此它可以辅助
+定位热点和粗粒度执行区域，但不能直接替代 filtered dispatch profile 或 FX /
+reconstruction 流程做依赖重建。
+
 因此，`torch.profiler` 适合做：
 
 - 新算法早期的通用热点初筛

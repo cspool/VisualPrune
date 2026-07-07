@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Attribute Nsight CUDA kernels to per-layer VP-FA NVTX ranges."""
+"""Attribute Nsight CUDA kernels to per-layer NVTX ranges by launch ownership."""
 
 from __future__ import annotations
 
@@ -8,6 +8,7 @@ import csv
 import json
 import re
 import sqlite3
+from bisect import bisect_left
 from collections import defaultdict
 from pathlib import Path
 
@@ -83,22 +84,45 @@ def main() -> None:
     conn.row_factory = sqlite3.Row
     ranges = conn.execute(
         """
-        SELECT start, end, text
-        FROM NVTX_EVENTS
-        WHERE text LIKE 'visprune.layer%'
-          AND end IS NOT NULL
+        SELECT n.start, n.end, COALESCE(s.value, n.text, n.jsonText) AS text
+        FROM NVTX_EVENTS AS n
+        LEFT JOIN StringIds AS s ON n.textId = s.id
+        WHERE COALESCE(s.value, n.text, n.jsonText) LIKE 'visprune.layer%'
+          AND n.end IS NOT NULL
         ORDER BY start
         """
     ).fetchall()
     kernels = conn.execute(
         """
-        SELECT k.start, k.end, s.value AS name
+        SELECT k.start, k.end, k.correlationId, s.value AS name
         FROM CUPTI_ACTIVITY_KIND_KERNEL AS k
-        JOIN StringIds AS s ON k.demangledName = s.id
+        LEFT JOIN StringIds AS s ON k.demangledName = s.id
         ORDER BY k.start
         """
     ).fetchall()
+    runtime_calls = conn.execute(
+        """
+        SELECT r.start, r.end, r.correlationId, s.value AS name
+        FROM CUPTI_ACTIVITY_KIND_RUNTIME AS r
+        LEFT JOIN StringIds AS s ON r.nameId = s.id
+        WHERE r.correlationId IS NOT NULL
+        ORDER BY r.start
+        """
+    ).fetchall()
     conn.close()
+
+    kernels_by_correlation: dict[int, list[sqlite3.Row]] = defaultdict(list)
+    for kernel in kernels:
+        if kernel["correlationId"] is not None:
+            kernels_by_correlation[int(kernel["correlationId"])].append(kernel)
+
+    owned_runtime_calls = [
+        call
+        for call in runtime_calls
+        if call["correlationId"] is not None
+        and int(call["correlationId"]) in kernels_by_correlation
+    ]
+    runtime_starts = [int(call["start"]) for call in owned_runtime_calls]
 
     occurrence_counters: dict[tuple[int, str, str], int] = defaultdict(int)
     rows = []
@@ -114,19 +138,24 @@ def main() -> None:
         occurrence_counters[occurrence_key] += 1
 
         groups: dict[str, dict[str, float | int]] = {}
-        for kernel in kernels:
-            if kernel["end"] <= rng["start"]:
-                continue
-            if kernel["start"] >= rng["end"]:
+        runtime_count = 0
+        kernel_instance_count = 0
+        seen_correlations: set[int] = set()
+        start_idx = bisect_left(runtime_starts, int(rng["start"]))
+        for runtime_call in owned_runtime_calls[start_idx:]:
+            if runtime_call["start"] >= rng["end"]:
                 break
-            overlap_start = max(kernel["start"], rng["start"])
-            overlap_end = min(kernel["end"], rng["end"])
-            if overlap_end <= overlap_start:
+            correlation_id = int(runtime_call["correlationId"])
+            if correlation_id in seen_correlations:
                 continue
-            family = kernel_family(kernel["name"])
-            entry = groups.setdefault(family, {"time_ms": 0.0, "instances": 0})
-            entry["time_ms"] += (overlap_end - overlap_start) / 1e6
-            entry["instances"] += 1
+            seen_correlations.add(correlation_id)
+            runtime_count += 1
+            for kernel in kernels_by_correlation[correlation_id]:
+                family = kernel_family(kernel["name"] or "")
+                entry = groups.setdefault(family, {"time_ms": 0.0, "instances": 0})
+                entry["time_ms"] += (kernel["end"] - kernel["start"]) / 1e6
+                entry["instances"] += 1
+                kernel_instance_count += 1
 
         kernel_total = sum(float(item["time_ms"]) for item in groups.values())
         family_times = {family: float(item["time_ms"]) for family, item in groups.items()}
@@ -145,6 +174,9 @@ def main() -> None:
                 "operator_path": metadata.get("operator_path"),
                 "range_ms": (rng["end"] - rng["start"]) / 1e6,
                 "kernel_total_ms": kernel_total,
+                "attribution_method": "runtime_correlation_id",
+                "owned_runtime_api_calls": runtime_count,
+                "owned_kernel_instances": kernel_instance_count,
                 "dominant_family": dominant_family,
                 "families": groups,
             }
@@ -153,6 +185,15 @@ def main() -> None:
     payload = {
         "source": str(db_path),
         "layer_events": args.layer_events,
+        "attribution_method": "runtime_correlation_id",
+        "kernel_total_ms_definition": (
+            "sum of full CUPTI GPU kernel durations whose CUPTI Runtime API "
+            "correlationId matches the kernel correlationId and whose runtime "
+            "API call starts inside the NVTX CPU range"
+        ),
+        "kernel_record_count": len(kernels),
+        "runtime_record_count": len(runtime_calls),
+        "runtime_records_with_kernel_correlation": len(owned_runtime_calls),
         "range_count": len(rows),
         "rows": rows,
     }
@@ -172,6 +213,9 @@ def main() -> None:
             "workload_type",
             "range_ms",
             "kernel_total_ms",
+            "attribution_method",
+            "owned_runtime_api_calls",
+            "owned_kernel_instances",
             "dominant_family",
         ] + [f"{family}_ms" for family in families]
         writer = csv.DictWriter(f, fieldnames=fieldnames)

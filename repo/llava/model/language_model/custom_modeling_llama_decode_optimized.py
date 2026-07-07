@@ -745,7 +745,7 @@ class VisiPrunerLlamaAttention(nn.Module):
         return attn_output, attn_weights, past_key_value
 
 
-class FA2VisiPrunerLlamaAttention(VisiPrunerLlamaAttention):
+class VPFAVisiPrunerLlamaAttention(VisiPrunerLlamaAttention):
     """
     VP-FA accelerated VisiPruner attention.
 
@@ -895,6 +895,11 @@ class FA2VisiPrunerLlamaAttention(VisiPrunerLlamaAttention):
             return (attn_output, important_vis_tokens, exit_indicator), None, past_key_value
 
         return attn_output, None, past_key_value
+
+
+# 被抛弃或不需要使用: backward-compatible legacy name used by older
+# report/config references. New code should use VPFAVisiPrunerLlamaAttention.
+FA2VisiPrunerLlamaAttention = VPFAVisiPrunerLlamaAttention
 
 
 class LlamaFlashAttention2(LlamaAttention):
@@ -1190,7 +1195,9 @@ class LlamaSdpaAttention(LlamaAttention):
 LLAMA_ATTENTION_CLASSES = {
     "eager": LlamaAttention,
     "visi_pruner": VisiPrunerLlamaAttention,
-    "fa2_visi_pruner": FA2VisiPrunerLlamaAttention,
+    "vpfa_visi_pruner": VPFAVisiPrunerLlamaAttention,
+    # 被抛弃或不需要使用: legacy key kept only for compatibility.
+    "fa2_visi_pruner": VPFAVisiPrunerLlamaAttention,
     "flash_attention_2": LlamaFlashAttention2,
     "sdpa": LlamaSdpaAttention,
 }
@@ -1204,7 +1211,7 @@ class LlamaDecoderLayer(nn.Module):
         self.layer_idx = layer_idx
 
         # Dynamic attention selection based on config flags:
-        # - use_visipruner + flash_attention_2 → FA2VisiPrunerLlamaAttention (NEW)
+        # - use_visipruner + flash_attention_2 → VPFAVisiPrunerLlamaAttention
         # - use_visipruner + eager            → VisiPrunerLlamaAttention (original)
         # - flash_attention_2 (no pruning)    → LlamaFlashAttention2
         # - eager / default (no pruning)      → LlamaAttention
@@ -1212,7 +1219,7 @@ class LlamaDecoderLayer(nn.Module):
         attn_impl = getattr(config, "_attn_implementation", "eager")
 
         if use_visipruner and attn_impl == "flash_attention_2":
-            self.self_attn = FA2VisiPrunerLlamaAttention(config=config, layer_idx=layer_idx)
+            self.self_attn = VPFAVisiPrunerLlamaAttention(config=config, layer_idx=layer_idx)
         elif use_visipruner:
             self.self_attn = VisiPrunerLlamaAttention(config=config, layer_idx=layer_idx)
         elif attn_impl == "flash_attention_2":
@@ -1532,9 +1539,9 @@ class LlamaModel(LlamaPreTrainedModel):
             # 2d mask is passed through the layers
             attention_mask = attention_mask if (attention_mask is not None and 0 in attention_mask) else None
         elif self._use_flash_attention_2:
-            # VisiPruner FA2 prefill still needs the 4D mask for hidden-state
+            # VisiPruner VP-FA prefill still needs the 4D mask for hidden-state
             # cropping bookkeeping. Attention layers ignore this mask for the
-            # FA2 kernel and only use it for the pruning proxy.
+            # VP-FA helper and only use it for the pruning proxy.
             attention_mask = _prepare_4d_causal_attention_mask(
                 attention_mask, (batch_size, seq_length), inputs_embeds, past_key_values_length
             )

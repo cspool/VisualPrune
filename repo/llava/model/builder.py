@@ -79,8 +79,8 @@ def load_pretrained_model(
 
     # Inject use_visipruner into the selected model config so LlamaDecoderLayer
     # selects the correct attention class during from_pretrained. The eager
-    # fallback uses the original modeling file; the FA2 backend uses the copied
-    # optimized modeling file.
+    # fallback uses the original modeling file; the VP-FA backend uses the
+    # copied optimized modeling file.
     visipruner_config = None
     if use_visipruner:
         visipruner_config = llava_config_cls.from_pretrained(model_path)

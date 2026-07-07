@@ -56,17 +56,19 @@ VISIPRUNER_CONFIGS: dict[str, dict[str, Any]] = {
         },
         "description": "Native VisPrune full path: shallow + middle + deep.",
     },
+    # 被抛弃或不需要使用: legacy config name kept only so old artifacts and
+    # scripts still resolve; use "visipruner-full-vp-fa" for new runs.
     "visipruner-full-fa2": {
         "use_flash_attn": True,
         "use_visipruner": True,
-        "visipruner_decode_backend": "auto",
+        "visipruner_decode_backend": "vp-fa",
         "pruning_config": {
             "mode": ["shallow", "middle", "deep"],
             "shallow_mid_layer": 6,
             "layer_threshold": 0.995,
             "tokens_threshold": 0.2,
         },
-        "description": "VisPrune full path with optimized backend auto-selection; currently Triton VP-FA prefill when available.",
+        "description": "Legacy alias for VisPrune full VP-FA; uses Triton VP-FA prefill and existing optimized decode path.",
     },
     "visipruner-full-vp-fa": {
         "use_flash_attn": True,
@@ -212,6 +214,7 @@ def pruning_modes(pruning_config: dict[str, Any] | None) -> set[str]:
 def classify_layer_workload(
     *,
     config_name: str,
+    resolved_backend: str | None = None,
     use_flash_attn: bool,
     pruning_config: dict[str, Any] | None,
     layer_idx: int,
@@ -220,7 +223,7 @@ def classify_layer_workload(
     kv_len: int,
 ) -> str:
     modes = pruning_modes(pruning_config)
-    is_vp_fa = "vp-fa" in config_name
+    is_vp_fa = resolved_backend == "vp_fa" or "vp-fa" in config_name
     dense_backend = "fa2" if use_flash_attn else "eager"
     if not modes:
         if phase == "prefill":
@@ -260,6 +263,7 @@ def classify_layer_workload(
 def describe_operator_path(
     *,
     config_name: str,
+    resolved_backend: str | None = None,
     use_flash_attn: bool,
     pruning_config: dict[str, Any] | None,
     layer_idx: int,
@@ -267,7 +271,7 @@ def describe_operator_path(
     q_len: int,
 ) -> str:
     modes = pruning_modes(pruning_config)
-    is_vp_fa = "vp-fa" in config_name
+    is_vp_fa = resolved_backend == "vp_fa" or "vp-fa" in config_name
     if not modes:
         attention = "FlashAttention2" if use_flash_attn else "eager QK^T/softmax/AV"
         if phase == "prefill":
@@ -406,6 +410,7 @@ def patch_model_for_ranges(
             "kv_len": kv_len,
             "workload_type": classify_layer_workload(
                 config_name=tracker.get("config_name", ""),
+                resolved_backend=tracker.get("resolved_visipruner_decode_backend_selected"),
                 use_flash_attn=bool(tracker.get("use_flash_attn", False)),
                 pruning_config=tracker.get("pruning_config"),
                 layer_idx=idx,
@@ -415,6 +420,7 @@ def patch_model_for_ranges(
             ),
             "operator_path": describe_operator_path(
                 config_name=tracker.get("config_name", ""),
+                resolved_backend=tracker.get("resolved_visipruner_decode_backend_selected"),
                 use_flash_attn=bool(tracker.get("use_flash_attn", False)),
                 pruning_config=tracker.get("pruning_config"),
                 layer_idx=idx,
@@ -729,6 +735,9 @@ def main() -> None:
         tokenizer, model, image_processor, context_len = load_model(
             config, args.model_path, args.model_base
         )
+    resolved_backend = getattr(model.config, "visipruner_decode_backend", None) or {}
+    if isinstance(resolved_backend, dict):
+        tracker["resolved_visipruner_decode_backend_selected"] = resolved_backend.get("selected")
     patch_model_for_ranges(model, recorder, tracker, layer_profile=args.layer_profile)
 
     for _ in range(args.warmup_iters):

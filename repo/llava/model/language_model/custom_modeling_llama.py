@@ -746,6 +746,10 @@ class VisiPrunerLlamaAttention(nn.Module):
 
 class FA2VisiPrunerLlamaAttention(VisiPrunerLlamaAttention):
     """
+    被抛弃或不需要使用: this historical VisiPruner-FA2 implementation is not
+    the current E2 optimized path. Use the VP-FA optimized modeling path
+    instead.
+
     FA2-accelerated VisiPruner attention.
 
     Uses flash_attn_func() for dense attention computation (fast, tiled, IO-aware).
@@ -1191,6 +1195,7 @@ class LlamaSdpaAttention(LlamaAttention):
 LLAMA_ATTENTION_CLASSES = {
     "eager": LlamaAttention,
     "visi_pruner": VisiPrunerLlamaAttention,
+    # 被抛弃或不需要使用: legacy VisiPruner-FA2 attention key.
     "fa2_visi_pruner": FA2VisiPrunerLlamaAttention,
     "flash_attention_2": LlamaFlashAttention2,
     "sdpa": LlamaSdpaAttention,
@@ -1205,7 +1210,8 @@ class LlamaDecoderLayer(nn.Module):
         self.layer_idx = layer_idx
 
         # Dynamic attention selection based on config flags:
-        # - use_visipruner + flash_attention_2 → FA2VisiPrunerLlamaAttention (NEW)
+        # - use_visipruner + flash_attention_2 -> FA2VisiPrunerLlamaAttention
+        #   被抛弃或不需要使用: use the VP-FA optimized modeling path instead.
         # - use_visipruner + eager            → VisiPrunerLlamaAttention (original)
         # - flash_attention_2 (no pruning)    → LlamaFlashAttention2
         # - eager / default (no pruning)      → LlamaAttention

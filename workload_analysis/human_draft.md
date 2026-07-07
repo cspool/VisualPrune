@@ -10,7 +10,7 @@ layer 18: 同layer 7～17计算delta， 再计算每个v的score=(-c)^2（这里
 
 layer 19（～27）：输入序列裁减到58个token（35 text + 10 v + 13 tail），其余同layer 7～17计算， 同样的和ref作差计算delta(?)。
 
-layer28： 输入完全移除v tyokens，其余同layer 7～17计算， 但不需要计算visual delta。
+layer 28： 输入完全移除v tyokens，其余同layer 7～17计算， 但不需要计算visual delta。
 
 
 forward 2：

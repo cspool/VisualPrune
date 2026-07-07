@@ -4,7 +4,7 @@
 
 为 E1 实验编写 `bench_e1_baseline.py`，支持 4 个 model config 的端到端推理，通过 nsys 和 ncu 两层 profiling 采集 GPU 性能数据。
 
-**严格禁止**：Python wall-time 计时（`time.time()`, `CUDATimer`, `torch.cuda.Event`）、CUPTI / `torch.profiler`。所有性能数据必须来自 nsys 或 ncu。
+**严格禁止**：Python wall-time 计时（`time.time()`, `CUDATimer`, `torch.cuda.Event`）、直接 CUPTI collector / `torch.profiler`。所有性能数据必须来自 nsys 或 ncu；nsys 导出的 SQLite `CUPTI_ACTIVITY_KIND_*` 表可作为 nsys 证据读取。
 
 ## 文件位置
 
@@ -86,7 +86,7 @@ from llava.utils import disable_torch_init
 from llava.constants import IMAGE_TOKEN_INDEX, DEFAULT_IMAGE_TOKEN
 ```
 
-**禁止依赖**：`profiling/utils.py`（CUDATimer, BenchResult 等）、`profiling/hardware.py`（HardwareProfiler, CUPTI 等）、`profiling/cupti_collector.py`。
+**禁止依赖**：`profiling/utils.py`（CUDATimer, BenchResult 等）、`profiling/hardware.py`（HardwareProfiler, 直接 CUPTI collector 等）、`profiling/cupti_collector.py`。
 
 ## 核心执行流
 
@@ -429,9 +429,9 @@ python analysis/e1_analyze_nsys.py  # 不在本 spec 范围内
 
 | 组件 | 状态 | 处理方式 |
 |------|------|---------|
-| `profiling/utils.py` | 依赖 wall-time / CUPTI | **不引用** — 重写最小化版本 |
-| `profiling/hardware.py` | 依赖 CUPTI | **不引用** |
-| `profiling/cupti_collector.py` | CUPTI | **不引用** |
+| `profiling/utils.py` | 依赖 wall-time / 直接 CUPTI collector | **不引用** — 重写最小化版本 |
+| `profiling/hardware.py` | 依赖直接 CUPTI collector | **不引用** |
+| `profiling/cupti_collector.py` | 直接 CUPTI collector | **不引用** |
 | `llava/model/builder.py` | 模型加载 | **直接使用** `load_pretrained_model` |
 | `llava/mm_utils.py` | 图像处理 | **直接使用** `process_images`, `tokenizer_image_token` |
 | `llava/model/language_model/llava_llama.py` | `generate()` 入口 | **直接调用** `model.generate()` |

@@ -96,9 +96,9 @@ run_one \
   "${REPORT_DIR}/SAME_INPUT_VISIPRUNER_FULL_EAGER_LAYER_PERFORMANCE_REPORT.md"
 
 run_one \
-  visipruner-full-fa2 \
-  sameinput_visipruner_full_fa2 \
-  "Same-input VisiPruner-FA2 layer performance report" \
+  visipruner-full-vp-fa \
+  sameinput_visipruner_full_vpfa \
+  "Same-input VisiPruner VP-FA layer performance report" \
   "${REPORT_DIR}/SAME_INPUT_VISIPRUNER_FULL_FA2_LAYER_PERFORMANCE_REPORT.md"
 
 "${PYTHON_BIN}" "${AUDIT_SCRIPT}" \

@@ -40,9 +40,9 @@ VARIANTS = [
         "use_visipruner": True,
     },
     {
-        "name": "VisiPruner-FA2",
-        "config": "visipruner-full-fa2",
-        "tag": "sameinput_visipruner_full_fa2",
+        "name": "VisiPruner VP-FA",
+        "config": "visipruner-full-vp-fa",
+        "tag": "sameinput_visipruner_full_vpfa",
         "report": "SAME_INPUT_VISIPRUNER_FULL_FA2_LAYER_PERFORMANCE_REPORT.md",
         "use_flash_attn": True,
         "use_visipruner": True,
