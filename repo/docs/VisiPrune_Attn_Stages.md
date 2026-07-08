@@ -115,18 +115,6 @@ else:
     self.self_attn = LlamaAttention(config=config, layer_idx=layer_idx)
 ```
 
-E1 配置中的 `visipruner-shallow-only` 明确不使用 FA2：
-
-```python
-"visipruner-shallow-only": {
-    "use_flash_attn": False,
-    "pruning_config": {
-        "mode": ["shallow"],
-        "shallow_mid_layer": 6,
-    },
-}
-```
-
 命名注意：
 
 - E1 `bench_e1_baseline.py` 中，`visipruner-full` 配置是 `mode=["middle", "deep"]`。
@@ -373,7 +361,7 @@ A rows \ cols      P keys             V keys             T keys
 | V -> V | keep | 视觉 token 作为 query 时仍可 attend 到视觉 token |
 | P/V/T 其他 block | keep | 正常参与 |
 
-因此，`shallow-only` 不是“只计算文本对文本和视觉 token 的注意力”。它仍然完整计算当前层 dense attention，只是把部分 text-to-visual block 在结果上置零或重定向。
+因此，shallow 阶段不是“只计算文本对文本和视觉 token 的注意力”。它仍然完整计算当前层 dense attention，只是把部分 text-to-visual block 在结果上置零或重定向。
 
 ### 3.3 13B layer 0 分支
 
@@ -409,22 +397,6 @@ A rows \ cols      P keys       V first half       V second half      T keys
 ```
 
 这里没有 `sum` 聚合。
-
-### 3.4 shallow-only 配置的实际含义
-
-`visipruner-shallow-only` 只设置：
-
-```python
-mode = ["shallow"]
-```
-
-因此：
-
-- 只执行本节的 post-softmax `attn_weights` 修改。
-- 不调用 middle 的重要视觉 token 选择。
-- 不调用 deep 的 exit check。
-- 不裁剪 `hidden_states` 长度。
-- 不使用 FA2。
 
 ## 4. Middle Pruning
 
@@ -1181,15 +1153,11 @@ FA2 路径参与和跳过：
 
 ## 9. 对常见问题的直接结论
 
-### shallow-only 使用 FA2 吗？
-
-不使用。E1 `visipruner-shallow-only` 设置 `use_flash_attn=False`，走 eager attention。
-
-### shallow-only 是否跳过视觉 token 的计算？
+### shallow 阶段是否跳过视觉 token 的计算？
 
 不跳过。它先完整计算当前层 dense attention，再修改 softmax 后的 `attn_weights`。它不会缩短序列，因此不会减少后续层 Q/K/V、attention 或 MLP 的 token 数。
 
-### shallow-only 是否只保留文本对文本和视觉 token 的注意力？
+### shallow 阶段是否只保留文本对文本和视觉 token 的注意力？
 
 不准确。7B layer 0 会对 `T -> V` 做 sum 聚合到 key 35，并把 `V -> V` 置零；layer 1..5 只把 `T -> V` 置零，`V -> V` 仍保留。
 

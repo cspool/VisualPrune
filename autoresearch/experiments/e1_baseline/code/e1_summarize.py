@@ -48,7 +48,6 @@ COLOR_MAP = {
     "dense-eager": "#3498db",
     "dense-sdpa": "#9b59b6",
     "visipruner-full": "#e74c3c",
-    "visipruner-shallow-only": "#f39c12",
 }
 
 CONFIG_DISPLAY = {
@@ -56,7 +55,6 @@ CONFIG_DISPLAY = {
     "dense-eager": "Dense + Eager",
     "dense-sdpa": "Dense + SDPA",
     "visipruner-full": "VisiPruner Full",
-    "visipruner-shallow-only": "VisiPruner Shallow",
 }
 
 
@@ -159,7 +157,7 @@ def plot_roofline(ncu_results: list[dict], output_dir: str, gpu_name: str = "RTX
 
     # Plot each kernel as a point
     config_markers = {"dense-fa2": "o", "dense-eager": "s", "dense-sdpa": "D",
-                      "visipruner-full": "^", "visipruner-shallow-only": "v"}
+                      "visipruner-full": "^"}
 
     for r in ncu_results:
         config = r.get("config", "unknown")

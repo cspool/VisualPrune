@@ -14,10 +14,10 @@ This report follows the workload-reading style of `workload_analysis/human_draft
 
 ## Data sources
 
-- clock json: `autoresearch/experiments/e2_single_request_latency/output/clock_sameinput_visipruner_full_fa2_32tok.json`
-- clock ranges: `autoresearch/experiments/e2_single_request_latency/output/clock_sameinput_visipruner_full_fa2_32tok_ranges.csv`
-- layer events: `autoresearch/experiments/e2_single_request_latency/output/clock_sameinput_visipruner_full_fa2_32tok_layer_events.csv`
-- Nsight layer kernels: `autoresearch/experiments/e2_single_request_latency/output/nsys_sameinput_visipruner_full_fa2_32tok_layer_kernel_breakdown.csv`
+- clock json: `autoresearch/experiments/e2_single_request_latency/output/visipruner_full_vp_fa/clock_sameinput_visipruner_full_fa2_32tok.json`
+- clock ranges: `autoresearch/experiments/e2_single_request_latency/output/visipruner_full_vp_fa/clock_sameinput_visipruner_full_fa2_32tok_ranges.csv`
+- layer events: `autoresearch/experiments/e2_single_request_latency/output/visipruner_full_vp_fa/clock_sameinput_visipruner_full_fa2_32tok_layer_events.csv`
+- Nsight layer kernels: `autoresearch/experiments/e2_single_request_latency/output/visipruner_full_vp_fa/nsys_sameinput_visipruner_full_fa2_32tok_layer_kernel_breakdown.csv`
 - Nsight/CUPTI kernel attribution: CUDA Runtime API `correlationId` -> CUPTI GPU kernel `correlationId`; the runtime API call start must fall inside the NVTX CPU range. This is CUPTI launch-owned kernel attribution, not kernel-vs-range execution overlap.
 - human draft reference: `/workspace/VisiPrune/workload_analysis/human_draft.md`
 

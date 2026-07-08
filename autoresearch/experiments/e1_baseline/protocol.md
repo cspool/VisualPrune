@@ -25,7 +25,6 @@ Gap 多大？L1 占比多少？即 VisiPruner 的理论加速比（2.17×）与�
 | dense-fa2 | Dense baseline, Flash Attention 2 | FA2 | 无 |
 | dense-eager | Dense baseline, Eager mode | Eager | 无 |
 | visipruner-full | VisiPruner 完整流水线 | Eager | 全部层 |
-| visipruner-shallow-only | 仅 shallow layer pruning | Eager | 仅 shallow 层 |
 
 ### 公共参数
 
@@ -66,7 +65,7 @@ Gap 多大？L1 占比多少？即 VisiPruner 的理论加速比（2.17×）与�
 对每个 config 运行 nsys，**不做任何 kernel 过滤**，收集全量 GPU kernel 时间分布：
 
 ```bash
-for config in dense-fa2 dense-eager visipruner-full visipruner-shallow-only; do
+for config in dense-fa2 dense-eager visipruner-full; do
     nsys profile \
         --trace cuda,nvtx,cublas \
         --stats=true \
@@ -185,7 +184,6 @@ Latency-bound:  O_SM < 60%      AND U_bw < 30% AND U_compute < 30%
 | dense-fa2 | 最低 | - | - | - | Compute-bound (GEMM) |
 | dense-eager | ~1.1-1.3× | - | - | - | Memory-bound (attention) |
 | visipruner-full | > dense-fa2 | < 50% | ~30% | ~20% | Memory-bound (pruning ops) |
-| visipruner-shallow-only | 略低于 full | < 50% | ~30% | ~20% | Memory-bound |
 
 ## 产出物
 

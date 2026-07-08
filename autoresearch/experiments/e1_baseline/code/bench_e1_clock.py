@@ -111,14 +111,6 @@ CONFIGS = {
         },
         "description": "VisiPruner full pipeline (middle+deep pruning)",
     },
-    "visipruner-shallow-only": {
-        "use_flash_attn": False,
-        "pruning_config": {
-            "mode": ["shallow"],
-            "shallow_mid_layer": 6,
-        },
-        "description": "VisiPruner shallow-only pruning",
-    },
 }
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -334,11 +326,6 @@ def print_comparison_table(results, baseline_key="dense-fa2"):
         if actual_su < 1.0:
             print(f"    ⚠  VisiPruner is actually {1/actual_su:.1f}× SLOWER "
                   f"than Dense-FA2!")
-
-    visi_shallow = valid.get("visipruner-shallow-only")
-    if visi_shallow and baseline:
-        su_shallow = baseline_ms / visi_shallow["mean_ms"] if visi_shallow["mean_ms"] > 0 else 0
-        print(f"    visipruner-shallow-only vs {baseline_key}: {su_shallow:.3f}×")
 
     dense_eager = valid.get("dense-eager")
     if dense_eager and baseline:

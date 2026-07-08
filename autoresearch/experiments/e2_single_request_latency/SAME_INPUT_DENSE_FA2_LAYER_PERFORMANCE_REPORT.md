@@ -13,10 +13,10 @@ This report follows the workload-reading style of `workload_analysis/human_draft
 
 ## Data sources
 
-- clock json: `/workspace/VisiPrune/autoresearch/experiments/e2_single_request_latency/output/clock_sameinput_dense_fa2_32tok.json`
-- clock ranges: `/workspace/VisiPrune/autoresearch/experiments/e2_single_request_latency/output/clock_sameinput_dense_fa2_32tok_ranges.csv`
-- layer events: `/workspace/VisiPrune/autoresearch/experiments/e2_single_request_latency/output/clock_sameinput_dense_fa2_32tok_layer_events.csv`
-- Nsight layer kernels: `/workspace/VisiPrune/autoresearch/experiments/e2_single_request_latency/output/nsys_sameinput_dense_fa2_32tok_layer_kernel_breakdown.csv`
+- clock json: `/workspace/VisiPrune/autoresearch/experiments/e2_single_request_latency/output/dense_fa2/clock_sameinput_dense_fa2_32tok.json`
+- clock ranges: `/workspace/VisiPrune/autoresearch/experiments/e2_single_request_latency/output/dense_fa2/clock_sameinput_dense_fa2_32tok_ranges.csv`
+- layer events: `/workspace/VisiPrune/autoresearch/experiments/e2_single_request_latency/output/dense_fa2/clock_sameinput_dense_fa2_32tok_layer_events.csv`
+- Nsight layer kernels: `/workspace/VisiPrune/autoresearch/experiments/e2_single_request_latency/output/dense_fa2/nsys_sameinput_dense_fa2_32tok_layer_kernel_breakdown.csv`
 - Nsight/CUPTI kernel attribution: CUDA Runtime API `correlationId` -> CUPTI GPU kernel `correlationId`; the runtime API call start must fall inside the NVTX CPU range. This is CUPTI launch-owned kernel attribution, not kernel-vs-range execution overlap.
 - human draft reference: `/workspace/VisiPrune/workload_analysis/human_draft.md`
 

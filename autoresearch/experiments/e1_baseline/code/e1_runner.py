@@ -49,7 +49,7 @@ import e1_analysis as ana
 
 # ── Defaults ────────────────────────────────────────────────────────────
 BENCH_SCRIPT = os.path.join(_CODE_DIR, "bench_e1_baseline.py")
-ALL_CONFIGS = ["dense-fa2", "dense-eager", "visipruner-full", "visipruner-shallow-only"]
+ALL_CONFIGS = ["dense-fa2", "dense-eager", "visipruner-full"]
 DEFAULT_GPU = 1
 DEFAULT_MODEL_PATH = "liuhaotian/llava-v1.5-7b"
 DEFAULT_CACHE_DIR = "/workspace/VisPrune/models"

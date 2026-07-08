@@ -32,4 +32,5 @@ exec "${PYTHON_BIN}" "${SCRIPT}" \
   --sync-timing on \
   --nvtx on \
   --layer-profile \
+  --fx-process-profile "${FX_PROCESS_PROFILE:-off}" \
   --tag "${TAG}"

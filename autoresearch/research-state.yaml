@@ -44,7 +44,6 @@ findings_20260616:
     dense_fa2_ms: 79.3
     dense_eager_ms: 1490.6
     visipruner_full_ms: 1516.2
-    visipruner_shallow_ms: 1490.5
     actual_speedup_vs_fa2: 0.052x
     conclusion: "Eager attention is 19× slower than FA2. VisiPruner vs Dense-FA2 comparison is dominated by attention backend, not pruning. UNFAIR."
     action: "Cancel eager-vs-FA2 comparison. Redesign with FA2 backend for VisiPruner."
@@ -73,27 +72,6 @@ findings_20260702:
       decode_19_to_27: "kv_len 59 -> 89"
       decode_28_to_31: "kv_len 49 -> 79"
     conclusion: "Triton VP-FA prefill is now measured; the 32-token single-request path remains decode dominated, mainly by repeated small GEMV/cuBLAS work."
-  focused_e2_layer_profiles:
-    status: done
-    status_doc: experiments/e2_single_request_latency/OTHER_EXPERIMENTS_LAYER_PERFORMANCE_STATUS.md
-    reports:
-      - experiments/e2_single_request_latency/E2_DENSE_FA2_LAYER_PERFORMANCE_REPORT.md
-      - experiments/e2_single_request_latency/E2_VISIPRUNER_FULL_EAGER_LAYER_PERFORMANCE_REPORT.md
-      - experiments/e2_single_request_latency/E2_VISIPRUNER_FULL_FA2_LAYER_PERFORMANCE_REPORT.md
-    e2_32tok_request_ms:
-      dense_fa2: 1352.631
-      visipruner_full_eager: 1544.539
-      visipruner_full_fa2: 1755.986
-    retained_configs:
-      - dense-fa2
-      - visipruner-full
-      - visipruner-full-fa2
-    removed_from_scope:
-      - dense-fa
-      - visipruner-shallow-only
-      - E1 layer-profile reports and clock_e1/nsys_e1 artifacts
-    conclusion: "Focused E2 layer-profile state now retains only dense-FA2, eager VisiPruner full, and VisiPruner-FA2 reports. Decode remains the dominant end-to-end cost in the retained reports."
-
 findings_20260703:
   same_input_three_way_layer_retest:
     status: done
@@ -154,12 +132,11 @@ experiments:
   e0_nsys_baseline:
     status: done
     protocol: experiments/e1_baseline/protocol.md
-    description: "Original E1: nsys profiling of dense-fa2, dense-eager, visipruner-full, visipruner-shallow-only"
+    description: "Original E1: nsys profiling of dense-fa2, dense-eager, and visipruner-full."
     results:
       dense_fa2_ms: 79.3
       dense_eager_ms: 1490.6
       visipruner_full_ms: 1516.2
-      visipruner_shallow_ms: 1490.5
       actual_speedup: 0.052x
     conclusion: "UNFAIR — attention backend dominates. Move to FA2-VisiPruner."
 
@@ -169,7 +146,6 @@ experiments:
     configs:
       - dense-fa2              # Dense + FA2 (baseline)
       - visipruner-fa2-full    # NEW: VisiPruner + FA2 + lightweight pruning proxy (middle+deep)
-      - visipruner-fa2-shallow # NEW: VisiPruner + FA2 (shallow-only, no middle/deep pruning)
     metrics:
       - T_total (nsys GPU time)
       - actual_speedup vs dense-fa2

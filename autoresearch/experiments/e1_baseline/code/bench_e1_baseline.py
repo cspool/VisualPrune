@@ -31,7 +31,6 @@ Configs:
     dense-eager            Dense + Eager attention (no pruning)
     dense-sdpa             Dense + SDPA (PyTorch native reference)
     visipruner-full        VisiPruner full pipeline (middle+deep pruning)
-    visipruner-shallow-only VisiPruner shallow-only pruning
 """
 
 import argparse
@@ -118,14 +117,6 @@ CONFIGS = {
             "tokens_threshold": 0.2,
         },
         "description": "VisiPruner full pipeline (middle+deep pruning)",
-    },
-    "visipruner-shallow-only": {
-        "use_flash_attn": False,
-        "pruning_config": {
-            "mode": ["shallow"],
-            "shallow_mid_layer": 6,
-        },
-        "description": "VisiPruner shallow-only pruning",
     },
 }
 

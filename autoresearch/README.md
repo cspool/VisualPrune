@@ -2,27 +2,21 @@
 
 ## Nsight Systems Range 与 Kernel Time 的含义
 
-当前 E2 单请求实验使用 Nsight Systems 记录真实推理 timeline。现在的 layer/kernel
-归因不再使用 “CUDA kernel 时间窗和 NVTX range 时间窗 overlap”，而是：
+E2 单请求实验把 clock 计时、NVTX CPU range 和 CUPTI kernel activity 分开使用。正式结论必须先确认三类数据的物理含义：
 
-1. 用 `nsys profile` 记录 CUDA / NVTX / cuBLAS / OS runtime 事件。
-2. Python 侧给 `request`、`forward`、`layer`、`attn`、`mlp` 等代码段打 NVTX range。
-3. 后处理脚本读取 nsys 导出的 SQLite。
-4. 先找 `start` 落在 NVTX range 内的 CUDA Runtime API 调用。
-5. 再用 `CUPTI_ACTIVITY_KIND_RUNTIME.correlationId` 匹配
-   `CUPTI_ACTIVITY_KIND_KERNEL.correlationId`，把这些 kernel 归到该 range。
+- `request_total_ms` / `generate_total_ms`：端到端 clock 计时。当前 request 返回前执行 `torch.cuda.synchronize()`，优先作为单请求端到端延迟。
+- `NVTX CPU range ms`：CPU/Python 进入和离开 request、forward、layer、attn、mlp scope 的时间跨度。它是 timeline 标记，不是该 scope 的 GPU completion latency。
+- `CUPTI launch-owned kernel sum ms`：NVTX range 内 CUDA Runtime API 发起、并由 `correlationId` 匹配到的 CUPTI kernel duration 求和。它不是 GPU wall-clock span，也不能在嵌套 range 或并发 kernel 之间直接相加。
 
-因此，当前报告里的 `NVTX CPU range` 和 `CUPTI launch-owned kernel` 字段必须按下面的边界理解。
+### 当前采集与归因链路
 
-### 当前 nsys 如何运行
-
-入口脚本：
+当前入口脚本是：
 
 ```bash
 autoresearch/experiments/e2_single_request_latency/code/run_nsys_layer_profile_single_request.sh
 ```
 
-核心命令：
+核心采集命令等价于：
 
 ```bash
 nsys profile \
@@ -30,7 +24,7 @@ nsys profile \
   --capture-range=cudaProfilerApi \
   --capture-range-end=stop \
   --stats=true \
-  ...
+  ... \
   profile_visprune_single_request.py \
     --sync-timing off \
     --nvtx on \
@@ -38,108 +32,15 @@ nsys profile \
     --layer-profile
 ```
 
-含义：
+`cudaProfilerApi` 只采集 measured request；`--sync-timing off` 保留真实异步执行形态；`--layer-profile` 在 request、forward、layer、attn、mlp 等 CPU scope 上打 NVTX range。
 
-- `cuda`: 记录 CUDA runtime/API 和 kernel activity。
-- `nvtx`: 记录 Python 侧打出的 NVTX range。
-- `cublas`: 记录 cuBLAS 调用。
-- `osrt`: 记录部分 OS runtime 活动。
-- `cudaProfilerApi`: 只采集 `torch.cuda.profiler.start()` 到
-  `torch.cuda.profiler.stop()` 之间的 measured request，避开模型加载和 warmup。
-- `--sync-timing off`: 不在每个 range 前后插入 CUDA 同步，尽量保留真实异步执行形态。
-
-### Python/CPU 侧记录了什么
-
-`profile_visprune_single_request.py` 中的 `LatencyRecorder.range()` 会在代码段前后调用：
-
-```python
-torch.cuda.nvtx.range_push(name)
-...
-torch.cuda.nvtx.range_pop()
-```
-
-`--layer-profile` 会 monkey patch 这些函数或模块：
-
-- `model.forward`
-- `layer.forward`
-- `layer.self_attn.forward`
-- `layer.mlp.forward`
-- `value_aware_token_selection`
-
-因此 nsys timeline 中会看到类似：
-
-```text
-visprune.request
-visprune.forward_prefill
-visprune.layer00.prefill
-visprune.layer00.prefill.attn
-visprune.layer00.prefill.mlp
-```
-
-这些 range 表示 CPU/Python 执行到对应代码段的时间窗。由于 CUDA 调用通常是异步的，
-CPU 调用 PyTorch op 后只是 enqueue CUDA/cuBLAS/Triton/FlashAttention 工作，然后继续执行。
-GPU 可能稍后才真正执行这些 kernel。
-
-所以当前 `NVTX CPU range` 的严格含义是：
-
-```text
-CPU 进入这个 Python/module scope 到 CPU 离开这个 scope 的 NVTX 时间跨度。
-```
-
-它不是：
-
-```text
-GPU 完整执行这个 layer/attn/mlp 的耗时。
-```
-
-### GPU/CUDA 侧记录了什么
-
-Nsight Systems 通过 CUPTI activity 记录 CUDA Runtime API 和 CUDA kernel：
-
-```text
-runtime.start
-runtime.end
-runtime.name
-runtime.correlationId
-
-kernel.start
-kernel.end
-kernel.name
-kernel.correlationId
-```
-
-单个 kernel 的 duration 通常是可信的。归因问题不在 kernel duration 本身，而在
-“这个 kernel 应该归到哪个 layer/range”。
-
-不开同步时，常见执行关系是：
-
-```text
-CPU: enter layer00.mlp range
-CPU: enqueue MLP GEMM
-CPU: exit layer00.mlp range
-
-GPU:                  MLP GEMM actually runs later
-```
-
-此时 MLP GEMM 的 kernel duration 是准确的，但它不一定和 `layer00.mlp` 的
-NVTX 时间窗重叠。
-
-### 后处理如何计算 nsys kernel time
-
-后处理脚本：
+后处理脚本是：
 
 ```bash
 autoresearch/experiments/e2_single_request_latency/code/analyze_layer_nsys.py
 ```
 
-它读取：
-
-- `NVTX_EVENTS`: 每个 range 的 `start/end/text`
-- `CUPTI_ACTIVITY_KIND_RUNTIME`: 每个 CUDA Runtime API 调用的
-  `start/end/name/correlationId`
-- `CUPTI_ACTIVITY_KIND_KERNEL`: 每个 kernel 的 `start/end/name/correlationId`
-
-然后对每个 range 做 launch ownership 归因：
+它读取 `NVTX_EVENTS`、`CUPTI_ACTIVITY_KIND_RUNTIME` 和 `CUPTI_ACTIVITY_KIND_KERNEL`，对每个 range 使用 launch ownership 归因：
 
 ```text
 owned_runtime_api(range)
@@ -152,130 +53,40 @@ kernel_total_ms(range)
   = sum(kernel.end - kernel.start for owned_cupti_kernel(range))
 ```
 
-也就是说，当前报告里的 `CUPTI launch-owned kernel sum ms` / `kernel_total_ms` 表示：
+因此报告中的 `kernel_total_ms` 只能解释为“该 NVTX CPU range 内 CUDA Runtime API 调用发起的 CUPTI GPU kernel 完整 duration 总和”。它不能解释为“kernel 物理执行时间窗落在这个 NVTX range 内”，也不能解释为“这个 layer 在 GPU 上独占运行了多久”。
 
-```text
-由这个 NVTX CPU range 内的 CUDA Runtime API 调用发起的 CUPTI GPU kernel 完整 duration 总和。
+### 使用边界
+
+- 端到端性能优先使用 measured request 的 clock/nsys 结果，尤其是 `request_total_ms`。
+- layer/component breakdown 使用 Runtime `correlationId` 到 kernel `correlationId` 的 launch ownership；不要再使用 kernel-vs-NVTX overlap。
+- `range_ms - kernel_total_ms` 不是严格 CPU overhead，因为二者不是同一个物理量。
+- 如果需要分析多个 kernel 的并发关系，使用 Nsight Systems 的 GPU timeline、stream、kernel start/end；Nsight Compute 更适合单个 kernel 的 counters 和 source-level 诊断。
+- 多轮相同输入可以降低随机波动，但不能替代归因规则审计。
+
+## SAME_INPUT 与 process-wise workflow skills
+
+当前 layer-wise 性能数据生成流程合并为一个主 skill：
+
+1. `$visipruner-same-input-layer-wise-workflow`
+   用于从 FX process trace 的输入契约出发，生成同输入的 VisiPruner full eager layer-wise Nsight/NVTX/CUPTI 性能数据。它内部覆盖 4 件事：读取 FX trace 的 image/prompt/max token/weights/config/backend；运行或生成等价 `profile_visprune_single_request.py` 与 `run_nsys_layer_profile_single_request.sh`；用 Runtime `correlationId` -> CUPTI kernel `correlationId` 生成 `*_layer_kernel_breakdown.csv/json`；按报告约束生成 `SAME_INPUT_VISIPRUNER_FULL_EAGER_LAYER_PERFORMANCE_REPORT.md`。
+
+   该 workflow 不再要求 clock/sync 采样，不再要求 `run_clock_layer_profile_single_request.sh`、clock JSON、clock ranges 或 clock total 作为必需产物。报告的必要性能列是 `NVTX CPU range ms` 和 `CUPTI launch-owned kernel sum ms`，并保留 q/kv/workload 与 kernel-family 证据。
+
+   原 `$visipruner-sampled-latency-attribution` 和 `$visipruner-same-input-evidence` 不再作为独立 workflow 使用；它们的内容已经并入 `$visipruner-same-input-layer-wise-workflow`，分别作为归因检查和报告约束。
+
+2. `$visipruner-process-performance-breakdown`
+   用于在已有 process-level 或 fragment-level NVTX instrumentation 的情况下，生成严格的 observed process-wise 报告。当前默认命令是：
+
+```bash
+python autoresearch/experiments/e2_single_request_latency/code/generate_process_performance_breakdown.py
 ```
 
-它不等于：
+它默认消费 process-level NVTX 和 Nsight/CUPTI 数据，输出 `SAME_INPUT_*_PROCESS_WISE_PERFORMANCE_REPORT.md` 与聚合 CSV/JSON。不要把它用于没有 process-level NVTX 的 full-layer 估计。
 
-```text
-这个 layer 在 GPU 上占用 wall-clock 的时间。
-```
+3. `$visipruner-segmented-process-attribution`
+   用于在只有部分代表 input-layer process trace、但已有全端到端 layer-wise Nsight 数据时，做 full-layer process attribution。它使用代表 input-layer 的 process 模板和理论复杂度比值形成 process 权重，再按每个目标 layer 自己的实测 layer-wise latency 归一化，保证 layer 内守恒。
 
-原因有三点：
-
-- kernel 可以在 CPU range 结束后才开始或结束；launch ownership 仍会把它完整计入该 range。
-- 多个 CUPTI kernel 如果并发执行，`kernel_total_ms` 是 duration 求和，不是 GPU 时间轴 span。
-- `layer`、`attn`、`mlp` 是嵌套 range；同一个 kernel 可以同时属于父 range 和子 range，
-  这些表项不能相加。
-
-### 为什么仍然要区分端到端 latency 和 breakdown
-
-端到端 latency 应优先看 clock JSON 里的外层 request/generate/forward 计时，而不是把
-per-layer `kernel_total_ms` 相加。当前 `profile_visprune_single_request.py` 中，
-`visprune.request` 包住完整 request，并且 `run_request()` 在返回前执行一次
-`torch.cuda.synchronize()`；因此 `request_total_ms` 更接近用户可感知的单请求端到端时间。
-
-`generate_total_ms`、`forward_prefill_ms`、`forward_decode_sum_ms` 等 breakdown 则是
-CPU/NVTX scope 或 Python 计时分段。它们用于解释时间花在什么阶段，但不开
-`--sync-timing on` 时，不应解释为每个阶段的完整 GPU completion latency。
-
-### 当前 NVTX CPU range 是否合理
-
-当前 `NVTX CPU range` 是合理的，但含义有限：
-
-```text
-它是低侵入的 CPU/NVTX timeline 标记，保留真实异步执行形态。
-```
-
-它适合用来：
-
-- 标记 request / forward / layer / attn / mlp 在 CPU 侧发生的位置。
-- 查看真实异步执行下的 timeline 结构。
-- 按 CUDA Runtime correlationId 找到 range 内 launch 出来的 GPU kernel。
-- 与正式端到端 nsys/clock 实验保持较低侵入性。
-
-它不适合直接解释为：
-
-```text
-这个 layer 在 GPU 上完整执行了多久。
-```
-
-也不适合直接用：
-
-```text
-range_ms - kernel_total_ms
-```
-
-解释为严格的 kernel launch / 同步 / CPU-only overhead。因为 `range_ms` 是 CPU scope，
-`kernel_total_ms` 是 CUPTI launch-owned kernel duration 求和，两者不是同一个物理量。
-
-### 多轮相同输入的作用
-
-相同输入多轮 nsys 有价值，可以降低随机波动：
-
-- GPU clock / boost 状态波动
-- OS / driver 调度波动
-- allocator/cache 状态差异
-- kernel launch 间隙的小幅波动
-- Nsight 采集扰动
-
-多轮不能消除所有系统性偏差。例如如果一个框架后台线程在同一时间窗提交 CUDA
-工作，而分析脚本只按全局 timestamp 判断 range containment，就仍然可能需要线程或
-stack 约束来进一步收窄归因。不过相比 kernel-vs-range overlap，当前 correlationId
-方法已经避免了“只统计落在 CPU range 内的 kernel 片段”这个主要偏差。
-
-### 如何做更严格的诊断
-
-如果目标是验证 “相同输入 layer0 下 FA2 attention core 应该快于 eager
-`QK^T / softmax / AV`”，不要只看 `layer total kernel_total_ms`。
-
-更合理的诊断方式：
-
-1. 继续使用无同步 nsys/clock 作为正式端到端性能证据。
-2. layer/component breakdown 使用 Runtime correlationId -> kernel correlationId。
-3. 在 attention 内部拆更细 NVTX：
-   - q/k/v projection
-   - RoPE
-   - FA2 core 或 eager QK
-   - softmax
-   - AV
-   - o_proj
-4. 必要时单独跑同步诊断版 profile，只用于归因，不用于端到端 latency 结论：
-
-```python
-torch.cuda.synchronize()
-torch.cuda.nvtx.range_push(name)
-...
-torch.cuda.synchronize()
-torch.cuda.nvtx.range_pop()
-```
-
-5. 或者绕开 layer range 归因，按 kernel name / kernel family 在 measured request
-   内聚合：
-   - dense FA2: FlashAttention core kernel
-   - eager attention: QK GEMM + softmax + AV GEMM
-6. 如果要分析多个 kernel 的并发关系，使用 Nsight Systems 的 GPU timeline/span、
-   stream 和 kernel start/end；Nsight Compute 更适合单个 kernel 的 counters 和
-   source-level 诊断，不适合直接复原原始多 kernel 并发 timeline。
-
-### 推荐结论口径
-
-正式报告中应区分：
-
-- **端到端性能**: 使用 measured request 的 clock/nsys，保留真实执行形态；优先看
-  `request_total_ms`。
-- **GPU kernel 实际耗时**: 使用 Nsight kernel duration 或按 kernel name/family 聚合。
-- **layer/component 归因**: 使用 Runtime correlationId -> kernel correlationId 的
-  launch ownership；不要再用 kernel-vs-NVTX overlap。
-
-因此，当前项目中的 nsys layer report 应把 `kernel_total_ms` 解释成：
-
-```text
-kernel_total_ms 是该 NVTX CPU range 内 CUDA Runtime API 调用发起的 CUPTI GPU kernel 完整 duration 总和。
-```
+协作方式：先用 `$visipruner-same-input-layer-wise-workflow` 生成和检查同 FX 输入的 layer-wise Nsight 数据；若有 process-level NVTX，则用 `$visipruner-process-performance-breakdown` 生成 observed process-wise 报告；若只采样了代表 input-layer，则用 `$visipruner-segmented-process-attribution` 做复杂度缩放、layer-conserved 的 full-layer process 估计。
 
 ## E2 单层推理过程 UML 时序图
 

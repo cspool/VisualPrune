@@ -2,7 +2,7 @@
 
 ## 概述
 
-为 E1 实验编写 `bench_e1_baseline.py`，支持 4 个 model config 的端到端推理，通过 nsys 和 ncu 两层 profiling 采集 GPU 性能数据。
+为 E1 实验编写 `bench_e1_baseline.py`，支持 3 个 model config 的端到端推理，通过 nsys 和 ncu 两层 profiling 采集 GPU 性能数据。
 
 **严格禁止**：Python wall-time 计时（`time.time()`, `CUDATimer`, `torch.cuda.Event`）、直接 CUPTI collector / `torch.profiler`。所有性能数据必须来自 nsys 或 ncu；nsys 导出的 SQLite `CUPTI_ACTIVITY_KIND_*` 表可作为 nsys 证据读取。
 
@@ -20,7 +20,7 @@ python bench_e1_baseline.py \
     --model-base <str>           # 可选, LoRA base
     --image-path <str>           # 单张图片路径 (必需)
     --prompt <str>               # 默认: "Describe the image briefly."
-    --config <str>               # dense-fa2 | dense-eager | visipruner-full | visipruner-shallow-only
+    --config <str>               # dense-fa2 | dense-eager | visipruner-full
     --mode <str>                 # nsys-profile | ncu-profile
     --max-new-tokens <int>       # 默认: nsys=128, ncu=32
     --cache-dir <str>            # HF cache, 默认: ~/.cache/huggingface
@@ -60,14 +60,6 @@ CONFIGS = {
             "tokens_threshold": 0.2,
         },
         "description": "VisiPruner full pipeline (shallow+middle+deep)",
-    },
-    "visipruner-shallow-only": {
-        "attn_implementation": "eager",
-        "pruning_config": {
-            "mode": ["shallow"],
-            "shallow_mid_layer": 6,
-        },
-        "description": "VisiPruner shallow-only",
     },
 }
 ```
@@ -393,7 +385,7 @@ bench 脚本只负责**运行**推理。nsys 数据采集由 nsys wrapper 完成
 # E1 Step 1 完整流程（人工或外层脚本执行）:
 
 # 1. 采集
-for config in dense-fa2 dense-eager visipruner-full visipruner-shallow-only; do
+for config in dense-fa2 dense-eager visipruner-full; do
     nsys profile \
         --trace cuda,nvtx,cublas \
         --stats=true \
@@ -407,7 +399,7 @@ for config in dense-fa2 dense-eager visipruner-full visipruner-shallow-only; do
 done
 
 # 2. 导出 kernel 统计
-for config in dense-fa2 dense-eager visipruner-full visipruner-shallow-only; do
+for config in dense-fa2 dense-eager visipruner-full; do
     nsys stats --report cuda_gpu_kern_sum --format csv \
         --output e1_nsys_${config}_kernels.csv \
         e1_nsys_${config}.nsys-rep

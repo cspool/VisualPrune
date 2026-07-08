@@ -20,6 +20,7 @@
 """ PyTorch LLaMA model."""
 import math
 import warnings
+from contextlib import nullcontext
 from typing import List, Optional, Tuple, Union, Dict
 
 import torch
@@ -68,6 +69,20 @@ if is_torch_fx_available():
 logger = logging.get_logger(__name__)
 
 _CONFIG_FOR_DOC = "LlamaConfig"
+
+
+def _visipruner_fx_process_range(
+    module: nn.Module,
+    process_id: str,
+    slug: str,
+    *,
+    q_len: Optional[int] = None,
+    part: Optional[int] = None,
+):
+    range_factory = getattr(module, "_visprune_fx_process_range", None)
+    if range_factory is None:
+        return nullcontext()
+    return range_factory(process_id=process_id, slug=slug, q_len=q_len, part=part)
 
 
 def _get_unpad_data(attention_mask):
@@ -630,110 +645,128 @@ class VisiPrunerLlamaAttention(nn.Module):
 
         bsz, q_len, _ = hidden_states.size()
 
-        if self.config.pretraining_tp > 1:
-            key_value_slicing = (self.num_key_value_heads * self.head_dim) // self.config.pretraining_tp
-            query_slices = self.q_proj.weight.split(
-                (self.num_heads * self.head_dim) // self.config.pretraining_tp, dim=0
-            )
-            key_slices = self.k_proj.weight.split(key_value_slicing, dim=0)
-            value_slices = self.v_proj.weight.split(key_value_slicing, dim=0)
-
-            query_states = [F.linear(hidden_states, query_slices[i]) for i in range(self.config.pretraining_tp)]
-            query_states = torch.cat(query_states, dim=-1)
-
-            key_states = [F.linear(hidden_states, key_slices[i]) for i in range(self.config.pretraining_tp)]
-            key_states = torch.cat(key_states, dim=-1)
-
-            value_states = [F.linear(hidden_states, value_slices[i]) for i in range(self.config.pretraining_tp)]
-            value_states = torch.cat(value_states, dim=-1)
-
-        else:
-            query_states = self.q_proj(hidden_states)
-            key_states = self.k_proj(hidden_states)
-            value_states = self.v_proj(hidden_states)
-
-        query_states = query_states.view(bsz, q_len, self.num_heads, self.head_dim).transpose(1, 2)
-        key_states = key_states.view(bsz, q_len, self.num_key_value_heads, self.head_dim).transpose(1, 2)
-        value_states = value_states.view(bsz, q_len, self.num_key_value_heads, self.head_dim).transpose(1, 2)
-
-        kv_seq_len = key_states.shape[-2]
-        if past_key_value is not None:
-            if self.layer_idx is None:
-                raise ValueError(
-                    f"The cache structure has changed since version v4.36. If you are using {self.__class__.__name__} "
-                    "for auto-regressive decoding with k/v caching, please make sure to initialize the attention class "
-                    "with a layer index."
+        with _visipruner_fx_process_range(
+            self, "qkv_projection", "qkv_projection", q_len=q_len
+        ):
+            if self.config.pretraining_tp > 1:
+                key_value_slicing = (self.num_key_value_heads * self.head_dim) // self.config.pretraining_tp
+                query_slices = self.q_proj.weight.split(
+                    (self.num_heads * self.head_dim) // self.config.pretraining_tp, dim=0
                 )
-            kv_seq_len += past_key_value.get_usable_length(kv_seq_len, self.layer_idx)
-        cos, sin = self.rotary_emb(value_states, seq_len=position_ids[0,-1]+1)
-        query_states, key_states = apply_rotary_pos_emb(query_states, key_states, cos, sin, position_ids)
+                key_slices = self.k_proj.weight.split(key_value_slicing, dim=0)
+                value_slices = self.v_proj.weight.split(key_value_slicing, dim=0)
 
-        if past_key_value is not None:
-            cache_kwargs = {"sin": sin, "cos": cos}  # Specific to RoPE models
-            key_states, value_states = past_key_value.update(key_states, value_states, self.layer_idx, cache_kwargs)
+                query_states = [F.linear(hidden_states, query_slices[i]) for i in range(self.config.pretraining_tp)]
+                query_states = torch.cat(query_states, dim=-1)
 
-        key_states = repeat_kv(key_states, self.num_key_value_groups)
-        value_states = repeat_kv(value_states, self.num_key_value_groups)
+                key_states = [F.linear(hidden_states, key_slices[i]) for i in range(self.config.pretraining_tp)]
+                key_states = torch.cat(key_states, dim=-1)
 
-        attn_weights = torch.matmul(query_states, key_states.transpose(2, 3)) / math.sqrt(self.head_dim)
+                value_states = [F.linear(hidden_states, value_slices[i]) for i in range(self.config.pretraining_tp)]
+                value_states = torch.cat(value_states, dim=-1)
 
-        if attn_weights.size() != (bsz, self.num_heads, q_len, kv_seq_len):
-            raise ValueError(
-                f"Attention weights should be of size {(bsz, self.num_heads, q_len, kv_seq_len)}, but is"
-                f" {attn_weights.size()}"
-            )
+            else:
+                query_states = self.q_proj(hidden_states)
+                key_states = self.k_proj(hidden_states)
+                value_states = self.v_proj(hidden_states)
 
-        if attention_mask is not None:
-            if attention_mask.size() != (bsz, 1, q_len, kv_seq_len):
+            query_states = query_states.view(bsz, q_len, self.num_heads, self.head_dim).transpose(1, 2)
+            key_states = key_states.view(bsz, q_len, self.num_key_value_heads, self.head_dim).transpose(1, 2)
+            value_states = value_states.view(bsz, q_len, self.num_key_value_heads, self.head_dim).transpose(1, 2)
+
+        with _visipruner_fx_process_range(self, "rope", "rope", q_len=q_len):
+            kv_seq_len = key_states.shape[-2]
+            if past_key_value is not None:
+                if self.layer_idx is None:
+                    raise ValueError(
+                        f"The cache structure has changed since version v4.36. If you are using {self.__class__.__name__} "
+                        "for auto-regressive decoding with k/v caching, please make sure to initialize the attention class "
+                        "with a layer index."
+                    )
+                kv_seq_len += past_key_value.get_usable_length(kv_seq_len, self.layer_idx)
+            cos, sin = self.rotary_emb(value_states, seq_len=position_ids[0,-1]+1)
+            query_states, key_states = apply_rotary_pos_emb(query_states, key_states, cos, sin, position_ids)
+
+        with _visipruner_fx_process_range(
+            self, "attention_scores", "qk_mask_softmax", q_len=q_len
+        ):
+            if past_key_value is not None:
+                cache_kwargs = {"sin": sin, "cos": cos}  # Specific to RoPE models
+                key_states, value_states = past_key_value.update(key_states, value_states, self.layer_idx, cache_kwargs)
+
+            key_states = repeat_kv(key_states, self.num_key_value_groups)
+            value_states = repeat_kv(value_states, self.num_key_value_groups)
+
+            attn_weights = torch.matmul(query_states, key_states.transpose(2, 3)) / math.sqrt(self.head_dim)
+
+            if attn_weights.size() != (bsz, self.num_heads, q_len, kv_seq_len):
                 raise ValueError(
-                    f"Attention mask should be of size {(bsz, 1, q_len, kv_seq_len)}, but is {attention_mask.size()}"
+                    f"Attention weights should be of size {(bsz, self.num_heads, q_len, kv_seq_len)}, but is"
+                    f" {attn_weights.size()}"
                 )
-            attn_weights = attn_weights + attention_mask
 
-        # upcast attention to fp32
-        attn_weights = nn.functional.softmax(attn_weights, dim=-1, dtype=torch.float32).to(query_states.dtype)
+            if attention_mask is not None:
+                if attention_mask.size() != (bsz, 1, q_len, kv_seq_len):
+                    raise ValueError(
+                        f"Attention mask should be of size {(bsz, 1, q_len, kv_seq_len)}, but is {attention_mask.size()}"
+                    )
+                attn_weights = attn_weights + attention_mask
 
-        if 'shallow' in getattr(self,"pruning_mode",[])and hasattr(self, 'shallow_mid_layer') and self.layer_idx < self.shallow_mid_layer and q_len>611 and self.num_images > 0:
-            if self.layer_idx == 0 and self.model_size == '7b':
-                sum_vision_attn_weights = attn_weights[:,:,self.vis_end_index:,35:self.vis_end_index].sum(dim=-1)
-                attn_weights[:,:,35:,35:self.vis_end_index] = 0
-                attn_weights[:,:,self.vis_end_index:, 35] = sum_vision_attn_weights
-            elif self.layer_idx == 0 and self.model_size == '13b':
-                attn_weights[:,:,35:self.vis_end_index,35:self.vis_end_index] = 0
-                attn_weights[:,:,self.vis_end_index:,35:self.vis_half_index] = 0
-            elif 0 < self.layer_idx < self.shallow_mid_layer:
-                # Mask all of visual-related attention
-                # attn_weights[:,:,35:,35:self.vis_end_index] = 0
-                # Mask all of textual-visual cross attention
-                attn_weights[:,:,self.vis_end_index:,35:self.vis_end_index] = 0
+            # upcast attention to fp32
+            attn_weights = nn.functional.softmax(attn_weights, dim=-1, dtype=torch.float32).to(query_states.dtype)
 
+            if 'shallow' in getattr(self,"pruning_mode",[])and hasattr(self, 'shallow_mid_layer') and self.layer_idx < self.shallow_mid_layer and q_len>611 and self.num_images > 0:
+                if self.layer_idx == 0 and self.model_size == '7b':
+                    sum_vision_attn_weights = attn_weights[:,:,self.vis_end_index:,35:self.vis_end_index].sum(dim=-1)
+                    attn_weights[:,:,35:,35:self.vis_end_index] = 0
+                    attn_weights[:,:,self.vis_end_index:, 35] = sum_vision_attn_weights
+                elif self.layer_idx == 0 and self.model_size == '13b':
+                    attn_weights[:,:,35:self.vis_end_index,35:self.vis_end_index] = 0
+                    attn_weights[:,:,self.vis_end_index:,35:self.vis_half_index] = 0
+                elif 0 < self.layer_idx < self.shallow_mid_layer:
+                    # Mask all of visual-related attention
+                    # attn_weights[:,:,35:,35:self.vis_end_index] = 0
+                    # Mask all of textual-visual cross attention
+                    attn_weights[:,:,self.vis_end_index:,35:self.vis_end_index] = 0
 
-        attn_weights = nn.functional.dropout(attn_weights, p=self.attention_dropout, training=self.training)
-        attn_output = torch.matmul(attn_weights, value_states)
+        with _visipruner_fx_process_range(
+            self, "attention_output", "weighted_value", q_len=q_len
+        ):
+            attn_weights = nn.functional.dropout(attn_weights, p=self.attention_dropout, training=self.training)
+            attn_output = torch.matmul(attn_weights, value_states)
 
-        if attn_output.size() != (bsz, self.num_heads, q_len, self.head_dim):
-            raise ValueError(
-                f"`attn_output` should be of size {(bsz, self.num_heads, q_len, self.head_dim)}, but is"
-                f" {attn_output.size()}"
-            )
+            if attn_output.size() != (bsz, self.num_heads, q_len, self.head_dim):
+                raise ValueError(
+                    f"`attn_output` should be of size {(bsz, self.num_heads, q_len, self.head_dim)}, but is"
+                    f" {attn_output.size()}"
+                )
 
-        attn_output = attn_output.transpose(1, 2).contiguous()
+            attn_output = attn_output.transpose(1, 2).contiguous()
 
-        attn_output = attn_output.reshape(bsz, q_len, self.hidden_size)
+            attn_output = attn_output.reshape(bsz, q_len, self.hidden_size)
 
         if self.num_images > 0 and q_len > 1 and self.layer_idx > getattr(self,"shallow_mid_layer",80):
             if "middle" in self.pruning_mode and important_vis_tokens is None and q_len == position_ids[0,-1]+1:
-                important_vis_tokens = self.value_aware_token_selection(value_states, attn_output, attn_weights)
+                with _visipruner_fx_process_range(
+                    self, "visual_process", "value_aware_selection", q_len=q_len
+                ):
+                    important_vis_tokens = self.value_aware_token_selection(value_states, attn_output, attn_weights)
             elif "deep" in self.pruning_mode and important_vis_tokens is not None and q_len == position_ids[0,-1]+1 - 576*self.num_images + important_vis_tokens.shape[0]:
-                exit_indicator += self.value_aware_token_selection(value_states, attn_output, attn_weights, important_vis_tokens)
+                with _visipruner_fx_process_range(
+                    self, "visual_process", "value_aware_verification", q_len=q_len
+                ):
+                    exit_indicator += self.value_aware_token_selection(value_states, attn_output, attn_weights, important_vis_tokens)
 
 
-        if self.config.pretraining_tp > 1:
-            attn_output = attn_output.split(self.hidden_size // self.config.pretraining_tp, dim=2)
-            o_proj_slices = self.o_proj.weight.split(self.hidden_size // self.config.pretraining_tp, dim=1)
-            attn_output = sum([F.linear(attn_output[i], o_proj_slices[i]) for i in range(self.config.pretraining_tp)])
-        else:
-            attn_output = self.o_proj(attn_output)
+        with _visipruner_fx_process_range(
+            self, "output_projection", "o_proj", q_len=q_len, part=1
+        ):
+            if self.config.pretraining_tp > 1:
+                attn_output = attn_output.split(self.hidden_size // self.config.pretraining_tp, dim=2)
+                o_proj_slices = self.o_proj.weight.split(self.hidden_size // self.config.pretraining_tp, dim=1)
+                attn_output = sum([F.linear(attn_output[i], o_proj_slices[i]) for i in range(self.config.pretraining_tp)])
+            else:
+                attn_output = self.o_proj(attn_output)
 
         if not output_attentions:
             attn_weights = None
@@ -1262,9 +1295,13 @@ class LlamaDecoderLayer(nn.Module):
                 "Passing `padding_mask` is deprecated and will be removed in v4.37. Please make sure use `attention_mask` instead.`"
             )
 
+        fx_q_len = int(hidden_states.shape[1]) if torch.is_tensor(hidden_states) else None
         residual = hidden_states
 
-        hidden_states = self.input_layernorm(hidden_states)
+        with _visipruner_fx_process_range(
+            self, "input_rmsnorm", "input_rmsnorm", q_len=fx_q_len
+        ):
+            hidden_states = self.input_layernorm(hidden_states)
 
         # Self Attention
         hidden_states, self_attn_weights, present_key_value = self.self_attn(
@@ -1280,13 +1317,23 @@ class LlamaDecoderLayer(nn.Module):
         )
         if type(hidden_states) is tuple and len(hidden_states) == 3:
             hidden_states, important_vis_tokens, exit_indicator = hidden_states
-        hidden_states = residual + hidden_states
+        with _visipruner_fx_process_range(
+            self, "output_projection", "attention_residual", q_len=fx_q_len, part=2
+        ):
+            hidden_states = residual + hidden_states
 
         # Fully Connected
         residual = hidden_states
-        hidden_states = self.post_attention_layernorm(hidden_states)
-        hidden_states = self.mlp(hidden_states)
-        hidden_states = residual + hidden_states
+        with _visipruner_fx_process_range(
+            self, "post_attention_rmsnorm", "post_attention_rmsnorm", q_len=fx_q_len
+        ):
+            hidden_states = self.post_attention_layernorm(hidden_states)
+        with _visipruner_fx_process_range(self, "mlp", "mlp", q_len=fx_q_len, part=1):
+            hidden_states = self.mlp(hidden_states)
+        with _visipruner_fx_process_range(
+            self, "mlp", "final_residual", q_len=fx_q_len, part=2
+        ):
+            hidden_states = residual + hidden_states
 
         outputs = (hidden_states,)
 

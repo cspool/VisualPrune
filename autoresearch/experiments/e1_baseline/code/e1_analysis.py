@@ -646,10 +646,4 @@ FALLBACK_NCU_PATTERNS = {
         "topk",
         "scaled_dot_product",
     ],
-    "visipruner-shallow-only": [
-        "matmul",
-        "cosine_similarity",
-        "index",
-        "scaled_dot_product",
-    ],
 }

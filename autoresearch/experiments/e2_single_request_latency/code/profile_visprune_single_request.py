@@ -84,6 +84,17 @@ VISIPRUNER_CONFIGS: dict[str, dict[str, Any]] = {
     },
 }
 
+FX_PROCESS_REPRESENTATIVE_EVENTS: frozenset[tuple[int, int, str]] = frozenset(
+    [
+        *[(1, layer, "prefill") for layer in [0, *range(5, 29)]],
+        *[
+            (forward_id, layer, "decode")
+            for forward_id in [2, 32]
+            for layer in [18, 19, 27, 28, 31]
+        ],
+    ]
+)
+
 
 def get_flash_attn_info() -> dict[str, str | bool | None]:
     try:
@@ -175,6 +186,17 @@ class LatencyRecorder:
             if self.enable_nvtx:
                 torch.cuda.nvtx.range_pop()
 
+    @contextmanager
+    def nvtx_range(self, name: str):
+        if not self.enable_nvtx:
+            yield
+            return
+        torch.cuda.nvtx.range_push(name)
+        try:
+            yield
+        finally:
+            torch.cuda.nvtx.range_pop()
+
     def summarized(self) -> dict[str, dict[str, float | int]]:
         return {name: stats.as_dict() for name, stats in sorted(self.ranges.items())}
 
@@ -243,8 +265,6 @@ def classify_layer_workload(
                 return f"{prefix}_middle_pruned_compact_prefill"
             if "deep" in modes and q_len < 80 and layer_idx >= 28:
                 return f"{prefix}_deep_removed_prefill"
-        if modes == {"shallow"}:
-            return f"{prefix}_shallow_only_dense_prefill"
         return f"{prefix}_prefill_other"
 
     prefix = "triton_vpfa" if is_vp_fa else "eager_visipruner"
@@ -255,8 +275,6 @@ def classify_layer_workload(
             return f"{prefix}_decode_middle_pruned_kv_cache"
         if "deep" in modes and kv_len < 120 and layer_idx >= 28:
             return f"{prefix}_decode_deep_removed_kv_cache"
-    if modes == {"shallow"}:
-        return f"{prefix}_shallow_only_decode_full_kv_cache"
     return f"{prefix}_decode_other"
 
 
@@ -313,6 +331,7 @@ def patch_model_for_ranges(
     tracker: dict[str, Any],
     *,
     layer_profile: bool = False,
+    fx_process_profile: bool = False,
 ) -> None:
     tracker["active_prefix"] = "visprune"
     model._visprune_profile_tracker = tracker
@@ -344,18 +363,27 @@ def patch_model_for_ranges(
         else:
             seq_len = -1
 
+        previous_forward_id = tracker.get("active_forward_id")
         if seq_len > 1:
             range_suffix = "forward_prefill"
             if tracker.get("active_prefix", "visprune") == "visprune":
+                tracker["active_forward_id"] = 1
                 tracker["prefill_seq_lens"].append(seq_len)
         else:
             range_suffix = "forward_decode"
             if tracker.get("active_prefix", "visprune") == "visprune":
+                tracker["active_forward_id"] = 2 + len(tracker["decode_seq_lens"])
                 tracker["decode_seq_lens"].append(seq_len)
 
         range_name = f"{tracker.get('active_prefix', 'visprune')}.{range_suffix}"
-        with recorder.range(range_name):
-            return original_forward(*args, **kwargs)
+        try:
+            with recorder.range(range_name):
+                return original_forward(*args, **kwargs)
+        finally:
+            if previous_forward_id is None:
+                tracker.pop("active_forward_id", None)
+            else:
+                tracker["active_forward_id"] = previous_forward_id
 
     model.encode_images = wrapped_encode_images
     model.prepare_inputs_labels_for_multimodal = wrapped_prepare
@@ -404,6 +432,7 @@ def patch_model_for_ranges(
             layer_idx=idx,
         )
         return {
+            "forward_id": tracker.get("active_forward_id"),
             "layer_idx": idx,
             "phase": phase,
             "q_len": q_len,
@@ -429,10 +458,48 @@ def patch_model_for_ranges(
             ),
         }
 
+    def make_fx_process_range(idx: int):
+        @contextmanager
+        def fx_process_range(
+            *,
+            process_id: str,
+            slug: str,
+            q_len: int | None = None,
+            part: int | None = None,
+        ):
+            prefix = tracker.get("active_prefix", "visprune")
+            layer_ctx = tracker.get("active_layer_context") or {}
+            phase = layer_ctx.get("phase") or ("prefill" if (q_len or -1) > 1 else "decode")
+            forward_id = layer_ctx.get("forward_id")
+            enabled = (
+                fx_process_profile
+                and (forward_id, idx, phase) in FX_PROCESS_REPRESENTATIVE_EVENTS
+            )
+            if not enabled:
+                yield
+                return
+
+            event_id = layer_ctx.get("event_id")
+            event_suffix = f"event{int(event_id):04d}" if event_id is not None else "event_unknown"
+            range_name = (
+                f"{prefix}.fx_process.layer{idx:02d}.{phase}."
+                f"fwd{int(forward_id):02d}.{event_suffix}.{process_id}.{slug}"
+            )
+            if part is not None:
+                range_name = f"{range_name}.part{int(part):02d}"
+            with recorder.nvtx_range(range_name):
+                yield
+
+        return fx_process_range
+
     for layer_idx, layer in enumerate(base_model.layers):
         original_layer_forward = layer.forward
         original_attn_forward = layer.self_attn.forward
         original_mlp_forward = layer.mlp.forward
+        if fx_process_profile:
+            fx_range = make_fx_process_range(layer_idx)
+            layer._visprune_fx_process_range = fx_range
+            layer.self_attn._visprune_fx_process_range = fx_range
 
         def make_layer_forward(orig: Callable, idx: int) -> Callable:
             def wrapped_layer_forward(*args, **kwargs):
@@ -454,16 +521,26 @@ def patch_model_for_ranges(
                 )
                 prefix = tracker.get("active_prefix", "visprune")
                 range_name = f"{prefix}.layer{idx:02d}.{ctx['phase']}"
+                event = None
                 if prefix == "visprune":
-                    tracker.setdefault("layer_events", []).append(
-                        {
-                            "event_id": len(tracker.setdefault("layer_events", [])),
-                            "range": range_name,
-                            **ctx,
-                        }
-                    )
-                with recorder.range(range_name):
-                    return orig(*args, **kwargs)
+                    event_id = len(tracker.setdefault("layer_events", []))
+                    event = {
+                        "event_id": event_id,
+                        "range": range_name,
+                        **ctx,
+                    }
+                    tracker.setdefault("layer_events", []).append(event)
+                previous_layer_context = tracker.get("active_layer_context")
+                if event is not None:
+                    tracker["active_layer_context"] = event
+                try:
+                    with recorder.range(range_name):
+                        return orig(*args, **kwargs)
+                finally:
+                    if previous_layer_context is None:
+                        tracker.pop("active_layer_context", None)
+                    else:
+                        tracker["active_layer_context"] = previous_layer_context
 
             return wrapped_layer_forward
 
@@ -664,6 +741,7 @@ def write_outputs(payload: dict[str, Any], output_dir: str, tag: str) -> tuple[P
         with layer_csv_path.open("w", encoding="utf-8", newline="") as f:
             fieldnames = [
                 "event_id",
+                "forward_id",
                 "range",
                 "layer_idx",
                 "phase",
@@ -705,6 +783,12 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Record per-decoder-layer total/attention/MLP timing and NVTX ranges.",
     )
+    parser.add_argument(
+        "--fx-process-profile",
+        choices=["on", "off"],
+        default="off",
+        help="Record FX-process NVTX ranges for representative FX events when enabled.",
+    )
     return parser.parse_args()
 
 
@@ -738,7 +822,13 @@ def main() -> None:
     resolved_backend = getattr(model.config, "visipruner_decode_backend", None) or {}
     if isinstance(resolved_backend, dict):
         tracker["resolved_visipruner_decode_backend_selected"] = resolved_backend.get("selected")
-    patch_model_for_ranges(model, recorder, tracker, layer_profile=args.layer_profile)
+    patch_model_for_ranges(
+        model,
+        recorder,
+        tracker,
+        layer_profile=args.layer_profile,
+        fx_process_profile=args.fx_process_profile == "on",
+    )
 
     for _ in range(args.warmup_iters):
         run_request(
@@ -811,6 +901,7 @@ def main() -> None:
         "nvtx": args.nvtx,
         "cuda_profiler_api": args.cuda_profiler_api,
         "layer_profile": args.layer_profile,
+        "fx_process_profile": args.fx_process_profile,
         "context_len": context_len,
         "environment": {
             "python": sys.executable,

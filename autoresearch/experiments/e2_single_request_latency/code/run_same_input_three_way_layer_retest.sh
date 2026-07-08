@@ -45,6 +45,7 @@ run_one() {
   local tag="$2"
   local title="$3"
   local report="$4"
+  local fx_process_profile="${5:-${FX_PROCESS_PROFILE:-off}}"
   local clock_tag="clock_${tag}_${COMMON_TOKENS}tok"
   local nsys_tag="nsys_${tag}_${COMMON_TOKENS}tok"
 
@@ -57,6 +58,7 @@ run_one() {
     OUTPUT_DIR="${OUTPUT_DIR}" \
     GPU="${COMMON_GPU}" \
     WARMUP_ITERS="${COMMON_WARMUP}" \
+    FX_PROCESS_PROFILE="${fx_process_profile}" \
     "${CLOCK_SCRIPT}" >"${OUTPUT_DIR}/${clock_tag}.log" 2>&1
   echo "DONE ${tag} clock"
 
@@ -69,6 +71,7 @@ run_one() {
     OUTPUT_DIR="${OUTPUT_DIR}" \
     GPU="${COMMON_GPU}" \
     WARMUP_ITERS="${COMMON_WARMUP}" \
+    FX_PROCESS_PROFILE="${fx_process_profile}" \
     "${NSYS_SCRIPT}" >"${OUTPUT_DIR}/${nsys_tag}.log" 2>&1
   echo "DONE ${tag} nsys"
 
