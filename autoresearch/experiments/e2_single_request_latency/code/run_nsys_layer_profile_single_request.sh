@@ -7,7 +7,8 @@ SCRIPT="${ROOT_DIR}/autoresearch/experiments/e2_single_request_latency/code/prof
 ANALYZE_SCRIPT="${ROOT_DIR}/autoresearch/experiments/e2_single_request_latency/code/analyze_layer_nsys.py"
 PROCESS_BREAKDOWN_SCRIPT="${ROOT_DIR}/autoresearch/experiments/e2_single_request_latency/code/generate_process_performance_breakdown.py"
 OUTPUT_DIR="${OUTPUT_DIR:-${ROOT_DIR}/autoresearch/experiments/e2_single_request_latency/output}"
-REPORT_DIR="${REPORT_DIR:-${ROOT_DIR}/autoresearch/experiments/e2_single_request_latency}"
+REPORT_DIR="${REPORT_DIR:-${ROOT_DIR}/autoresearch/experiments/e2_single_request_latency/output/visipruner_full_eager_process_wise}"
+PROCESS_REPORT_DIR="${PROCESS_REPORT_DIR:-${REPORT_DIR}}"
 NSYS_BIN="${NSYS_BIN:-/opt/nvidia/nsight-systems/2026.3.1/bin/nsys}"
 CONFIG_NAME="${CONFIG:-dense-fa2}"
 TOKENS="${MAX_NEW_TOKENS:-32}"
@@ -23,7 +24,7 @@ if [[ -n "${FLASH_ATTN_SITE_PACKAGES:-}" && -d "${FLASH_ATTN_SITE_PACKAGES}" ]];
   export PYTHONPATH="${FLASH_ATTN_SITE_PACKAGES}${PYTHONPATH:+:${PYTHONPATH}}"
 fi
 
-mkdir -p "${OUTPUT_DIR}"
+mkdir -p "${OUTPUT_DIR}" "${PROCESS_REPORT_DIR}"
 cd "${ROOT_DIR}"
 
 "${NSYS_BIN}" profile \
@@ -65,12 +66,12 @@ if [[ "${FX_PROCESS_PROFILE:-off}" == "on" ]]; then
   "${PYTHON_BIN}" "${PROCESS_BREAKDOWN_SCRIPT}" \
     --sqlite "${OUTPUT_DIR}/${TAG}.sqlite" \
     --layer-events "${OUTPUT_DIR}/${TAG}_layer_events.csv" \
-    --handoff "${REPORT_DIR}/FX_PROCESS_NVTX_INSTRUMENTATION_HANDOFF.md" \
+    --handoff "${PROCESS_REPORT_DIR}/FX_PROCESS_NVTX_INSTRUMENTATION_HANDOFF.md" \
     --variant "visipruner-full-eager" \
     --display-name "VisiPruner Full Eager" \
-    --output-csv "${OUTPUT_DIR}/${TAG}_process_nvtx_kernel_breakdown.csv" \
-    --output-json "${OUTPUT_DIR}/${TAG}_process_nvtx_kernel_breakdown.json" \
-    --process-csv "${OUTPUT_DIR}/same_input_visipruner_full_eager_process_attribution.csv" \
-    --report "${REPORT_DIR}/SAME_INPUT_VISIPRUNER_FULL_EAGER_PROCESS_WISE_PERFORMANCE_REPORT.md" \
-    --aggregate-report "${REPORT_DIR}/SAME_INPUT_PROCESS_WISE_PERFORMANCE_BREAKDOWN.md"
+    --output-csv "${PROCESS_REPORT_DIR}/${TAG}_process_nvtx_kernel_breakdown.csv" \
+    --output-json "${PROCESS_REPORT_DIR}/${TAG}_process_nvtx_kernel_breakdown.json" \
+    --process-csv "${PROCESS_REPORT_DIR}/same_input_visipruner_full_eager_process_attribution.csv" \
+    --report "${PROCESS_REPORT_DIR}/SAME_INPUT_VISIPRUNER_FULL_EAGER_PROCESS_WISE_PERFORMANCE_REPORT.md" \
+    --aggregate-report "${PROCESS_REPORT_DIR}/SAME_INPUT_PROCESS_WISE_PERFORMANCE_BREAKDOWN.md"
 fi

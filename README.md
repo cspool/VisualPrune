@@ -397,7 +397,6 @@ repo/llava/model/language_model/custom_modeling_llama.py
 当前输出：
 
 ```text
-autoresearch/experiments/e2_single_request_latency/FX_PROCESS_NVTX_INSTRUMENTATION_HANDOFF.md
 autoresearch/experiments/e2_single_request_latency/output/visipruner_full_eager_process_wise/FX_PROCESS_NVTX_INSTRUMENTATION_HANDOFF.md
 ```
 
@@ -440,8 +439,7 @@ autoresearch/experiments/e2_single_request_latency/code/generate_layer_performan
 当前 VisiPruner full eager 输出：
 
 ```text
-autoresearch/experiments/e2_single_request_latency/SAME_INPUT_VISIPRUNER_FULL_EAGER_LAYER_PERFORMANCE_REPORT.md
-autoresearch/experiments/e2_single_request_latency/output/visipruner_full_eager/
+autoresearch/experiments/e2_single_request_latency/output/visipruner_full_eager_layer_wise/
   SAME_INPUT_VISIPRUNER_FULL_EAGER_LAYER_PERFORMANCE_REPORT.md
   nsys_fxsameinput_visipruner_full_eager_32tok.json
   nsys_fxsameinput_visipruner_full_eager_32tok.nsys-rep
@@ -498,7 +496,6 @@ autoresearch/experiments/e2_single_request_latency/code/run_nsys_layer_profile_s
 当前输出：
 
 ```text
-autoresearch/experiments/e2_single_request_latency/SAME_INPUT_VISIPRUNER_FULL_EAGER_PROCESS_WISE_PERFORMANCE_REPORT.md
 autoresearch/experiments/e2_single_request_latency/output/visipruner_full_eager_process_wise/
   SAME_INPUT_VISIPRUNER_FULL_EAGER_PROCESS_WISE_PERFORMANCE_REPORT.md
   SAME_INPUT_PROCESS_WISE_PERFORMANCE_BREAKDOWN.md

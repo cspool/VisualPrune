@@ -6,15 +6,16 @@ experiments were removed from this directory.
 
 ## Evidence Package
 
-Root-level reports remain as the human-readable index. The corresponding
-report package directories under `output/` contain report copies plus the raw
-artifacts used by each report.
+This README is the root-level human-readable index. New report package
+directories are expected under `output/`. Historical reference artifacts are
+kept under `output_bk/`; treat them as examples for paths and fields because
+they are known to have gaps.
 
 Primary layer-wise report packages:
 
 ```text
 output/dense_fa2/
-output/visipruner_full_eager/
+output/visipruner_full_eager_layer_wise/
 output/visipruner_full_vp_fa/
 output/three_way_summary/
 ```
@@ -23,6 +24,8 @@ Strict process-wise artifacts for VisiPrune eager full use a separate package:
 
 ```text
 output/visipruner_full_eager_process_wise/
+output/visipruner_full_eager_process_wise/nsys_sameinput_visipruner_full_eager_32tok.nsys-rep
+output/visipruner_full_eager_process_wise/nsys_sameinput_visipruner_full_eager_32tok.sqlite
 output/visipruner_full_eager_process_wise/SAME_INPUT_VISIPRUNER_FULL_EAGER_PROCESS_WISE_PERFORMANCE_REPORT.md
 output/visipruner_full_eager_process_wise/SAME_INPUT_PROCESS_WISE_PERFORMANCE_BREAKDOWN.md
 output/visipruner_full_eager_process_wise/nsys_sameinput_visipruner_full_eager_32tok_process_nvtx_kernel_breakdown.csv
@@ -30,10 +33,18 @@ output/visipruner_full_eager_process_wise/nsys_sameinput_visipruner_full_eager_3
 output/visipruner_full_eager_process_wise/same_input_visipruner_full_eager_process_attribution.csv
 ```
 
+Process-wise GPU hardware diagnostics use a separate package:
+
+```text
+output/visipruner_full_eager_process_wise_ncu/
+output/visipruner_full_eager_process_wise_ncu/ncu_<layer>_<phase>_<process>.ncu-rep
+output/visipruner_full_eager_process_wise_ncu/ncu_<layer>_<phase>_<process>_metrics.csv
+output/visipruner_full_eager_process_wise_ncu/SAME_INPUT_VISIPRUNER_FULL_EAGER_PROCESS_WISE_NCU_REPORT.md
+```
+
 Process-level NVTX instrumentation handoff for VisiPrune eager full:
 
 ```text
-FX_PROCESS_NVTX_INSTRUMENTATION_HANDOFF.md
 output/visipruner_full_eager_process_wise/FX_PROCESS_NVTX_INSTRUMENTATION_HANDOFF.md
 ```
 
@@ -43,10 +54,23 @@ should call it VP-FA.
 
 ## Workflow
 
-Use `$visipruner-same-input-layer-wise-workflow` for the current workflow. It describes how
-to recover the FX-matched input contract, run Nsight layer profiling, check
-launch-owned CUPTI attribution, and package the layer-wise report without a
-separate clock sampling requirement.
+Use `VISIPRUNER_FULL_EAGER_PROCESS_ATTRIBUTION_WORKFLOW.md` as the index for
+the VisiPruner full eager attribution flow. The executable runbooks are:
+
+```text
+workflows/01_layer_wise_end_to_end_trace.md
+workflows/02_representative_fx_process_wise_trace.md
+workflows/03_process_gpu_hardware_trace.md
+workflows/04_full_layer_fx_process_wise_estimate.md
+```
+
+The relevant skills are `$visipruner-same-input-layer-wise-workflow`,
+`$visipruner-fx-process-nvtx-instrumentation`,
+`$visipruner-process-performance-breakdown`, and
+`$visipruner-segmented-process-attribution`.
+
+All performance-collection workflows require `GPU=1`; GPU 1 currently has
+lighter load and lower expected measurement interference.
 
 Main orchestration script:
 
@@ -76,6 +100,7 @@ code/analyze_layer_nsys.py
 code/generate_layer_performance_report.py
 code/audit_same_input_three_way_layer_retest.py
 code/generate_process_performance_breakdown.py
+code/generate_segmented_process_attribution.py
 ```
 
 `run_clock_layer_profile_single_request.sh` and
@@ -89,18 +114,26 @@ Current output package convention:
 
 ```text
 output/dense_fa2/
-output/visipruner_full_eager/
+output/visipruner_full_eager_layer_wise/
 output/visipruner_full_eager_process_wise/
+output/visipruner_full_eager_process_wise_ncu/
 output/visipruner_full_vp_fa/
 output/three_way_summary/
 ```
 
-These packages include report copies, clock JSON/range/layer-event files,
+These packages include reports, clock JSON/range/layer-event files,
 Nsight `.nsys-rep` and SQLite exports, Nsight stats CSVs, layer-kernel
 breakdown CSV/JSON files, SAME_INPUT audit files, or strict process
-attribution CSV/JSON files associated with the report. Process-wise files stay
-under `output/visipruner_full_eager_process_wise/`; their source Nsight trace
-and SQLite stay under `output/visipruner_full_eager/`.
+attribution CSV/JSON files associated with the report. The expected
+process-wise package should keep its own process-level Nsight `.nsys-rep` and
+SQLite, because derived CSV/report files alone cannot recover process GPU
+launch order.
+
+Historical reference packages, if needed, are under:
+
+```text
+output_bk/
+```
 
 ## Interpretation
 

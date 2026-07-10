@@ -39,4 +39,5 @@ repo/.understand-anything/
 human_draft_never_touch.md
 autoresearch/data/
 autoresearch/**/output/
+autoresearch/**/output_bk/
 autoresearch/profiling/results/

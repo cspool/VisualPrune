@@ -27,6 +27,7 @@ VARIANTS = [
         "name": "dense-FA2",
         "config": "dense-fa2",
         "tag": "sameinput_dense_fa2",
+        "package": "dense_fa2",
         "report": "SAME_INPUT_DENSE_FA2_LAYER_PERFORMANCE_REPORT.md",
         "use_flash_attn": True,
         "use_visipruner": False,
@@ -35,6 +36,7 @@ VARIANTS = [
         "name": "eager VisiPruner full",
         "config": "visipruner-full",
         "tag": "sameinput_visipruner_full_eager",
+        "package": "visipruner_full_eager_layer_wise",
         "report": "SAME_INPUT_VISIPRUNER_FULL_EAGER_LAYER_PERFORMANCE_REPORT.md",
         "use_flash_attn": False,
         "use_visipruner": True,
@@ -43,6 +45,7 @@ VARIANTS = [
         "name": "VisiPruner VP-FA",
         "config": "visipruner-full-vp-fa",
         "tag": "sameinput_visipruner_full_vpfa",
+        "package": "visipruner_full_vp_fa",
         "report": "SAME_INPUT_VISIPRUNER_FULL_FA2_LAYER_PERFORMANCE_REPORT.md",
         "use_flash_attn": True,
         "use_visipruner": True,
@@ -162,33 +165,34 @@ def audit_variant(
 ) -> dict[str, Any]:
     clock_tag = f"clock_{variant['tag']}_{tokens}tok"
     nsys_tag = f"nsys_{variant['tag']}_{tokens}tok"
-    report_path = report_dir / variant["report"]
+    package_dir = output_dir / variant["package"]
+    report_path = report_dir / variant["package"] / variant["report"]
 
     required = [
-        output_dir / f"{clock_tag}.json",
-        output_dir / f"{clock_tag}.log",
-        output_dir / f"{clock_tag}_ranges.csv",
-        output_dir / f"{clock_tag}_layer_events.csv",
-        output_dir / f"{nsys_tag}.json",
-        output_dir / f"{nsys_tag}.log",
-        output_dir / f"{nsys_tag}.nsys-rep",
-        output_dir / f"{nsys_tag}.sqlite",
-        output_dir / f"{nsys_tag}_ranges.csv",
-        output_dir / f"{nsys_tag}_layer_events.csv",
-        output_dir / f"{nsys_tag}_layer_kernel_breakdown.csv",
-        output_dir / f"{nsys_tag}_layer_kernel_breakdown.json",
-        output_dir / f"{nsys_tag}_stats_cuda_gpu_kern_sum.csv",
-        output_dir / f"{nsys_tag}_stats_nvtx_gpu_proj_sum.csv",
-        output_dir / f"{nsys_tag}_stats_nvtx_kern_sum.csv",
-        output_dir / f"{nsys_tag}_stats_nvtx_sum.csv",
+        package_dir / f"{clock_tag}.json",
+        package_dir / f"{clock_tag}.log",
+        package_dir / f"{clock_tag}_ranges.csv",
+        package_dir / f"{clock_tag}_layer_events.csv",
+        package_dir / f"{nsys_tag}.json",
+        package_dir / f"{nsys_tag}.log",
+        package_dir / f"{nsys_tag}.nsys-rep",
+        package_dir / f"{nsys_tag}.sqlite",
+        package_dir / f"{nsys_tag}_ranges.csv",
+        package_dir / f"{nsys_tag}_layer_events.csv",
+        package_dir / f"{nsys_tag}_layer_kernel_breakdown.csv",
+        package_dir / f"{nsys_tag}_layer_kernel_breakdown.json",
+        package_dir / f"{nsys_tag}_stats_cuda_gpu_kern_sum.csv",
+        package_dir / f"{nsys_tag}_stats_nvtx_gpu_proj_sum.csv",
+        package_dir / f"{nsys_tag}_stats_nvtx_kern_sum.csv",
+        package_dir / f"{nsys_tag}_stats_nvtx_sum.csv",
         report_path,
     ]
     existing = {str(path): require_file(path, failures) for path in required}
 
-    if not existing.get(str(output_dir / f"{clock_tag}.json")):
+    if not existing.get(str(package_dir / f"{clock_tag}.json")):
         return {"name": variant["name"], "ok": False, "clock_tag": clock_tag, "nsys_tag": nsys_tag}
 
-    clock = read_json(output_dir / f"{clock_tag}.json")
+    clock = read_json(package_dir / f"{clock_tag}.json")
     config = clock.get("config")
     if config != variant["config"]:
         failures.append(f"{variant['name']}: config mismatch {config!r} != {variant['config']!r}")
@@ -197,7 +201,7 @@ def audit_variant(
     if clock.get("use_visipruner") is not variant["use_visipruner"]:
         failures.append(f"{variant['name']}: use_visipruner mismatch")
 
-    layer_events_path = output_dir / f"{clock_tag}_layer_events.csv"
+    layer_events_path = package_dir / f"{clock_tag}_layer_events.csv"
     if layer_events_path.exists():
         rows = read_csv(layer_events_path)
         prefill = layer_coverage(rows, "prefill")
@@ -213,7 +217,7 @@ def audit_variant(
                 f"{variant['name']}: missing clock decode occurrences for layers {missing_decode_repeats}"
             )
 
-    nsys_layer_path = output_dir / f"{nsys_tag}_layer_kernel_breakdown.csv"
+    nsys_layer_path = package_dir / f"{nsys_tag}_layer_kernel_breakdown.csv"
     if nsys_layer_path.exists():
         rows = read_csv(nsys_layer_path)
         total_rows = [row for row in rows if row.get("component") == "total"]
@@ -239,7 +243,7 @@ def audit_variant(
         "name": variant["name"],
         "clock_tag": clock_tag,
         "nsys_tag": nsys_tag,
-        "clock_json": str(output_dir / f"{clock_tag}.json"),
+        "clock_json": str(package_dir / f"{clock_tag}.json"),
         "report": str(report_path),
         "image_path": clock.get("image_path"),
         "prompt": clock.get("prompt"),
@@ -252,7 +256,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root-dir", default=str(ROOT_DIR))
     parser.add_argument("--output-dir", default=str(OUTPUT_DIR))
-    parser.add_argument("--report-dir", default=str(EXPERIMENT_DIR))
+    parser.add_argument("--report-dir", default=None)
     parser.add_argument("--tokens", type=int, default=EXPECTED_TOKENS)
     parser.add_argument("--expected-image", default=EXPECTED_IMAGE)
     parser.add_argument("--expected-prompt", default=EXPECTED_PROMPT)
@@ -261,7 +265,7 @@ def main() -> None:
 
     root_dir = Path(args.root_dir)
     output_dir = Path(args.output_dir)
-    report_dir = Path(args.report_dir)
+    report_dir = Path(args.report_dir) if args.report_dir else output_dir
     failures: list[str] = []
     summaries = [
         audit_variant(

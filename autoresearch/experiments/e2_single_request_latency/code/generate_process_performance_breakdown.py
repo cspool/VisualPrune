@@ -24,11 +24,11 @@ from typing import Any
 
 EXPERIMENT_DIR = Path("autoresearch/experiments/e2_single_request_latency")
 OUTPUT_DIR = EXPERIMENT_DIR / "output"
-DEFAULT_EAGER_PACKAGE_DIR = OUTPUT_DIR / "visipruner_full_eager"
+DEFAULT_EAGER_PACKAGE_DIR = OUTPUT_DIR / "visipruner_full_eager_layer_wise"
 DEFAULT_PROCESS_PACKAGE_DIR = OUTPUT_DIR / "visipruner_full_eager_process_wise"
 DEFAULT_SQLITE = DEFAULT_EAGER_PACKAGE_DIR / "nsys_sameinput_visipruner_full_eager_32tok.sqlite"
 DEFAULT_LAYER_EVENTS = DEFAULT_EAGER_PACKAGE_DIR / "nsys_sameinput_visipruner_full_eager_32tok_layer_events.csv"
-DEFAULT_HANDOFF = EXPERIMENT_DIR / "FX_PROCESS_NVTX_INSTRUMENTATION_HANDOFF.md"
+DEFAULT_HANDOFF = DEFAULT_PROCESS_PACKAGE_DIR / "FX_PROCESS_NVTX_INSTRUMENTATION_HANDOFF.md"
 DEFAULT_DETAIL_CSV = (
     DEFAULT_PROCESS_PACKAGE_DIR / "nsys_sameinput_visipruner_full_eager_32tok_process_nvtx_kernel_breakdown.csv"
 )
@@ -36,8 +36,8 @@ DEFAULT_DETAIL_JSON = (
     DEFAULT_PROCESS_PACKAGE_DIR / "nsys_sameinput_visipruner_full_eager_32tok_process_nvtx_kernel_breakdown.json"
 )
 DEFAULT_PROCESS_CSV = DEFAULT_PROCESS_PACKAGE_DIR / "same_input_visipruner_full_eager_process_attribution.csv"
-DEFAULT_REPORT = EXPERIMENT_DIR / "SAME_INPUT_VISIPRUNER_FULL_EAGER_PROCESS_WISE_PERFORMANCE_REPORT.md"
-DEFAULT_AGGREGATE_REPORT = EXPERIMENT_DIR / "SAME_INPUT_PROCESS_WISE_PERFORMANCE_BREAKDOWN.md"
+DEFAULT_REPORT = DEFAULT_PROCESS_PACKAGE_DIR / "SAME_INPUT_VISIPRUNER_FULL_EAGER_PROCESS_WISE_PERFORMANCE_REPORT.md"
+DEFAULT_AGGREGATE_REPORT = DEFAULT_PROCESS_PACKAGE_DIR / "SAME_INPUT_PROCESS_WISE_PERFORMANCE_BREAKDOWN.md"
 
 PROCESS_RE = re.compile(
     r"^visprune\.fx_process\.layer(?P<layer>\d+)\."
@@ -86,6 +86,9 @@ class LaunchOwnedMetrics:
     cupti_ms: float = 0.0
     runtime_api_calls: int = 0
     kernel_instances: int = 0
+    first_runtime_start_ns: int | None = None
+    first_kernel_start_ns: int | None = None
+    last_kernel_end_ns: int | None = None
     families: dict[str, float] = field(default_factory=lambda: defaultdict(float))
     family_instances: Counter[str] = field(default_factory=Counter)
     kernel_names: Counter[str] = field(default_factory=Counter)
@@ -289,6 +292,8 @@ def launch_owned_metrics(
         if runtime_call.start >= nvtx_range.end:
             break
         metrics.runtime_api_calls += 1
+        if metrics.first_runtime_start_ns is None:
+            metrics.first_runtime_start_ns = runtime_call.start
         if runtime_call.correlation_id is None:
             continue
         correlation_id = runtime_call.correlation_id
@@ -297,12 +302,24 @@ def launch_owned_metrics(
         seen_correlations.add(correlation_id)
         for kernel in kernels_by_correlation.get(correlation_id, []):
             family = kernel_family(kernel.name)
+            if metrics.first_kernel_start_ns is None or kernel.start < metrics.first_kernel_start_ns:
+                metrics.first_kernel_start_ns = kernel.start
+            if metrics.last_kernel_end_ns is None or kernel.end > metrics.last_kernel_end_ns:
+                metrics.last_kernel_end_ns = kernel.end
             metrics.cupti_ms += kernel.duration_ms
             metrics.kernel_instances += 1
             metrics.families[family] += kernel.duration_ms
             metrics.family_instances[family] += 1
             metrics.kernel_names[kernel.name] += 1
     return metrics
+
+
+def order_key_for_range(nvtx_range: NvtxRange, metrics: LaunchOwnedMetrics) -> tuple[int, str]:
+    if metrics.first_kernel_start_ns is not None:
+        return metrics.first_kernel_start_ns, "first_launch_owned_gpu_kernel_start"
+    if metrics.first_runtime_start_ns is not None:
+        return metrics.first_runtime_start_ns, "first_runtime_call_start"
+    return nvtx_range.start, "process_nvtx_start"
 
 
 def parse_process_range(range_text: str) -> dict[str, Any] | None:
@@ -413,6 +430,7 @@ def row_for_range(
         notes = f"{notes} Matched families did not intersect expected families."
     if status == "no_kernel":
         notes = f"{notes} No launch-owned CUPTI kernel matched this NVTX range."
+    gpu_order_key_ns, gpu_order_basis = order_key_for_range(nvtx_range, metrics)
     return {
         "variant": variant,
         "phase": parsed["phase"],
@@ -441,6 +459,13 @@ def row_for_range(
         "dominant kernel family": metrics.dominant_kernel_family,
         "kernel_family_ms": family_ms,
         "top_kernel_names": top_kernels,
+        "process_nvtx_start_ns": nvtx_range.start,
+        "process_nvtx_end_ns": nvtx_range.end,
+        "first_runtime_start_ns": metrics.first_runtime_start_ns or "",
+        "first_kernel_start_ns": metrics.first_kernel_start_ns or "",
+        "last_kernel_end_ns": metrics.last_kernel_end_ns or "",
+        "gpu_order_key_ns": gpu_order_key_ns,
+        "gpu_order_basis": gpu_order_basis,
         "attribution method": "launch-owned correlationId",
         "validation status": status,
         "notes": notes,
@@ -495,6 +520,27 @@ def aggregate_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
                     pass
         dominant = max(family_totals, key=family_totals.get) if family_totals else "none"
         fragment_ids = ", ".join(sorted(str(item["fragment_id"]) for item in group))
+        order_values = [int(item["gpu_order_key_ns"]) for item in group if str(item.get("gpu_order_key_ns", "")).strip()]
+        first_runtime_values = [
+            int(item["first_runtime_start_ns"]) for item in group if str(item.get("first_runtime_start_ns", "")).strip()
+        ]
+        first_kernel_values = [
+            int(item["first_kernel_start_ns"]) for item in group if str(item.get("first_kernel_start_ns", "")).strip()
+        ]
+        last_kernel_values = [
+            int(item["last_kernel_end_ns"]) for item in group if str(item.get("last_kernel_end_ns", "")).strip()
+        ]
+        nvtx_start_values = [int(item["process_nvtx_start_ns"]) for item in group]
+        nvtx_end_values = [int(item["process_nvtx_end_ns"]) for item in group]
+        if first_kernel_values:
+            gpu_order_key_ns = min(first_kernel_values)
+            gpu_order_basis = "first_launch_owned_gpu_kernel_start"
+        elif first_runtime_values:
+            gpu_order_key_ns = min(first_runtime_values)
+            gpu_order_basis = "first_runtime_call_start"
+        else:
+            gpu_order_key_ns = min(order_values) if order_values else min(nvtx_start_values)
+            gpu_order_basis = "process_nvtx_start"
         aggregated.append(
             {
                 "variant": base["variant"],
@@ -526,6 +572,13 @@ def aggregate_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
                     f"{family}={value:.3f}" for family, value in sorted(family_totals.items())
                 ),
                 "top_kernel_names": "",
+                "process_nvtx_start_ns": min(nvtx_start_values),
+                "process_nvtx_end_ns": max(nvtx_end_values),
+                "first_runtime_start_ns": min(first_runtime_values) if first_runtime_values else "",
+                "first_kernel_start_ns": min(first_kernel_values) if first_kernel_values else "",
+                "last_kernel_end_ns": max(last_kernel_values) if last_kernel_values else "",
+                "gpu_order_key_ns": gpu_order_key_ns,
+                "gpu_order_basis": gpu_order_basis,
                 "attribution method": "launch-owned correlationId",
                 "validation status": combine_status([str(item["validation status"]) for item in group]),
                 "notes": "Aggregated from fragment rows by aggregation_key.",
@@ -590,6 +643,47 @@ def markdown_table(rows: list[dict[str, Any]], columns: list[str], limit: int | 
     return "\n".join(lines) + "\n"
 
 
+def gpu_execution_order_rows(aggregate: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    grouped: dict[tuple[str, int, int], list[dict[str, Any]]] = defaultdict(list)
+    for row in aggregate:
+        grouped[
+            (
+                str(row["parent_layer_range"]),
+                int(row["forward_id"]),
+                int(row["layer"]),
+            )
+        ].append(row)
+
+    ordered: list[dict[str, Any]] = []
+    phase_rank = {"prefill": 0, "decode": 1}
+    for parent_key, rows in sorted(
+        grouped.items(),
+        key=lambda item: (
+            phase_rank.get(str(item[1][0].get("phase", "")), 99),
+            item[0][1],
+            item[0][2],
+            item[0][0],
+        ),
+    ):
+        rows = sorted(
+            rows,
+            key=lambda row: (
+                int(row.get("gpu_order_key_ns") or 0),
+                int(row.get("process_nvtx_start_ns") or 0),
+                str(row.get("process_id", "")),
+            ),
+        )
+        base = min((int(row.get("gpu_order_key_ns") or 0) for row in rows), default=0)
+        for idx, row in enumerate(rows, start=1):
+            order_key = int(row.get("gpu_order_key_ns") or 0)
+            out = dict(row)
+            out["gpu_order"] = idx
+            out["gpu_start_offset_us"] = f"{(order_key - base) / 1000.0:.3f}"
+            out["parent_layer_range"] = parent_key[0]
+            ordered.append(out)
+    return ordered
+
+
 def write_report(
     *,
     path: Path,
@@ -611,6 +705,7 @@ def write_report(
         if row["parent_layer_range"] != "missing"
     }
     top = sorted(aggregate, key=lambda row: float(row["CUPTI kernel ms"]), reverse=True)
+    gpu_order_rows = gpu_execution_order_rows(aggregate)
     unexpected = [row for row in rows if row["validation status"] == "unexpected_kernel_family"]
     no_kernel = [row for row in rows if row["validation status"] == "no_kernel"]
     partially_validated = [row for row in rows if row["validation status"] == "partially_validated"]
@@ -661,6 +756,31 @@ def write_report(
                 "validation status",
             ],
             limit=80,
+        ),
+        "",
+        "## Representative Layer Process GPU Execution Order",
+        "",
+        "Rows are grouped by parent layer and ordered by each process row's first launch-owned CUPTI kernel GPU start. If a process has no launch-owned kernel, the order falls back to its first CUDA runtime call start and then to the process NVTX start.",
+        "",
+        markdown_table(
+            gpu_order_rows,
+            [
+                "parent_layer_range",
+                "forward_id",
+                "layer",
+                "gpu_order",
+                "gpu_start_offset_us",
+                "process_id",
+                "process_title",
+                "CUPTI kernel ms",
+                "NVTX CPU ms",
+                "process_cupti_pct_in_parent",
+                "matched_kernel_families",
+                "runtime API calls",
+                "kernel instances",
+                "gpu_order_basis",
+                "validation status",
+            ],
         ),
         "",
         "## FX Process Validation",
@@ -928,6 +1048,13 @@ def main() -> None:
         "dominant kernel family",
         "kernel_family_ms",
         "top_kernel_names",
+        "process_nvtx_start_ns",
+        "process_nvtx_end_ns",
+        "first_runtime_start_ns",
+        "first_kernel_start_ns",
+        "last_kernel_end_ns",
+        "gpu_order_key_ns",
+        "gpu_order_basis",
         "attribution method",
         "validation status",
         "notes",

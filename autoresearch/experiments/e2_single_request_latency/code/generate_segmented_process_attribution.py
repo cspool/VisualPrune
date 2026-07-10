@@ -99,6 +99,27 @@ def pct(numer: float, denom: float) -> str:
     return f"{100.0 * numer / denom:.2f}%"
 
 
+def compact_unique(values: list[Any], *, limit: int = 6) -> str:
+    seen: list[str] = []
+    for value in values:
+        text = str(value or "").strip()
+        if not text or text in seen:
+            continue
+        seen.append(text)
+    if len(seen) > limit:
+        return "; ".join(seen[:limit]) + f"; ... (+{len(seen) - limit})"
+    return "; ".join(seen)
+
+
+def compact_numeric_values(values: list[Any]) -> str:
+    numbers = sorted({inum(value) for value in values if str(value or "").strip()})
+    if not numbers:
+        return ""
+    if len(numbers) == 1:
+        return str(numbers[0])
+    return f"{numbers[0]}-{numbers[-1]}"
+
+
 def md_escape(value: Any) -> str:
     return str(value).replace("|", "\\|").replace("\n", " ")
 
@@ -622,8 +643,16 @@ def build_process_attribution(assignments: list[dict[str, Any]]) -> list[dict[st
                     "complexity_ratio": "",
                     "raw_weight_ms": "",
                     "normalization_scope": "layer_total_metric",
+                    "process_title": "",
+                    "fx_nodes": "",
                     "fx_op_families": "",
                     "matched_sample_families": "",
+                    "representative_matched_kernel_families": "",
+                    "representative_dominant_kernel_family": "",
+                    "representative_kernel_family_ms": "",
+                    "representative_runtime_api_calls": "",
+                    "representative_kernel_instances": "",
+                    "representative_validation_status": "",
                     "attribution_method": "unknown",
                     "fallback_reason": assignment["validation_reason"],
                     "conservation_error_ms": "0.000000",
@@ -688,8 +717,16 @@ def build_process_attribution(assignments: list[dict[str, Any]]) -> list[dict[st
                     "complexity_ratio": fmt(target_c / rep_c if rep_c > 0 else 0.0),
                     "raw_weight_ms": fmt(raw),
                     "normalization_scope": "layer_total_metric",
+                    "process_title": rep_process_row.get("process_title", ""),
+                    "fx_nodes": rep_process_row.get("fx_nodes", ""),
                     "fx_op_families": rep_process_row.get("fx_op_families", ""),
                     "matched_sample_families": target_families or rep_process_row.get("matched_kernel_families", ""),
+                    "representative_matched_kernel_families": rep_process_row.get("matched_kernel_families", ""),
+                    "representative_dominant_kernel_family": rep_process_row.get("dominant kernel family", ""),
+                    "representative_kernel_family_ms": rep_process_row.get("kernel_family_ms", ""),
+                    "representative_runtime_api_calls": rep_process_row.get("runtime API calls", ""),
+                    "representative_kernel_instances": rep_process_row.get("kernel instances", ""),
+                    "representative_validation_status": rep_process_row.get("validation status", ""),
                     "attribution_method": method,
                     "fallback_reason": "",
                     "conservation_error_ms": "0.000000",
@@ -765,6 +802,14 @@ def build_aggregation(process_rows: list[dict[str, Any]]) -> list[dict[str, Any]
             by_source[row["attribution_source"]] += fnum(row["ms"])
             covered.add((row["phase"], row["layer"], row["occurrence"]))
         denom = denominators.get(metric, 0.0)
+        representative_layers = compact_unique([row.get("representative_layer_id") for row in rows], limit=8)
+        runtime_calls = compact_numeric_values([row.get("representative_runtime_api_calls") for row in rows])
+        kernel_instances = compact_numeric_values([row.get("representative_kernel_instances") for row in rows])
+        launch_evidence = []
+        if runtime_calls:
+            launch_evidence.append(f"runtime API calls {runtime_calls}")
+        if kernel_instances:
+            launch_evidence.append(f"kernel instances {kernel_instances}")
         output.append(
             {
                 "variant": variant,
@@ -783,6 +828,26 @@ def build_aggregation(process_rows: list[dict[str, Any]]) -> list[dict[str, Any]
                 "unknown_pct": pct(by_source["unknown"], total),
                 "covered_layers": str(len(covered)),
                 "coverage_note": "covered_layers counts input-layer rows for this process and metric",
+                "process_title": compact_unique([row.get("process_title") for row in rows], limit=3),
+                "representative_layers": representative_layers,
+                "fx_nodes": compact_unique([row.get("fx_nodes") for row in rows], limit=4),
+                "fx_op_families": compact_unique([row.get("fx_op_families") for row in rows], limit=4),
+                "expected_kernel_families": compact_unique(
+                    [row.get("expected_kernel_families") for row in rows], limit=4
+                ),
+                "matched_kernel_families": compact_unique(
+                    [row.get("representative_matched_kernel_families") for row in rows], limit=4
+                ),
+                "dominant_kernel_families": compact_unique(
+                    [row.get("representative_dominant_kernel_family") for row in rows], limit=4
+                ),
+                "sample_kernel_family_ms": compact_unique(
+                    [row.get("representative_kernel_family_ms") for row in rows], limit=4
+                ),
+                "sample_launch_evidence": "; ".join(launch_evidence),
+                "sample_validation_status": compact_unique(
+                    [row.get("representative_validation_status") for row in rows], limit=4
+                ),
             }
         )
     return output
@@ -993,6 +1058,7 @@ def write_report(
             md_table(
                 [
                     "process",
+                    "process title",
                     "cost_type",
                     "sum_ms",
                     "global_pct",
@@ -1000,10 +1066,18 @@ def write_report(
                     "template_scaled_ms",
                     "evidence mix",
                     "covered input-layers",
+                    "representative layers",
+                    "FX nodes",
+                    "FX op families",
+                    "expected kernels",
+                    "matched sample kernels",
+                    "sample launch evidence",
+                    "sample validation",
                 ],
                 [
                     [
                         row["process"],
+                        row["process_title"],
                         row["cost_type"],
                         row["sum_ms"],
                         row["global_metric_pct"],
@@ -1011,6 +1085,13 @@ def write_report(
                         row["template_scaled_ms"],
                         f"obs {row['observed_pct']} / tmpl {row['template_scaled_pct']}",
                         row["covered_layers"],
+                        row["representative_layers"],
+                        row["fx_nodes"],
+                        row["fx_op_families"],
+                        row["expected_kernel_families"],
+                        row["matched_kernel_families"],
+                        row["sample_launch_evidence"],
+                        row["sample_validation_status"],
                     ]
                     for row in top_rows(aggregation, metric)
                 ],
@@ -1021,6 +1102,7 @@ def write_report(
     out.append("")
     out.append("- `observed_fx_op` rows use direct process-level NVTX/CUPTI evidence for the same input-layer, then normalize to the full layer-wise run's measured metric.")
     out.append("- `template_scaled` rows are estimates: the representative process template is complexity-scaled and then layer-conserved.")
+    out.append("- Global aggregation rows include representative-layer FX op families and launch-owned kernel families from the strict process-wise CSV; these columns explain the process template, not a new full-layer direct trace.")
     out.append("- CUPTI kernel ms and NVTX CPU ms are separate metric scopes and should not be subtracted from each other.")
     out.append("- Because most decode input-layers are template-scaled, global process percentages are suitable for optimization guidance but not a replacement for tracing every process-level range.")
     out.append("")
@@ -1128,11 +1210,11 @@ def parse_args() -> argparse.Namespace:
     output = base / "output"
     package = output / "visipruner_full_eager_full_layer_process_attribution"
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--full-input-layer-csv", type=Path, default=output / "visipruner_full_eager/nsys_fxsameinput_visipruner_full_eager_32tok_all_input_layer_performance.csv")
-    parser.add_argument("--layer-kernel-csv", type=Path, default=output / "visipruner_full_eager/nsys_fxsameinput_visipruner_full_eager_32tok_layer_kernel_breakdown.csv")
+    parser.add_argument("--full-input-layer-csv", type=Path, default=output / "visipruner_full_eager_layer_wise/nsys_fxsameinput_visipruner_full_eager_32tok_all_input_layer_performance.csv")
+    parser.add_argument("--layer-kernel-csv", type=Path, default=output / "visipruner_full_eager_layer_wise/nsys_fxsameinput_visipruner_full_eager_32tok_layer_kernel_breakdown.csv")
     parser.add_argument("--representative-process-csv", type=Path, default=output / "visipruner_full_eager_process_wise/same_input_visipruner_full_eager_process_attribution.csv")
-    parser.add_argument("--representative-report", type=Path, default=base / "SAME_INPUT_VISIPRUNER_FULL_EAGER_PROCESS_WISE_PERFORMANCE_REPORT.md")
-    parser.add_argument("--layer-report", type=Path, default=base / "SAME_INPUT_VISIPRUNER_FULL_EAGER_LAYER_PERFORMANCE_REPORT.md")
+    parser.add_argument("--representative-report", type=Path, default=output / "visipruner_full_eager_process_wise/SAME_INPUT_VISIPRUNER_FULL_EAGER_PROCESS_WISE_PERFORMANCE_REPORT.md")
+    parser.add_argument("--layer-report", type=Path, default=output / "visipruner_full_eager_layer_wise/SAME_INPUT_VISIPRUNER_FULL_EAGER_LAYER_PERFORMANCE_REPORT.md")
     parser.add_argument("--type-map-output", type=Path, default=package / "full_layer_attribution_type_map.csv")
     parser.add_argument("--assignment-output", type=Path, default=package / "full_layer_template_assignment.csv")
     parser.add_argument("--attribution-output", type=Path, default=package / "full_layer_process_attribution.csv")
@@ -1234,8 +1316,16 @@ def main() -> None:
             "complexity_ratio",
             "raw_weight_ms",
             "normalization_scope",
+            "process_title",
+            "fx_nodes",
             "fx_op_families",
             "matched_sample_families",
+            "representative_matched_kernel_families",
+            "representative_dominant_kernel_family",
+            "representative_kernel_family_ms",
+            "representative_runtime_api_calls",
+            "representative_kernel_instances",
+            "representative_validation_status",
             "attribution_method",
             "fallback_reason",
             "conservation_error_ms",
@@ -1263,6 +1353,16 @@ def main() -> None:
             "unknown_pct",
             "covered_layers",
             "coverage_note",
+            "process_title",
+            "representative_layers",
+            "fx_nodes",
+            "fx_op_families",
+            "expected_kernel_families",
+            "matched_kernel_families",
+            "dominant_kernel_families",
+            "sample_kernel_family_ms",
+            "sample_launch_evidence",
+            "sample_validation_status",
         ],
     )
     write_csv(

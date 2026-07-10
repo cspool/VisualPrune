@@ -516,7 +516,7 @@ FX reconstruction 文件，不能把 FX process label 当成真实运行时模�
 
 - `$visipruner-process-performance-breakdown`: 会消费
   `workload_analysis/fx/traces/fx_filtered_dispatch_layers_specialized/*`，但产物是
-  `autoresearch/experiments/e2_single_request_latency/SAME_INPUT_*_PROCESS_WISE_PERFORMANCE_REPORT.md`。
+  `autoresearch/experiments/e2_single_request_latency/output/visipruner_full_eager_process_wise/SAME_INPUT_*_PROCESS_WISE_PERFORMANCE_REPORT.md`。
   它是 `workload_analysis` 的下游消费者，不是生成当前目录产物的步骤。
 - `$visipruner-same-input-workflow`、`$visipruner-sampled-latency-attribution`、
   `$visipruner-same-input-evidence`: 属于 `autoresearch` / E2 SAME_INPUT 性能实验链路，
